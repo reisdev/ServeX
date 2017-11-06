@@ -1,0 +1,36 @@
+{
+  "name": "servex-backend",
+  "version": "0.0.1",
+  "main": "src/index.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/BlindJoker/ServeX-Backend.git"
+  },
+  "author": "Raphael Nepomuceno <raphael.nepomueceno@ufv.br>",
+  "license": "UNLICENSED",
+  "description": "Backend para o trabalho prático da disciplina Banco de Dados I (UFV)",
+  "private": true,
+  "dependencies": {
+    "body-parser": "^1.18.2",
+    "express": "^4.16.2",
+    "pg": "^7.4.0",
+    "pg-hstore": "^2.3.2",
+    "sequelize": "^4.22.5"
+  },
+  "devDependencies": {
+    "babel-cli": "^6.26.0",
+    "babel-preset-env": "^1.6.1",
+    "babel-preset-stage-0": "^6.24.1",
+    "nodemon": "^1.12.1"
+  },
+  "bugs": {
+    "url": "https://github.com/BlindJoker/ServeX-Backend/issues"
+  },
+  "homepage": "https://github.com/BlindJoker/ServeX-Backend#readme",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon src/index.js --exec babel-node",
+    "build": "babel src -d build",
+    "serve": "node build/index.js"
+  }
+}
