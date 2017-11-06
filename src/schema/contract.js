@@ -3,10 +3,7 @@
  * @Date:   2017-11-06
  */
 
-import Sequelize from 'sequelize'
-import settings from '../settings.js'
-  
-export default (seq,DataTypes) =>
+export default (seq, DataTypes) =>
     seq.define (
         'contract',
         {

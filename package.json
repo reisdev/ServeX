@@ -29,7 +29,7 @@
   "homepage": "https://github.com/BlindJoker/ServeX-Backend#readme",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "nodemon src/server.js --exec babel-node",
+    "start": "nodemon src/index.js --exec babel-node",
     "build": "babel src -d build",
     "serve": "node build/index.js"
   }

@@ -4,10 +4,10 @@
  */
 
 import Sequelize from 'sequelize'
-import settings from '../settings.js'
+import { SCHEMA_URI } from '../settings.js'
 
-const sequelize = new Sequelize(Settings.sequelize.URI, {
-    logging: settings.sequelize.logging
+const sequelize = new Sequelize(SCHEMA_URI, {
+    logging: console.log
 })
 
 const $Users = sequelize.import(__dirname + '/users.js')
@@ -24,7 +24,7 @@ $Review.belongsTo($Contract)
 $Contract.hasOne($Review,{ as: "Hirer"})
 $Contract.hasOne($Review,{ as: "Hired"})
 
-sequelize.sync({ force: settings.sequelize.forceBuildSchema })
+sequelize.sync({ force: true })
 export {
     sequelize,
     $Users,
