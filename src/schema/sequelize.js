@@ -11,16 +11,23 @@ const sequelize = new Sequelize(SCHEMA_URI)
 const $User = sequelize.import(__dirname + '/users.js')
 const $Review = sequelize.import(__dirname + '/review.js')
 const $Contract = sequelize.import(__dirname + '/contract.js')
-// const $ServiceType = sequelize.import(__dirname + '/servicetype.js')
-// const $OfferedService = sequelize.import(__dirname + '/offeredservice.js')
-// const $Adress = sequelize.import(__dirname + '/adress.js')
+const $ServiceType = sequelize.import(__dirname + '/servicetype.js')
+const $OfferedService = sequelize.import(__dirname + '/offeredservice.js')
+const $Adress = sequelize.import(__dirname + '/adress.js')
 // const $CredCard = sequelize.import(__dirname + '/credcard.js')
 // const $Phone = sequelize.import(__dirname + '/phone.js')
+
+$User.hasMany($Adress)
 
 $Review.belongsTo($User, { as: 'reviewer' })
 $Review.belongsTo($User, { as: 'reviewed' })
 
 $Contract.hasMany($Review)
+
+$OfferedService.hasMany($Contract)
+$OfferedService.belongsTo($ServiceType, { as: 'servicetype' })
+
+$Adress.hasMany($Contract)
 
 sequelize.sync({ force: true })
 
@@ -29,7 +36,7 @@ export {
     $User,
     $Review,
     $Contract,
-    // $ServiceType,
+    $ServiceType,
     // $OfferedService,
     // $Adress,
     // $CredCard,
