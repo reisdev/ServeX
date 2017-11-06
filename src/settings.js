@@ -4,4 +4,4 @@
  */
 
 export const SERVER_PORT = 44800
-export const SCHEMA_URI = 'postgres://postgres:servex@localhost:3306/servex'
+export const SCHEMA_URI = 'mysql://root@localhost:3306/servex'
