@@ -17,13 +17,12 @@ app.use('/', express.static('public'))
 // Converte o corpo das requests para JSON automaticamente.
 app.use(bodyParser.json())
 
-// Inicia o servidor.
-
 // Realiza a conexão com o banco de dados. Caso suceda, inicia o servidor HTTP.
 // Caso contrário, fecha a aplicação.
 sequelize.authenticate().then(() => {
-	app.listen(SERVER_PORT, () => console.log('\x1b[34m[servex]\x1b[0m %s', '🍻 Servidor iniciado.'))
+	// Inicia o servidor.
+	app.listen(SERVER_PORT, () => console.log('\x1b[34m[%s]\x1b[0m %s', 'servex', '🍻 Servidor iniciado.'))
 }).catch(err => {
-	console.error('\x1b[31m%s\x1b[0m', '[server error] ' + err)
+	console.error('\x1b[31m[%s]\x1b[0m %s', 'server error', err)
 	process.exit(1)
 })

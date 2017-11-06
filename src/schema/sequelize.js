@@ -6,11 +6,9 @@
 import Sequelize from 'sequelize'
 import { SCHEMA_URI } from '../settings.js'
 
-const sequelize = new Sequelize(SCHEMA_URI, {
-    logging: console.log
-})
+const sequelize = new Sequelize(SCHEMA_URI)
 
-const $Users = sequelize.import(__dirname + '/users.js')
+const $User = sequelize.import(__dirname + '/users.js')
 const $Review = sequelize.import(__dirname + '/review.js')
 const $Contract = sequelize.import(__dirname + '/contract.js')
 // const $ServiceType = sequelize.import(__dirname + '/servicetype.js')
@@ -19,15 +17,16 @@ const $Contract = sequelize.import(__dirname + '/contract.js')
 // const $CredCard = sequelize.import(__dirname + '/credcard.js')
 // const $Phone = sequelize.import(__dirname + '/phone.js')
 
-$Review.belongsTo($Contract)
+$Review.belongsTo($User, { as: 'reviewer' })
+$Review.belongsTo($User, { as: 'reviewed' })
 
-$Contract.hasOne($Review,{ as: "Hirer"})
-$Contract.hasOne($Review,{ as: "Hired"})
+$Contract.hasMany($Review)
 
 sequelize.sync({ force: true })
+
 export {
     sequelize,
-    $Users,
+    $User,
     $Review,
     $Contract,
     // $ServiceType,
