@@ -4,17 +4,18 @@
  * @Date:   2017-11-06
  */
 
-export default (seq, DataTypes) => seq.define('contract', {
+export default (seq, DataTypes) => seq.define('serviceType', {
 		id: {
 			type: DataTypes.INTEGER,
 			primaryKey: true,
 			autoIncrement: true
 		},
-		totalPrice: {
-			type: DataTypes.DECIMAL(10, 2),
+		name: {
+			type: DataTypes.STRING,
 			allowNull: false
 		},
-		hoursSpent: DataTypes.FLOAT,
-		startDate: DataTypes.DATE,
-		endDate: DataTypes.DATE,
+		pricingType: {
+			type: DataTypes.ENUM('Onetime', 'Hourly', 'Daily'),
+			allowNull: false
+		}
 	})

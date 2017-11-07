@@ -1,9 +1,10 @@
 /**
- * @Author: Matheus Reis <matheusdrjd@gmail.com
+ * @Authors: Matheus Reis <matheusdrdj@gmail.com>
+ *           Raphael Nepomuceno <raphael.nepomuceno@ufv.br>
  * @Date:   2017-11-06
  */
 
-export default (seq, DataTypes) => seq.define('users', {
+export default (seq, DataTypes) => seq.define('user', {
 		id: {
 			type: DataTypes.INTEGER,
 			primaryKey: true,
@@ -22,10 +23,10 @@ export default (seq, DataTypes) => seq.define('users', {
 			unique: true,
 			allowNull: true
 		},
-		name: {
+		fullName: {
 			type: DataTypes.STRING,
 			allowNull: false
 		},
-		rating: DataTypes.DECIMAL(10, 1),
-		photo: DataTypes.STRING
+		averageRating: DataTypes.DECIMAL(10, 1),
+		photoPath: DataTypes.STRING
 	})

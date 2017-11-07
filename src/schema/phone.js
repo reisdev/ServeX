@@ -4,12 +4,18 @@
  * @Date:   2017-11-06
  */
 
-export default (seq, DataTypes) => seq.define('review', {
-        id: {
+export default (seq, DataTypes) => seq.define('phone', {
+		id: {
 			type: DataTypes.INTEGER,
 			primaryKey: true,
 			autoIncrement: true
-        },
-        rating: DataTypes.DECIMAL(10, 2),
-        message: DataTypes.STRING
-    })
+		},
+		name: {
+			type: DataTypes.STRING,
+			allowNull: false
+		},
+		number: {
+			type: DataTypes.STRING,
+			allowNull: false
+		}
+	})
