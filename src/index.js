@@ -9,6 +9,8 @@ import bodyParser from 'body-parser'
 import { SERVER_PORT } from './settings.js'
 import { sequelize } from './schema/sequelize.js'
 
+import { UserEndpoint } from './endpoints'
+
 const app = express()
 
 // Roteia os arquivos da front-end.
@@ -16,6 +18,9 @@ app.use('/', express.static('public'))
 
 // Converte o corpo das requests para JSON automaticamente.
 app.use(bodyParser.json())
+
+// Registra as rotas
+UserEndpoint.registerRoutes(app)
 
 // Realiza a conexão com o banco de dados. Caso suceda, inicia o servidor HTTP.
 // Caso contrário, fecha a aplicação.

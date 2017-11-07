@@ -8,6 +8,7 @@ import Sequelize from 'sequelize'
 import { SCHEMA_URI } from '../settings.js'
 
 const sequelize = new Sequelize(SCHEMA_URI, {
+	logging: false,
 	define: { timestamps: false }
 })
 
