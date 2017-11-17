@@ -7,7 +7,7 @@ import express from 'express'
 import bodyParser from 'body-parser'
 
 import { SERVER_PORT } from './settings.js'
-import { sequelize } from './schema/sequelize.js'
+import { sequelize } from './sequelize.js'
 
 import { UserEndpoint } from './endpoints'
 

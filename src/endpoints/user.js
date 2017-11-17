@@ -3,15 +3,29 @@
  * @Date:   2017-11-07
  */
 
-import { Router, GET, POST } from '../utils/routeDecorators.js'
+import { Router, JSONEndpoint, GET, POST } from '../utils/routeDecorators.js'
+import { $User } from '../sequelize.js'
 
 @Router({ route: '/user' })
 export class UserEndpoint
 {
-	@GET()
-	@POST()
-	static async profile (req, res)
+	@GET('') @JSONEndpoint
+	static async profile (req)
 	{
-		return res.status(200).json([ req.body ])
+		return {
+			success: true,
+			status: 200,
+			payload: await $User.findAll()
+		}
+	}
+
+	@GET('/:id') @JSONEndpoint
+	static async getProductById(req)
+	{
+		return {
+			success: true,
+			status: 200,
+			payload: await $User.find({ where: { id: req.params.id } })
+		}
 	}
 }
