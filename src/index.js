@@ -9,7 +9,7 @@ import bodyParser from 'body-parser'
 import { SERVER_PORT } from './settings.js'
 import { sequelize } from './sequelize.js'
 
-import { UserEndpoint } from './endpoints'
+import { UserEndpoint, ServiceEndpoint } from './endpoints'
 
 const app = express()
 
@@ -21,6 +21,7 @@ app.use(bodyParser.json())
 
 // Registra as rotas
 UserEndpoint.registerRoutes(app)
+ServiceEndpoint.registerRoutes(app)
 
 // Realiza a conexão com o banco de dados. Caso suceda, inicia o servidor HTTP.
 // Caso contrário, fecha a aplicação.

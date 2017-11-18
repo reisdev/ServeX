@@ -11,6 +11,7 @@
   "description": "Backend para o trabalho prático da disciplina Banco de Dados I (UFV)",
   "private": true,
   "dependencies": {
+    "bcrypt": "^1.0.3",
     "body-parser": "^1.18.2",
     "express": "^4.16.2",
     "pg": "<7",

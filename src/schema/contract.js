@@ -4,17 +4,19 @@
  * @Date:   2017-11-06
  */
 
-export default (seq, DataTypes) => seq.define('contract', {
+export default function (sequelize, DataTypes)
+{
+	const Contract = sequelize.define('contract', {
 		id: {
-			type: DataTypes.INTEGER,
-			primaryKey: true,
-			autoIncrement: true
+			primaryKey:    true,
+			type:          DataTypes.UUID,
+			defaultValue:  DataTypes.UUIDV4
 		},
-		totalPrice: {
-			type: DataTypes.DECIMAL(10, 2),
-			allowNull: false
-		},
-		hoursSpent: DataTypes.FLOAT,
-		startDate: DataTypes.DATE,
-		endDate: DataTypes.DATE,
+		totalPrice:  { type: DataTypes.DECIMAL(10, 2), allowNull: false },
+		hoursSpent:          DataTypes.FLOAT,
+		startDate:           DataTypes.DATE,
+		endDate:             DataTypes.DATE,
 	})
+
+	return Contract
+}

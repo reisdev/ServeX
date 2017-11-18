@@ -4,13 +4,18 @@
  * @Date:   2017-11-06
  */
 
- export default (seq, DataTypes) => seq.define('serviceOffer', {
+export default function (sequelize, DataTypes)
+{
+	const Service = sequelize.define('service', {
 		id: {
-			type: DataTypes.INTEGER,
-			primaryKey: true,
-			autoIncrement: true
+			primaryKey:    true,
+			type:          DataTypes.UUID,
+			defaultValue:  DataTypes.UUIDV4
 		},
-		title: DataTypes.STRING,
-		description: DataTypes.STRING,
-		basePrice: DataTypes.DECIMAL(10, 2)
+		title:        DataTypes.STRING,
+		description:  DataTypes.STRING,
+		basePrice:    DataTypes.DECIMAL(10, 2)
 	})
+
+	return Service
+}

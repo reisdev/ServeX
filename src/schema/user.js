@@ -1,32 +1,33 @@
 /**
- * @Authors: Matheus Reis <matheusdrdj@gmail.com>
- *           Raphael Nepomuceno <raphael.nepomuceno@ufv.br>
- * @Date:   2017-11-06
- */
+* @Author: Matheus Reis <matheusdrdj@gmail.com>
+* @Author: Raphael Nepomuceno <raphael.nepomuceno@ufv.br>
+*/
 
-export default (seq, DataTypes) => seq.define('user', {
+import bcrypt from 'bcrypt'
+
+export default function (sequelize, DataTypes)
+{
+	const User = sequelize.define('user', {
 		id: {
-			type: DataTypes.INTEGER,
-			primaryKey: true,
-			autoIncrement: true
+			primaryKey:    true,
+			type:          DataTypes.UUID,
+			defaultValue:  DataTypes.UUIDV4
 		},
-		email: {
-			type: DataTypes.STRING,
-			unique: true,
-		},
-		password: {
-			type: DataTypes.STRING,
-			allowNull: false
-		},
-		CPF: {
-			type: DataTypes.STRING,
-			unique: true,
-			allowNull: true
-		},
-		fullName: {
-			type: DataTypes.STRING,
-			allowNull: false
-		},
-		averageRating: DataTypes.DECIMAL(10, 1),
-		photoPath: DataTypes.STRING
+		email:         { type: DataTypes.STRING,                  unique: true },
+		password:      { type: DataTypes.STRING, allowNull: false              },
+		CPF:           { type: DataTypes.STRING, allowNull: true, unique: true },
+		fullName:      { type: DataTypes.STRING, allowNull: false              },
+		rating:                DataTypes.DECIMAL(10, 1),
+		photoPath:     { type: DataTypes.STRING, allowNull: true               },
+	}, {
+		instanceMethods: {
+			authenticate: (password) => bcrypt.compare(value, this.password)
+		}
 	})
+
+	User.beforeCreate((user, options) => {
+		return bcrypt.hash(user.password, 10).then(hash => { user.password = hash })
+	})
+
+	return User
+}

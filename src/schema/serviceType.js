@@ -4,18 +4,17 @@
  * @Date:   2017-11-06
  */
 
-export default (seq, DataTypes) => seq.define('serviceType', {
+export default function (sequelize, DataTypes)
+{
+	const ServiceCategory = sequelize.define('serviceCategory', {
 		id: {
-			type: DataTypes.INTEGER,
-			primaryKey: true,
-			autoIncrement: true
+			primaryKey:    true,
+			type:          DataTypes.UUID,
+			defaultValue:  DataTypes.UUIDV4
 		},
-		name: {
-			type: DataTypes.STRING,
-			allowNull: false
-		},
-		pricingType: {
-			type: DataTypes.ENUM('Onetime', 'Hourly', 'Daily'),
-			allowNull: false
-		}
+		name:        { allowNull: false, type: DataTypes.STRING, unique: true },
+		pricingType: { allowNull: false, type: DataTypes.ENUM('Once', 'Hourly', 'Daily') }
 	})
+
+	return ServiceCategory
+}

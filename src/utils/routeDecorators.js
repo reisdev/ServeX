@@ -34,27 +34,26 @@ function httpMethod (method, route, middlewares = [])
 	}
 }
 
-export function GET (route, middlewares = [])
-{
-	return httpMethod('get', route, middlewares)
-}
-
-export function POST (route, middlewares = [])
-{
-	return httpMethod('post', route, middlewares)
-}
-
-export function JSONEndpoint(target, name, descriptor)
+export function MuteExceptions(target, name, descriptor)
 {
 	const original = descriptor.value
 	descriptor.value = async (req, res, next) => {
 		try {
-			const out = original.call(this, req)
-			return res.status(await out.status || 200).json(await out)
+			return await original.call(this, req, res, next)
 		} catch (e) {
-			return next(e)
+			return res.status(500).end()
 		}
 	}
 
 	return descriptor
+}
+
+export function Get (route, middlewares = [])
+{
+	return httpMethod('get', route, middlewares)
+}
+
+export function Post (route, middlewares = [])
+{
+	return httpMethod('post', route, middlewares)
 }

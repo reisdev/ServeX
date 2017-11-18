@@ -4,18 +4,17 @@
  * @Date:   2017-11-06
  */
 
-export default (seq, DataTypes) => seq.define('phone', {
+export default function (sequelize, DataTypes)
+{
+	const Phone = sequelize.define('phone', {
 		id: {
-			type: DataTypes.INTEGER,
-			primaryKey: true,
-			autoIncrement: true
+			primaryKey:    true,
+			type:          DataTypes.UUID,
+			defaultValue:  DataTypes.UUIDV4
 		},
-		name: {
-			type: DataTypes.STRING,
-			allowNull: false
-		},
-		number: {
-			type: DataTypes.STRING,
-			allowNull: false
-		}
+		name:    { type: DataTypes.STRING, allowNull: false },
+		number:  { type: DataTypes.STRING, allowNull: false },
 	})
+
+	return Phone
+}
