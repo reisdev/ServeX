@@ -7,7 +7,7 @@ import { Router, Get, Post, MuteExceptions } from '../utils/routeDecorators.js'
 import { $User } from '../sequelize.js'
 
 @Router({ route: '/user' })
-export class UserEndpoint
+export class User
 {
 	@Get('/') @MuteExceptions
 	static async profile (request, response)
@@ -15,6 +15,12 @@ export class UserEndpoint
 		return response.status(200).json({
 			payload: await $User.findAll({ attributes: { exclude: ['password', 'CPF'] } })
 		})
+	}
+
+	@Get('/signup')
+	static async signup (request, response)
+	{
+		return response.render('signup.pug')
 	}
 
 	@Post('/') @MuteExceptions

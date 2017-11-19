@@ -1,0 +1,74 @@
+body {
+	/*background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADwAAAA8CAYAAAA6/NlyAAAA90lEQVRoge2UsQ0EMQzDbv9h49au/NUNkEIC8acucBURBJ+q2u7emdmZ2e7eqtp/vT/vo7v3C++HQN15/95ggmZWpQnUrdGifSiVTqVT6bvBBM2sShOop9LKwQTNrEoTqKfSysEEzaxKE6in0srBBM2sShOop9LKwQTNrEoTqKfSysEEzaxKE6in0srBBM2sShOoW6N1zkF9KJVOpVPpu8EEzaxKE6hbo0X7UCqdSqfSd4MJmlmVJlBPpZWDCZpZlSZQT6WVgwmaWZUmUE+llYMJmlmVJlBPpZWDCZpZlSZQT6WVgwmaWZUmUE+llYMJmlmVJlB33n8h5m5oot5UAgAAAABJRU5ErkJggg==) repeat;*/
+	background: #edeff0;
+}
+
+
+/* Extra small devices (portrait phones, less than 576px) */
+/* No media query since this is the default in Bootstrap */
+
+/* Small devices */
+.card-columns { column-count: 1 }
+
+/* Medium devices */
+@media (min-width: 768px) {
+	.card-columns { column-count: 2 }
+}
+
+.navbar {
+	position: sticky;
+	top: 0;
+	z-index: 999;
+}
+
+#header {
+	position: relative;
+	width: 100vw;
+	min-height: 220px;
+	padding: 20px;
+	background: #2b3e50;
+	margin-bottom: 40px;
+}
+
+.bg-dark {
+	background: #2b3e50 !important;
+	box-shadow: rgba(57, 70, 78, 0.2) 0px 0px 5px 0px;
+}
+
+.sticky-sidebar {
+	position: sticky;
+	top: 64px;
+}
+
+/*
+* @Author:  Raphael Nepomuceno <raphael.nepomuceno@ufv.br>
+* @Date:    2017-11-15
+*/
+
+.center-view {
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%)
+}
+
+.layout-sidebar {
+	position: sticky;
+	top: 10px;
+}
+
+/* Extra small devices (portrait phones, less than 576px) */
+@media only screen and (max-width: 768px) {
+	.layout-sidebar {
+		top: 0;
+		position: relative;
+		margin-bottom: 30px;
+	}
+}
+
+.long-shadow {
+	font-size: 120px;
+	color: #fff;
+	text-shadow: 0 15px 30px rgba(0,0,0,.1), 10px 20px 5px rgba(0,0,0,.05), -10px 20px 5px rgba(0,0,0,.05);
+}
+

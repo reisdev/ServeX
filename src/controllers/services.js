@@ -6,10 +6,10 @@
 import { Router, Get, Post, MuteExceptions } from '../utils/routeDecorators.js'
 import { $Service, $User, $ServiceCategory, sequelize } from '../sequelize.js'
 
-@Router({ route: '/service' })
-export class ServiceEndpoint
+@Router({ route: '/services' })
+export class Service
 {
-	@Get('/category') @MuteExceptions
+	@Get('/category')
 	static async getCategories (request, response)
 	{
 		return response.status(200).json({
@@ -17,7 +17,7 @@ export class ServiceEndpoint
 		})
 	}
 
-	@Post('/category') @MuteExceptions
+	@Post('/category')
 	static async insertCategory ({ body }, response)
 	{
 		try {
@@ -39,15 +39,28 @@ export class ServiceEndpoint
 		}
 	}
 
-	@Get('/') @MuteExceptions
+	@Get('/')
 	static async profile (request, response)
 	{
-		return response.status(200).json({
-			payload: await $Service.findAll()
+		const services = $Service.findAll({
+			raw: true,
+			include: [
+				{ model: $ServiceCategory },
+				{ model: $User }
+			]
+		})
+
+		const categories = $ServiceCategory.findAll({
+			raw: true
+		})
+
+		return response.render('services.pug', {
+			services: await services,
+			categories: await categories
 		})
 	}
 
-	@Post('/') @MuteExceptions
+	@Post('/')
 	static async insert ({ body }, response)
 	{
 		const service = sequelize.transaction(async (transaction) => {
@@ -68,7 +81,7 @@ export class ServiceEndpoint
 		})
 	}
 
-	@Get('/:id') @MuteExceptions
+	@Get('/:id')
 	static async find ({ params }, response)
 	{
 		const user = await $Service.findOne({

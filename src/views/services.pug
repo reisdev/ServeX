@@ -1,0 +1,12 @@
+extends index.pug
+
+include serviceCard.pug
+
+block content
+	.col-12.col-md-3
+		.sticky-sidebar.list-group
+			each category in categories
+				a(href='/categories/' + category.id).list-group-item-action.list-group-item= category.name
+	.layout-main.card-columns.col-12.col-md-9
+		each service in services
+			+serviceCard(service)

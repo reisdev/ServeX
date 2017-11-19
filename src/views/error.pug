@@ -1,0 +1,7 @@
+extends index.pug
+
+block content
+	div.card
+		div.card-body
+			h4.card-title #{error.status} #{message}
+			pre #{error.stack}

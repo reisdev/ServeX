@@ -1,0 +1,18 @@
+mixin navlink (target, title)
+	if target == request.path
+		a(href=target).nav-item.nav-link.active= title
+	else
+		a(href=target).nav-item.nav-link= title
+		
+nav.navbar.navbar-expand-lg.navbar-dark.bg-dark
+	div.container
+		a(href='/').navbar-brand.mb-0 S
+		button.navbar-toggler.navbar-toggler-right(type='button' data-toggle='collapse' data-target='#navbarNavAltMarkup' aria-controls='navbarNavAltMarkup' aria-expanded='false' aria-label='Toggle navigation')
+			span.navbar-toggler-icon
+		#navbarNavAltMarkup.collapse.navbar-collapse
+			form.form-inline.mr-auto
+				input.form-control.mr-sm-2(placeholder='Buscar serviços' type='text')
+			div.navbar-nav
+				+navlink('/services', 'Serviços')
+				+navlink('/user/signup', 'Cadastre-se')
+				+navlink('/user/signin', 'Entre')

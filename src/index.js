@@ -3,25 +3,45 @@
  * @Date:   2017-11-06
  */
 
+import path from 'path'
+import url from 'url'
 import express from 'express'
-import bodyParser from 'body-parser'
 
 import { SERVER_PORT } from './settings.js'
 import { sequelize } from './sequelize.js'
 
-import { UserEndpoint, ServiceEndpoint } from './endpoints'
+import * as Controllers from './controllers'
 
 const app = express()
 
-// Roteia os arquivos da front-end.
-app.use('/', express.static('public'))
+// Carrega o engine de templates
+app.set('view engine', 'pug')
+app.set('views', path.join(__dirname, '/views'))
 
-// Converte o corpo das requests para JSON automaticamente.
-app.use(bodyParser.json())
+// Roteia os arquivos da front-end.
+app.use('/public', express.static('public'))
+
+// Expoẽ a rota local ao pug
+app.use((req, res, next) => {
+	res.locals.request = { path: req.path }
+	res.locals.title = 'ServeX'
+	res.locals.respath = (resource) => url.resolve('http://localhost:44800/', resource)
+	return next()
+})
 
 // Registra as rotas
-UserEndpoint.registerRoutes(app)
-ServiceEndpoint.registerRoutes(app)
+Controllers.Index.registerRoutes(app)
+Controllers.User.registerRoutes(app)
+Controllers.Service.registerRoutes(app)
+
+// error handler
+app.use(
+	(error, req, res, next) => {
+		res.status(error.status || 500).render('error.pug', {
+			message: error.message, error
+		})
+	}
+)
 
 // Realiza a conexão com o banco de dados. Caso suceda, inicia o servidor HTTP.
 // Caso contrário, fecha a aplicação.

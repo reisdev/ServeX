@@ -36,13 +36,13 @@ $Review.belongsTo($User, { as: 'sender' })
 
 $Service.hasMany($Contract)
 
-$ServiceCategory.hasMany($Service)
+$Service.belongsTo($ServiceCategory)
+$Service.belongsTo($User)
 
 $User.hasMany($Address)
 $User.hasMany($Contract)
 $User.hasMany($CreditCard)
 $User.hasMany($Phone)
-$User.hasMany($Service)
 
 sequelize.sync({ force: false })
 
