@@ -50,7 +50,7 @@ export class ServiceEndpoint
 	@Post('/') @MuteExceptions
 	static async insert ({ body }, response)
 	{
-		const service = await sequelize.transaction(async transaction => {
+		const service = sequelize.transaction(async (transaction) => {
 			const category = $ServiceCategory.findOne({ where: { id: body.serviceCategoryId } }, { transaction })
 			const user = $User.findOne({ where: { id: body.userId } }, { transaction })
 
@@ -64,7 +64,7 @@ export class ServiceEndpoint
 		})
 
 		return response.status(200).json({
-			payload: service
+			payload: await service
 		})
 	}
 
