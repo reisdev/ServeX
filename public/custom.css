@@ -24,7 +24,7 @@ body {
 #header {
 	position: relative;
 	width: 100vw;
-	min-height: 220px;
+	min-height: 230px;
 	padding: 20px;
 	background: #2b3e50;
 	margin-bottom: 40px;
@@ -32,7 +32,6 @@ body {
 
 .bg-dark {
 	background: #2b3e50 !important;
-	box-shadow: rgba(57, 70, 78, 0.2) 0px 0px 5px 0px;
 }
 
 .sticky-sidebar {

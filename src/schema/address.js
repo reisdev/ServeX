@@ -18,6 +18,7 @@ export default function (sequelize, DataTypes)
 		ZIPCode:       { type: DataTypes.STRING, allowNull: false },
 		province:      { type: DataTypes.STRING, allowNull: false },
 		country:       { type: DataTypes.STRING, allowNull: false },
+		number:        { type: DataTypes.STRING, allowNull: false }
 	})
 
 	return Address

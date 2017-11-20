@@ -4,7 +4,7 @@
  */
 
 import { Router, Get, Post, MuteExceptions } from '../utils/routeDecorators.js'
-import { $Service, $User, $ServiceCategory, sequelize } from '../sequelize.js'
+import { $Service, $User, $ServiceCategory, sequelize, ValidationError } from '../sequelize.js'
 
 @Router({ route: '/services' })
 export class Service
@@ -30,7 +30,7 @@ export class Service
 				payload: category
 			})
 		} catch (e) {
-			if(e.name !== 'SequelizeUniqueConstraintError')
+			if(e instanceof ValidationError === false)
 				throw e
 
 			return response.status(400).json({

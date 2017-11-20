@@ -4,7 +4,9 @@
  */
 
 import { Router, Get, Post, MuteExceptions } from '../utils/routeDecorators.js'
-import { $User } from '../sequelize.js'
+import { $User, $Address } from '../sequelize.js'
+
+import _ from 'lodash'
 
 @Router({ route: '/user' })
 export class User
@@ -18,9 +20,34 @@ export class User
 	}
 
 	@Get('/signup')
+	@Post('/signup')
 	static async signup (request, response)
 	{
-		return response.render('signup.pug')
+		if(_.isEmpty(request.body))
+			return response.render('signup.pug', { errors: {} })
+
+		try {
+			const u = await $User.create(request.body)
+			const p = await $Address.create({
+				... request.body, userId: u.id
+			})
+			console.log(u, p)
+			//return response.location('/')
+			return response.render('signup.pug')
+		} catch (e) {
+			if(e.name !== 'SequelizeUniqueConstraintError' && e.name !== 'SequelizeValidationError')
+				throw e
+
+				console.log(e)
+				console.log(request.body)
+
+			const errors = e.errors.reduce(
+				(hash, p) => { hash[p.path] = p.validatorKey; return hash },
+				{}
+			)
+
+			return response.status(400).render('signup.pug', { errors })
+		}
 	}
 
 	@Post('/') @MuteExceptions

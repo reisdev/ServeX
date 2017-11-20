@@ -7,12 +7,24 @@ import path from 'path'
 import url from 'url'
 import express from 'express'
 
+import bodyParser from 'body-parser'
+
 import { SERVER_PORT } from './settings.js'
 import { sequelize } from './sequelize.js'
 
 import * as Controllers from './controllers'
 
 const app = express()
+
+// To support JSON-encoded bodies
+app.use(
+	bodyParser.json()
+)
+
+// To support URL-encoded bodies
+app.use(
+	bodyParser.urlencoded({ extended: true })
+)
 
 // Carrega o engine de templates
 app.set('view engine', 'pug')
