@@ -1,26 +1,19 @@
-/**
- * @Author: Raphael Nepomuceno <raphael.nepomuceno@ufv.br>
- * @Date:   2017-11-07
- */
+/*! @Author: Raphael Nepomuceno <raphael.nepomuceno@ufv.br> */
 
-import { Router, Get, Post, MuteExceptions } from '../utils/routeDecorators.js'
+import * as Router from '../utils/router.js'
+
 import { $User, $Address, sequelize } from '../sequelize.js'
 
 import _ from 'lodash'
 
 const redirectIfAuthenticated = (request, response, next) => {
-	return (request.session
-		&& request.session.user
-		&& request.session.user.id
-		&& request.session.user.password)
-		? response.redirect('/')
-		: next()
+	return response.locals.loggedIn ? response.redirect('/') : next()
 }
 
-@Router({ route: '/user' })
+@Router.Route({ route: '/user' })
 export class User
 {
-	@Get('/')
+	@Router.Get('/')
 	static async profile (request, response)
 	{
 		return response.status(200).json({
@@ -28,13 +21,20 @@ export class User
 		})
 	}
 
-	@Get('/login', [ redirectIfAuthenticated ])
+	@Router.All('/logout')
+	static async logout (request, response)
+	{
+		request.session.destroy()
+		return response.redirect('/user/login')
+	}
+
+	@Router.Get('/login', [ redirectIfAuthenticated ])
 	static async login (request, response)
 	{
 		return response.render('login.pug')
 	}
 
-	@Post('/login', [ redirectIfAuthenticated ])
+	@Router.Post('/login', [ redirectIfAuthenticated ])
 	static async doLogin (request, response)
 	{
 		const { email, password } = request.body
@@ -53,13 +53,13 @@ export class User
 		})
 	}
 
-	@Get('/register', [ redirectIfAuthenticated ])
+	@Router.Get('/register', [ redirectIfAuthenticated ])
 	static async viewSignup (request, response)
 	{
 		return response.render('register.pug')
 	}
 
-	@Post('/register', [ redirectIfAuthenticated ])
+	@Router.Post('/register', [ redirectIfAuthenticated ])
 	static async register (request, response)
 	{
 		if(_.isEmpty(request.body))
@@ -93,7 +93,7 @@ export class User
 		}
 	}
 
-	@Post('/')
+	@Router.Post('/')
 	static async insert (request, response)
 	{
 		const u = await $User.create({

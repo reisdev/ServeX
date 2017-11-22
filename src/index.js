@@ -50,14 +50,16 @@ app.use((req, res, next) => {
 	res.locals.request = { path: req.path }
 	res.locals.title = 'ServeX'
 	res.locals.respath = (resource) => url.resolve('http://localhost:44800/', resource)
-
+	res.locals.loggedIn = req.session
+		&& req.session.user
+		&& req.session.user.id
+		&& req.session.user.password
 	res.locals.uniqKey = uid.sync(18)
 
 	return next()
 })
 
 // Registra as rotas
-Controllers.Index.registerRoutes(app)
 Controllers.User.registerRoutes(app)
 Controllers.Service.registerRoutes(app)
 
@@ -72,7 +74,8 @@ app.use(
 app.all('*', (request, response) => {
 	return response.status(404).render('error.pug', {
 		status: 404,
-		message: 'Página não encontrada'
+		message: 'Página não encontrada',
+		errors: 'Página não encontrada'
 	})
 })
 

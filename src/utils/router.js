@@ -5,7 +5,7 @@
 
 import path from 'path'
 
-export function Router ({ route = '/', middlewares = [] })
+export function Route ({ route = '/', middlewares = [] })
 {
 	return function (target, name, descriptor)
 	{
@@ -56,4 +56,9 @@ export function Get (route, middlewares = [])
 export function Post (route, middlewares = [])
 {
 	return httpMethod('post', route, middlewares)
+}
+
+export function All (route, middlewares = [])
+{
+	return httpMethod('all', route, middlewares)
 }

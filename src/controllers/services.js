@@ -1,15 +1,15 @@
 /**
- * @Author: Raphael Nepomuceno <raphael.nepomuceno@ufv.br>
- * @Date:   2017-11-07
- */
+* @Author: Raphael Nepomuceno <raphael.nepomuceno@ufv.br>
+* @Date:   2017-11-07
+*/
 
-import { Router, Get, Post, MuteExceptions } from '../utils/routeDecorators.js'
+import * as Router from '../utils/router.js'
 import { $Service, $User, $ServiceCategory, sequelize, ValidationError } from '../sequelize.js'
 
-@Router({ route: '/services' })
+@Router.Route({ route: '/services' })
 export class Service
 {
-	@Get('/category')
+	@Router.Get('/category')
 	static async getCategories (request, response)
 	{
 		return response.status(200).json({
@@ -17,7 +17,7 @@ export class Service
 		})
 	}
 
-	@Post('/category')
+	@Router.Post('/category')
 	static async insertCategory ({ body }, response)
 	{
 		try {
@@ -39,7 +39,7 @@ export class Service
 		}
 	}
 
-	@Get('/')
+	@Router.Get('/')
 	static async profile (request, response)
 	{
 		const services = $Service.findAll({
@@ -60,7 +60,7 @@ export class Service
 		})
 	}
 
-	@Post('/')
+	@Router.Post('/')
 	static async insert ({ body }, response)
 	{
 		const service = sequelize.transaction(async (transaction) => {
@@ -81,7 +81,7 @@ export class Service
 		})
 	}
 
-	@Get('/:id')
+	@Router.Get('/:id')
 	static async find ({ params }, response)
 	{
 		const user = await $Service.findOne({
