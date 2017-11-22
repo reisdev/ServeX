@@ -4,14 +4,23 @@
  */
 
 import { Router, Get, Post, MuteExceptions } from '../utils/routeDecorators.js'
-import { $User, $Address } from '../sequelize.js'
+import { $User, $Address, sequelize } from '../sequelize.js'
 
 import _ from 'lodash'
+
+const redirectIfAuthenticated = (request, response, next) => {
+	return (request.session
+		&& request.session.user
+		&& request.session.user.id
+		&& request.session.user.password)
+		? response.redirect('/')
+		: next()
+}
 
 @Router({ route: '/user' })
 export class User
 {
-	@Get('/') @MuteExceptions
+	@Get('/')
 	static async profile (request, response)
 	{
 		return response.status(200).json({
@@ -19,38 +28,72 @@ export class User
 		})
 	}
 
-	@Get('/signup')
-	@Post('/signup')
-	static async signup (request, response)
+	@Get('/login', [ redirectIfAuthenticated ])
+	static async login (request, response)
+	{
+		return response.render('login.pug')
+	}
+
+	@Post('/login', [ redirectIfAuthenticated ])
+	static async doLogin (request, response)
+	{
+		const { email, password } = request.body
+
+		if(! email || ! password)
+			return response.redirect('/login')
+
+		return await $User.findOne({ where: { email } }).then(user => {
+			if(! user)
+				return response.render('login.pug', { message: 'Usuário inexistente.' })
+			else if(! user.authenticate(password))
+				return response.render('login.pug', { message: 'Senha incorreta.' })
+
+			request.session.user = user
+			return response.redirect('/')
+		})
+	}
+
+	@Get('/register', [ redirectIfAuthenticated ])
+	static async viewSignup (request, response)
+	{
+		return response.render('register.pug')
+	}
+
+	@Post('/register', [ redirectIfAuthenticated ])
+	static async register (request, response)
 	{
 		if(_.isEmpty(request.body))
-			return response.render('signup.pug', { errors: {} })
+			return response.status(400).render('register.pug', {
+				errors: [ 'Preencha todos os campos.' ]
+			})
+
+		const body = request.body
 
 		try {
-			const u = await $User.create(request.body)
-			const p = await $Address.create({
-				... request.body, userId: u.id
+			const service = await sequelize.transaction(async (transaction) => {
+				const user = await $User.create({
+					... body, authLevel: 'Admin', rating: 0
+				}, { transaction })
+
+				$Address.create({ ... body, userId: user.id }, { transaction })
+
+				return user
 			})
-			console.log(u, p)
-			//return response.location('/')
-			return response.render('signup.pug')
+
+			return response.render('registerSuccess.pug')
 		} catch (e) {
-			if(e.name !== 'SequelizeUniqueConstraintError' && e.name !== 'SequelizeValidationError')
-				throw e
+			const mapPathToErrors = {
+				email: 'E-mail já cadastrado.',
+				CPF: 'CPF já cadastrado.'
+			}
 
-				console.log(e)
-				console.log(request.body)
-
-			const errors = e.errors.reduce(
-				(hash, p) => { hash[p.path] = p.validatorKey; return hash },
-				{}
-			)
-
-			return response.status(400).render('signup.pug', { errors })
+			return response.status(400).render('register.pug', {
+				errors: e.errors.map(p => mapPathToErrors[p.path] || p.path)
+			})
 		}
 	}
 
-	@Post('/') @MuteExceptions
+	@Post('/')
 	static async insert (request, response)
 	{
 		const u = await $User.create({
@@ -63,7 +106,6 @@ export class User
 		return response.status(200).json({ payload: { id: u.id } })
 	}
 
-	@Get('/:id') @MuteExceptions
 	static async find ({ params }, response)
 	{
 		const user = await $User.findOne({

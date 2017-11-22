@@ -3,11 +3,12 @@
  * @Date:   2017-11-06
  */
 
-import path from 'path'
-import url from 'url'
-import express from 'express'
-
 import bodyParser from 'body-parser'
+import express from 'express'
+import path from 'path'
+import session from 'express-session'
+import uid from 'uid-safe'
+import url from 'url'
 
 import { SERVER_PORT } from './settings.js'
 import { sequelize } from './sequelize.js'
@@ -15,6 +16,17 @@ import { sequelize } from './sequelize.js'
 import * as Controllers from './controllers'
 
 const app = express()
+
+// Enable support for sessions
+app.use(
+	session({
+		cookie: { maxAge: 60000 },
+		key: 'sid',
+		resave: false,
+		saveUninitialized: true,
+		secret: 'Morgenstern'
+	})
+)
 
 // To support JSON-encoded bodies
 app.use(
@@ -38,6 +50,9 @@ app.use((req, res, next) => {
 	res.locals.request = { path: req.path }
 	res.locals.title = 'ServeX'
 	res.locals.respath = (resource) => url.resolve('http://localhost:44800/', resource)
+
+	res.locals.uniqKey = uid.sync(18)
+
 	return next()
 })
 
@@ -46,14 +61,20 @@ Controllers.Index.registerRoutes(app)
 Controllers.User.registerRoutes(app)
 Controllers.Service.registerRoutes(app)
 
-// error handler
+// Error handler
 app.use(
 	(error, req, res, next) => {
-		res.status(error.status || 500).render('error.pug', {
-			message: error.message, error
-		})
+		res.status(error.status || 500).render('error.pug', error)
 	}
 )
+
+// Página 404
+app.all('*', (request, response) => {
+	return response.status(404).render('error.pug', {
+		status: 404,
+		message: 'Página não encontrada'
+	})
+})
 
 // Realiza a conexão com o banco de dados. Caso suceda, inicia o servidor HTTP.
 // Caso contrário, fecha a aplicação.

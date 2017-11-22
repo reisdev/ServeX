@@ -1,0 +1,20 @@
+extends index.pug
+
+block content
+	if message
+		.alert.alert-danger(role="alert").w-100
+			= message
+			button.close(type="button" data-dismiss="alert" aria-label="Close")
+				span(aria-hidden="true") ×
+	
+	form(action='/user/login' name=uniqKey method='POST').card-group.w-100
+		.card.card-body
+			h1.card-title Entrar
+			div.form-group
+				label(for='email') E-mail
+				input.form-control(required type='email' name='email')#email
+			div.form-group
+				label(for='password') Senha
+				input.form-control(required type='password' name='password')#password
+			div.form-group
+				button.btn.btn-primary(type='submit') Cadastrar

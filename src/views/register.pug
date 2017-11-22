@@ -1,0 +1,59 @@
+extends index.pug
+
+block content
+	if errors
+		each err in errors
+			.alert.alert-danger(role='alert').w-100
+				= err
+				button.close(type='button' data-dismiss='alert' aria-label='Fechar')
+					span(aria-hidden='true') ×
+
+	form(action='/user/register' name=uniqKey method='POST').card-group.w-100
+		.card.card-body
+			h1.card-title Cadastrar
+			h2.card-title Informações pessoais 			
+			
+			div.form-group
+				label(for='fullname') Nome completo
+				input.form-control(required type='text' name='fullName')#fullname
+			div.form-group
+				label(for='email') E-mail
+				input.form-control(required type='email' name='email')#email
+			div.form-group
+				label(for='cpf') CPF
+				input.form-control(required type='text' name='CPF')#cpf
+			div.form-group
+				label(for='password') Senha
+				input.form-control(required type='password' name='password' aria-describedby='passwd-help')#password
+				small.form-text.text-muted#passwd-help Deve conter pelo menos 6 caracteres.
+			div.form-group
+				label(for='confirmPassword') Repita a senha
+				input.form-control(required type='password' name='confirmPassword')#confirmPassword
+
+		.card.card-body
+			h2.card-title Endereço
+			
+			div.form-group
+				label(for='country') País
+				input.form-control(required type='text' name='country')#country
+			div.form-group
+				label(for='province') Estado
+				input.form-control(required type='text' name='province')#province
+			div.form-group
+				label(for='ZIPCode') CEP
+				input.form-control(required type='text' name='ZIPCode')#ZIPCode
+			div.form-group
+				label(for='city') Cidade
+				input.form-control(required type='text' name='city')#city
+			div.form-group
+				label(for='neighborhood') Bairro
+				input.form-control(required type='text' name='neighborhood')#neighborhood
+			div.form-group
+				label(for='street') Rua
+				input.form-control(required type='text' name='street')#street
+			div.form-group
+				label(for='number') Número
+				input.form-control(required type='text' name='number')#number
+
+			div.form-group
+				button.btn.btn-primary(type='submit') Cadastrar

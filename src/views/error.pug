@@ -1,7 +1,8 @@
 extends index.pug
 
 block content
-	div.card
+	div.card.w-100
 		div.card-body
-			h4.card-title #{error.status} #{message}
-			pre #{error.stack}
+			h4.card-title #{status} #{message}
+			pre #{stack}
+			pre #{errors}

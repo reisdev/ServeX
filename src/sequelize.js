@@ -44,7 +44,7 @@ $User.hasMany($Contract)
 $User.hasMany($CreditCard)
 $User.hasMany($Phone)
 
-sequelize.sync({ force: true })
+sequelize.sync({ force: false })
 
 export {
 	sequelize, Sequelize,

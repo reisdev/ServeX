@@ -19,15 +19,15 @@ export default function (sequelize, DataTypes)
 		fullName:      { type: DataTypes.STRING, allowNull: false              },
 		rating:                DataTypes.DECIMAL(10, 1),
 		photoPath:     { type: DataTypes.STRING, allowNull: true               },
-	}, {
-		instanceMethods: {
-			authenticate: (password) => bcrypt.compare(value, this.password)
-		}
+		authLevel:     { type: DataTypes.ENUM('User', 'Admin'), allowNull: false }
 	})
 
-	User.beforeCreate((user, options) => {
-		return bcrypt.hash(user.password, 10).then(hash => { user.password = hash })
-	})
+	User.prototype.authenticate = function (password)
+	{
+		return bcrypt.compareSync(password, this.password)
+	}
+
+	User.beforeCreate(user => user.password = bcrypt.hashSync(user.password, 10))
 
 	return User
 }
