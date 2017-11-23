@@ -100,7 +100,8 @@ export class User
 			email: request.body.email,
 			password: request.body.password,
 			CPF: request.body.CPF,
-			fullName: request.body.fullName
+			fullName: request.body.fullName,
+			photoPath: request.body.photoPath
 		})
 
 		return response.status(200).json({ payload: { id: u.id } })

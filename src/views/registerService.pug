@@ -8,29 +8,30 @@ block content
                     button.close(type='button' data-dismiss='alert' aria-label='Fechar')
                         span(aria-hidden='true') ×
 
-    form(action='/service' name=uniqKey method='POST').card-group.w-100
+    form(action='/services' name=uniqKey method='POST').card-group.w-100
         .card.card-body
             h1.card-title Cadastrar
-            h2.card-title Novo Serviço
+            h2.card-title Informações do Serviço
 
             div.form-group
-                label(for='fullname') Nome do Serviço
-                input.form-control(required type='text' name='serviceName')#serviceName
+                label(for='fullname') Nome
+                input.form-control(required type='text' name='title')#serviceName
             div.form-group
                 label(for='description') Descrição
                 textarea.form-control(required name='description' rows='4')#description
             div.form-group
                 div.row
-                    div.col-lg-6
+                    div.col-lg-3
                         label(for='baseprice') Preço
                         div.input-group
                             span.input-group-addon(type='text') R$
-                            input.form-control(required type='number' name='basePrice')#baseprice
+                            input.form-control(required type='number' min='1' max='9999999999.9' name='basePrice')#baseprice
 
-                    div.col-lg-6
+                    div.col-lg-4
                         label(for='servicetype') Tipo de Serviço
-                        select.form-control(required name='serviceType')#servicetype
-                            each i in categories
-                                option #{i.name}
+                        select.form-control(required name='serviceCategoryId')#servicetype
+                            each category in categories
+                                option(value=category.id) #{category.name}                     
+
             div.from-group
                 button.btn.btn-primary(type='submit') Registrar Serviço

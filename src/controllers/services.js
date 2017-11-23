@@ -86,15 +86,16 @@ export class Service {
 	static async insert({
 		body
 	}, response) {
+		console.log(body)
 		const service = sequelize.transaction(async(transaction) => {
-			const category = $ServiceCategory.findOne({
+			const category = await $ServiceCategory.findOne({
 				where: {
 					id: body.serviceCategoryId
 				}
 			}, {
 				transaction
 			})
-			const user = $User.findOne({
+			const user = await $User.findOne({
 				where: {
 					id: body.userId
 				}
@@ -106,11 +107,10 @@ export class Service {
 				title: body.title,
 				description: body.description,
 				basePrice: body.basePrice,
-				serviceCategoryId: (await category).id,
-				userId: (await user).id
+				serviceCategoryId: category.id,
+				userId: '19beddd3-d21d-4426-bc22-9db1e9e44563'
 			})
 		})
-
 		return response.status(200).render('regServiceSucess.pug')
 	}
 

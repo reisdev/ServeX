@@ -10,8 +10,12 @@ import session from 'express-session'
 import uid from 'uid-safe'
 import url from 'url'
 
-import { SERVER_PORT } from './settings.js'
-import { sequelize } from './sequelize.js'
+import {
+	SERVER_PORT
+} from './settings.js'
+import {
+	sequelize
+} from './sequelize.js'
 
 import * as Controllers from './controllers'
 
@@ -20,7 +24,9 @@ const app = express()
 // Enable support for sessions
 app.use(
 	session({
-		cookie: { maxAge: 60000 },
+		cookie: {
+			maxAge: 60000
+		},
 		key: 'sid',
 		resave: false,
 		saveUninitialized: true,
@@ -35,7 +41,9 @@ app.use(
 
 // To support URL-encoded bodies
 app.use(
-	bodyParser.urlencoded({ extended: true })
+	bodyParser.urlencoded({
+		extended: true
+	})
 )
 
 // Carrega o engine de templates
@@ -47,14 +55,17 @@ app.use('/public', express.static('public'))
 
 // Expoẽ a rota local ao pug
 app.use((req, res, next) => {
-	res.locals.request = { path: req.path }
+	res.locals.request = {
+		path: req.path
+	}
 	res.locals.title = 'ServeX'
 	res.locals.respath = (resource) => url.resolve('http://localhost:44800/', resource)
-	res.locals.loggedIn = req.session
-		&& req.session.user
-		&& req.session.user.id
-		&& req.session.user.password
+	res.locals.loggedIn = req.session &&
+		req.session.user &&
+		req.session.user.id &&
+		req.session.user.password
 	res.locals.uniqKey = uid.sync(18)
+	res.locals.userid = ''
 
 	return next()
 })
@@ -83,7 +94,7 @@ app.all('*', (request, response) => {
 // Caso contrário, fecha a aplicação.
 sequelize.authenticate().then(() => {
 	// Inicia o servidor.
-	app.listen(SERVER_PORT, () => console.log('\x1b[34m[%s]\x1b[0m %s', 'servex', '🍻 Servidor iniciado na porta ',SERVER_PORT))
+	app.listen(SERVER_PORT, () => console.log('\x1b[34m[%s]\x1b[0m %s', 'servex', '🍻 Servidor iniciado na porta ', SERVER_PORT))
 }).catch(err => {
 	console.error('\x1b[31m[%s]\x1b[0m %s', 'server error', err)
 	process.exit(1)
