@@ -14,30 +14,6 @@ import {
 })
 export class Service {
 
-	@Router.Get('/category')
-	static async getCategories(request, response) {
-
-		return response.status(200).json({
-			payload: await $ServiceCategory.findAll()
-		})
-	}
-
-	@Router.Get('/category/add')
-	static async addCategories(request, response) {
-		return response.status(200).render('addCategory.pug')
-	}
-
-	@Router.Post('/category')
-	static async insertCategory({
-		body
-	}, response) {
-		const category = await $ServiceCategory.create({
-			name: body.name,
-			pricingType: body.pricingType
-		})
-		response.status(200).render('index.pug')
-	}
-
 	@Router.Get('/')
 	static async profile(request, response) {
 		const services = $Service.findAll({
