@@ -20,14 +20,16 @@ import * as Controllers from './controllers'
 // Realiza a conexão com o banco de dados. Caso suceda, inicia o servidor HTTP.
 // Caso contrário, fecha a aplicação.
 sequelize.authenticate().then(() => {
-	// Inicia o servidor.
 	const app = express()
-	app.listen(SERVER_PORT, () => console.log('\x1b[34m[%s]\x1b[0m %s', 'servex', '🍻 Servidor iniciado na porta ', SERVER_PORT))
+
+	// Carrega o engine de templates
+	app.set('view engine', 'pug')
+	app.set('views', path.join(__dirname, '/views'))
 
 	// Enable support for sessions
 	app.use(
 		session({
-			key: 'ssid',
+			key: 'sid',
 			resave: false,
 			store: new SequelizeStore({ db: sequelize }),
 			saveUninitialized: true,
@@ -42,14 +44,8 @@ sequelize.authenticate().then(() => {
 
 	// To support URL-encoded bodies
 	app.use(
-		bodyParser.urlencoded({
-			extended: true
-		})
+		bodyParser.urlencoded({ extended: true })
 	)
-
-	// Carrega o engine de templates
-	app.set('view engine', 'pug')
-	app.set('views', path.join(__dirname, '/views'))
 
 	// Roteia os arquivos da front-end.
 	app.use('/public', express.static('public'))
@@ -60,7 +56,9 @@ sequelize.authenticate().then(() => {
 		res.locals.user = req.session.user
 		res.locals.uniqKey = uid.sync(18)
 
-		res.locals.baseurl = (resource) => url.resolve('http://localhost:44800/', resource)
+		res.locals.baseurl = function (resource) {
+			return url.resolve('http://localhost:44800/', resource)
+		}
 
 		return next()
 	})
@@ -70,13 +68,6 @@ sequelize.authenticate().then(() => {
 	Controllers.Service.registerRoutes(app)
 	Controllers.ServiceCategory.registerRoutes(app)
 
-	// Error handler
-	app.use(
-		(error, req, res, next) => {
-			res.status(error.status || 500).render('error.pug', error)
-		}
-	)
-
 	// Página 404
 	app.all('*', (request, response) => {
 		return response.status(404).render('error.pug', {
@@ -85,6 +76,9 @@ sequelize.authenticate().then(() => {
 			error: 'Página não encontrada'
 		})
 	})
+
+	// Inicia o servidor.
+	app.listen(SERVER_PORT, () => console.log('\x1b[34m[%s]\x1b[0m %s', 'servex', '🍻 Servidor iniciado na porta ', SERVER_PORT))
 }).catch(err => {
 	console.error('\x1b[31m[%s]\x1b[0m %s', 'server error', err)
 	process.exit(1)

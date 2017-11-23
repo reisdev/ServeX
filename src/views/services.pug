@@ -15,3 +15,6 @@ block content
 	.layout-main.card-columns.col-12.col-md-9
 		each service in services
 			+serviceCard(service)
+		else
+			div.card.card-body
+				h4.card-title Não há serviços cadastrados.
