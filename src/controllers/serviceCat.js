@@ -1,6 +1,7 @@
 /*! @Author: Matheus Reis <matheus.r.jesus@ufv.br */
 
 import * as Router from '../utils/router.js'
+
 import {
     $ServiceCategory,
     sequelize
@@ -9,11 +10,16 @@ import {
 @Router.Route({
     route: '/categories'
 })
-export class Category {
 
+export class ServiceCategory {
     @Router.Get('/')
     static async getCategories(request, response) {
-        return response.status(200).render('services.pug')
+        return response.status(200).json({
+            payload: {
+                text: 'Teste',
+                id: '1'
+            }
+        })
     }
 
     @Router.Get('/add')

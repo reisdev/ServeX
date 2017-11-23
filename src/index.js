@@ -73,6 +73,7 @@ app.use((req, res, next) => {
 // Registra as rotas
 Controllers.User.registerRoutes(app)
 Controllers.Service.registerRoutes(app)
+Controllers.ServiceCategory.registerRoutes(app)
 
 // Error handler
 app.use(
