@@ -1,14 +1,16 @@
 /* @Author: Raphael Nepomuceno <raphael.nepomuceno@ufv.br> */
 
-const DEFAULT_MESSAGE = 'Operação não permitida.'
+export const restrictedPage = (prefs) => (request, response, next) => {
+	const test = prefs.test || (() => true)
 
-export const restrictedPage = (error = DEFAULT_MESSAGE, test = () => true) => (request, response, next) => {
 	if(request.session.user && test(request.session.user))
 		return next()
 
-	return response.status(403).render('error.pug', {
-		status: 403,
-		message: 'Acesso restrito',
-		error
+	const error = prefs.error || 'Operação não permitida.'
+	const message = prefs.message || 'Acesso restrito.'
+	const status = prefs.status || 403
+
+	return response.status(status).render('error.pug', {
+		status, message, error
 	})
 }

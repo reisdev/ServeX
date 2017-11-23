@@ -1,10 +1,15 @@
 /*! @Author: Matheus Reis <matheus.r.jesus@ufv.br */
 
 import * as Router from '../utils/router.js'
+import * as Middlewares from '../utils/middlewares.js'
 
 import { $ServiceCategory, sequelize } from '../sequelize.js'
 
-@Router.Route({ route: '/categories' })
+@Router.Route({ route: '/categories', middlewares: [
+	Middlewares.restrictedPage({
+		message: 'Efetue login para adicionar um serviço.'
+	})
+]})
 export class ServiceCategory
 {
 	@Router.Get('/new')

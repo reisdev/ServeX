@@ -46,7 +46,9 @@ export class Service
 	}
 
 	@Router.Get('/add', [
-		Middlewares.restrictedPage('Efetue login para adicionar um serviço.')
+		Middlewares.restrictedPage({
+			message: 'Efetue login para adicionar um serviço.'
+		})
 	])
 	static async insertForm (request, response)
 	{
@@ -67,7 +69,9 @@ export class Service
 	}
 
 	@Router.Post('/', [
-		Middlewares.restrictedPage('Efetue login para adicionar um serviço.')
+		Middlewares.restrictedPage({
+			message: 'Efetue login para adicionar um serviço.'
+		})
 	])
 	static async doInsert ({ body, session }, response)
 	{
