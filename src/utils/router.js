@@ -3,7 +3,7 @@
  * @Date:   2017-11-07
  */
 
-import path from 'path'
+import { posix as path } from 'path'
 
 export function Route ({ route = '/', middlewares = [] })
 {
