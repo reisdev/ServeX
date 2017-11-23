@@ -8,7 +8,7 @@ block content
                     button.close(type='button' data-dismiss='alert' aria-label='Fechar')
                         span(aria-hidden='true') ×
 
-    form(action='/category' name=uniqKey method="POST").card-group.w-100
+    form(action='/services/category' name=uniqKey method="POST").card-group.w-100
         .card.card-body
             h1.card-title Inserir
             h2.card-tile Nova Categoria de Serviço
@@ -22,9 +22,9 @@ block content
                     label(for='pricingType') Tipo de Precificação por:
                     div.form-group
                         select.form-control(required name='pricingType')
-                            option Atividade
-                            option Diária
-                            option Hora
+                            option(value='Once') Atividade
+                            option(value='Dairy') Diária
+                            option(value='Hourly') Hora
 
             div.form-group
                 button.btn.btn-primary(type='submit') Adicionar categoria

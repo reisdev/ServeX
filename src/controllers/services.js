@@ -13,6 +13,7 @@ import {
 	route: '/services'
 })
 export class Service {
+
 	@Router.Get('/category')
 	static async getCategories(request, response) {
 
@@ -23,7 +24,6 @@ export class Service {
 
 	@Router.Get('/category/add')
 	static async addCategories(request, response) {
-
 		return response.status(200).render('addCategory.pug')
 	}
 
@@ -31,26 +31,11 @@ export class Service {
 	static async insertCategory({
 		body
 	}, response) {
-		try {
-			const category = await $ServiceCategory.create({
-				name: body.name,
-				pricingType: body.pricingType
-			})
-
-			return response.status(200).json({
-				payload: category
-			})
-		} catch (e) {
-			if (e instanceof ValidationError === false)
-				throw e
-
-			return response.status(400).json({
-				errors: e.errors.map(m => ({
-					validatorKey: m.validatorKey,
-					path: m.path
-				}))
-			})
-		}
+		const category = await $ServiceCategory.create({
+			name: body.name,
+			pricingType: body.pricingType
+		})
+		response.status(200).render('index.pug')
 	}
 
 	@Router.Get('/')
@@ -115,10 +100,12 @@ export class Service {
 				description: body.description,
 				basePrice: body.basePrice,
 				serviceCategoryId: body.serviceCategoryId,
-				userId: user.id
+				userId: session.user.id
 			})
 		})
-		return response.status(200).render('regServiceSucess.pug')
+		return response.status(200).render('addServiceSucess.pug',{
+
+		})
 	}
 
 	@Router.Get('/:id')
