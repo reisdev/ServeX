@@ -126,8 +126,8 @@ export class Service {
 				title: body.title,
 				description: body.description,
 				basePrice: body.basePrice,
-				serviceCategoryId: category.id,
-				userId: user
+				serviceCategoryId: category,
+				userId: user.id
 			})
 		})
 		return response.status(200).render('regServiceSucess.pug')
