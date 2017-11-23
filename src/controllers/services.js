@@ -101,11 +101,6 @@ export class Service {
 		session
 	}, response) {
 		const service = sequelize.transaction(async(transaction) => {
-			const category = $ServiceCategory.findOne({
-				where: {
-					id: body.serviceCategoryId
-				}
-			})
 			/*
 			if(!session.user){
 				return response.status(200).render('addService.pug', {
@@ -114,19 +109,12 @@ export class Service {
 				})
 			}
 			*/
-			const user = await $User.findOne({
-				where: {
-					id: session.user.id
-				}
-			}, {
-				transaction
-			})
 
 			return $Service.create({
 				title: body.title,
 				description: body.description,
 				basePrice: body.basePrice,
-				serviceCategoryId: category,
+				serviceCategoryId: body.serviceCategoryId,
 				userId: user.id
 			})
 		})
