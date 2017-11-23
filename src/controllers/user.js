@@ -1,103 +1,70 @@
 /*! @Author: Raphael Nepomuceno <raphael.nepomuceno@ufv.br> */
 
-import * as Router from '../utils/router.js'
-
-import {
-	$User,
-	$Address,
-	sequelize
-} from '../sequelize.js'
-
 import _ from 'lodash'
 
-const redirectIfAuthenticated = (request, response, next) => {
-	return response.locals.loggedIn ? response.redirect('/') : next()
+import * as Router from '../utils/router.js'
+import { $Address, $User, sequelize } from '../sequelize.js'
+
+const redirectIfAuthenticated = (request, response, next) =>
+{
+return request.session.user ? response.redirect('/') : next()
 }
 
-@Router.Route({
-	route: '/user'
-})
-export class User {
+@Router.Route({ route: '/user' })
+export class User
+{
 	@Router.Get('/')
-	static async profile(request, response) {
+	static async all (request, response)
+	{
 		return response.status(200).json({
-			payload: await $User.findAll({
-				attributes: {
-					exclude: ['password', 'CPF']
-				}
-			})
+			payload: await $User.findAll()
 		})
 	}
 
-	@Router.All('/logout')
-	static async logout(request, response) {
+	@Router.Get('/logout')
+	@Router.Post('/logout')
+	static async logout(request, response)
+	{
 		request.session.destroy()
 		return response.redirect('/user/login')
 	}
 
-	@Router.Get('/login', [redirectIfAuthenticated])
-	static async login(request, response) {
-		return response.render('login.pug')
-	}
+	@Router.Get('/login', [ redirectIfAuthenticated ])
+	@Router.Post('/login', [ redirectIfAuthenticated ])
+	static async login (request, response)
+	{
+		const { email, password } = request.body
 
-	@Router.Post('/login', [redirectIfAuthenticated])
-	static async doLogin(request, response) {
-		const {
-			email,
-			password
-		} = request.body
-
-		if (!email || !password)
-			return response.redirect('/login')
+		if (! email || ! password)
+			return response.render('login.pug')
 
 		return await $User.findOne({
-			where: {
-				email
-			}
+			where: { email }
 		}).then(user => {
-			if (!user)
-				return response.render('login.pug', {
-					message: 'Usuário inexistente.'
-				})
-			else if (!user.authenticate(password))
-				return response.render('login.pug', {
-					message: 'Senha incorreta.'
-				})
+			if (! user)
+				return response.render('login.pug', { message: 'Usuário inexistente.' })
+			else if (! user.authenticate(password))
+				return response.render('login.pug', { message: 'Senha incorreta.' })
 
 			request.session.user = user
 			return response.redirect('/')
 		})
 	}
 
-	@Router.Get('/register', [redirectIfAuthenticated])
-	static async viewSignup(request, response) {
-		return response.render('register.pug')
-	}
+	@Router.Get('/register', [ redirectIfAuthenticated ])
+	@Router.Post('/register', [ redirectIfAuthenticated ])
+	static async register ({ body }, response)
+	{
+		if (_.isEmpty(body))
+			return response.status(400).render('register.pug', { error: [ 'Preencha todos os campos.' ] })
 
-	@Router.Post('/register', [redirectIfAuthenticated])
-	static async register(request, response) {
-		if (_.isEmpty(request.body))
-			return response.status(400).render('register.pug', {
-				errors: ['Preencha todos os campos.']
-			})
-
-		const body = request.body
+		if(body.password !== body.confirmPassword)
+			return response.status(400).render('register.pug', { error: [ 'As senhas inseridas não são iguais.' ] })
 
 		try {
-			const service = await sequelize.transaction(async(transaction) => {
-				const user = await $User.create({
-					...body,
-					authLevel: 'Admin',
-					rating: 0
-				}, {
-					transaction
-				})
-
-				$Address.create({ ...body,
-					userId: user.id
-				}, {
-					transaction
-				})
+			await sequelize.transaction(async (transaction) => {
+				const user = await $User.create({ ...body, authLevel: 'Admin', rating: 0 }, { transaction })
+				const addr = await $Address.create({ ...body, userId: user.id }, { transaction })
 
 				return user
 			})
@@ -106,48 +73,15 @@ export class User {
 				message: 'Cadastro Concluído!'
 			})
 		} catch (e) {
-			const mapPathToErrors = {
+			const mapPathToErrors =
+			{
 				email: 'E-mail já cadastrado.',
 				CPF: 'CPF já cadastrado.'
 			}
 
 			return response.status(400).render('register.pug', {
-				errors: e.errors.map(p => mapPathToErrors[p.path] || p.path)
+				error: e.errors.map(p => mapPathToErrors[ p.path ] || p.path)
 			})
 		}
-	}
-
-	@Router.Post('/')
-	static async insert(request, response) {
-		const u = await $User.create({
-			email: request.body.email,
-			password: request.body.password,
-			CPF: request.body.CPF,
-			fullName: request.body.fullName,
-			photoPath: request.body.photoPath
-		})
-
-		return response.status(200).json({
-			payload: {
-				id: u.id
-			}
-		})
-	}
-
-	static async find({
-		params
-	}, response) {
-		const user = await $User.findOne({
-			where: {
-				id: params.id
-			},
-			attributes: {
-				exclude: ['password', 'CPF']
-			}
-		})
-
-		return response.status(200).json({
-			payload: user
-		})
 	}
 }

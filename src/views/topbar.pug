@@ -14,7 +14,7 @@ nav.navbar.navbar-expand-lg.navbar-dark.bg-dark
 				input.form-control.mr-sm-2(placeholder='Buscar serviços' type='text')
 			div.navbar-nav
 				+navlink('/services', 'Serviços') 					
-				if loggedIn
+				if user
 					+navlink('/user/logout', 'Encerrar sessão')
 				else
 					+navlink('/user/register', 'Cadastre-se')

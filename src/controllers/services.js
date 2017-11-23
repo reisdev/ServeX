@@ -1,100 +1,90 @@
 /* @Author: Raphael Nepomuceno <raphael.nepomuceno@ufv.br> */
 
 import * as Router from '../utils/router.js'
-import {
-	$Service,
-	$User,
-	$ServiceCategory,
-	sequelize,
-	ValidationError
-} from '../sequelize.js'
+import * as Middlewares from '../utils/middlewares.js'
 
-@Router.Route({
-	route: '/services'
-})
-export class Service {
+import { $Service, $ServiceCategory, $User, sequelize } from '../sequelize.js'
 
+@Router.Route({ route: '/services' })
+export class Service
+{
 	@Router.Get('/')
-	static async profile(request, response) {
+	static async index(request, response)
+	{
 		const services = $Service.findAll({
 			raw: true,
-			include: [{
-					model: $ServiceCategory
-				},
-				{
-					model: $User
-				}
-			]
+			include: [ $ServiceCategory, $User ]
 		})
 
-		const categories = $ServiceCategory.findAll({
-			raw: true
-		})
+		const categories = $ServiceCategory.findAll({ raw: true })
+
 		return response.render('services.pug', {
-			user: request.session.user,
 			services: await services,
 			categories: await categories
 		})
 	}
 
-	@Router.Get('/add')
-	static async insertService(request, response) {
+	@Router.Get('/filter/:id')
+	static async filter({ params }, response)
+	{
+		const services = $Service.findAll({
+			raw: true,
+			where: { id: params.id },
+			include: [ $ServiceCategory, $User ]
+		})
+
 		const categories = $ServiceCategory.findAll({
 			raw: true
 		})
 
-		if(!request.session.user){
-			return response.render('error.pug',{
-				status: 403,
-				message: 'Acesso Negado',
-				errors: 'Nenhum usuário está conectado. Efetue login para poder adicionar novos serviços!'
-			})
-		}
+		return response.render('services.pug', {
+			services: await services,
+			categories: await categories
+		})
+	}
+
+	@Router.Get('/add', [
+		Middlewares.restrictedPage('Efetue login para adicionar um serviço.')
+	])
+	static async insertForm (request, response)
+	{
+		const categories = $ServiceCategory.findAll({ raw: true })
 
 		return response.render('addService.pug', {
 			categories: await categories
 		})
 	}
 
-	@Router.Post('/')
-	static async insert({
-		body,
-		session
-	}, response) {
-		const service = sequelize.transaction(async(transaction) => {
-			/*
-			if(!session.user){
-				return response.status(200).render('addService.pug', {
-					errors: [ 'Nenhum usuário logado.' ],
-					categories: await category
-				})
-			}
-			*/
+	@Router.Post('/', [
+		Middlewares.restrictedPage('Efetue login para adicionar um serviço.')
+	])
+	static async doInsert ({ body, session }, response)
+	{
+		return await sequelize.transaction(async (transaction) => {
+			const category = await $ServiceCategory.findOne({
+				where: { id: body.serviceCategoryId }
+			}, { transaction })
 
-			return $Service.create({
-				title: body.title,
-				description: body.description,
-				basePrice: body.basePrice,
-				serviceCategoryId: body.serviceCategoryId,
-				userId: session.user.id
+			if(! category)
+				return response.status(400)
+
+			const service = await $Service.create({ ... body, serviceCategoryId: category.id, userId: session.user.id })
+
+			if(! service)
+				return response.status(400)
+
+			return response.render('success.pug', {
+				service, message: 'Serviço cadastrado com sucesso!'
 			})
-		})
-		return response.status(200).render('success.pug',{
-			message: 'Registro de Serviço Concluido!'
 		})
 	}
 
 	@Router.Get('/:id')
-	static async find({
-		params
-	}, response) {
+	static async find({ params }, response)
+	{
 		const user = await $Service.findOne({
-			where: {
-				id: params.id
-			},
-			attributes: {
-				exclude: ['password', 'CPF']
-			}
+			where: { id: params.id },
+			attributes: { exclude: ['password', 'CPF'] }
 		})
 
 		return response.status(200).json({

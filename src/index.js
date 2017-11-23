@@ -24,10 +24,7 @@ const app = express()
 // Enable support for sessions
 app.use(
 	session({
-		cookie: {
-			maxAge: 60000
-		},
-		key: 'sid',
+		key: 'ssid',
 		resave: false,
 		saveUninitialized: true,
 		secret: 'Morgenstern'
@@ -58,12 +55,14 @@ app.use((req, res, next) => {
 	res.locals.request = {
 		path: req.path
 	}
+
 	res.locals.title = 'ServeX'
 	res.locals.respath = (resource) => url.resolve('http://localhost:44800/', resource)
 	res.locals.loggedIn = req.session &&
 		req.session.user &&
 		req.session.user.id &&
 		req.session.user.password
+	res.locals.user = req.session.user
 	res.locals.uniqKey = uid.sync(18)
 	res.locals.userid = ''
 
@@ -87,7 +86,7 @@ app.all('*', (request, response) => {
 	return response.status(404).render('error.pug', {
 		status: 404,
 		message: 'Página não encontrada',
-		errors: 'Página não encontrada'
+		error: 'Página não encontrada'
 	})
 })
 

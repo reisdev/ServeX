@@ -1,8 +1,8 @@
 extends index.pug
 
 block content
-    if errors
-            each err in errors
+    if error
+            each err in error
                 .alert.alert-danger(role='alert').w-100
                     = err
                     button.close(type='button' data-dismiss='alert' aria-label='Fechar')
@@ -28,4 +28,3 @@ block content
 
             div.form-group
                 button.btn.btn-primary(type='submit') Adicionar categoria
-

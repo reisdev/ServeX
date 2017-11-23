@@ -2,51 +2,46 @@
 
 import * as Router from '../utils/router.js'
 
-import {
-    $ServiceCategory,
-    sequelize
-} from '../sequelize.js'
+import { $ServiceCategory, sequelize } from '../sequelize.js'
 
-@Router.Route({
-    route: '/categories'
-})
-
-export class ServiceCategory {
+@Router.Route({ route: '/categories' })
+export class ServiceCategory
+{
     @Router.Get('/')
-    static async getCategories(request, response) {
-        const Categories = $ServiceCategory.findAll()
-        return response.status(200).json({
-            payload: await Categories
+    static async getCategories(request, response)
+	{
+		const categories = $ServiceCategory.findAll()
+        return response.json({
+            payload: await categories
         })
     }
 
     @Router.Get('/add')
-    static async addCategories(request, response) {
-        return response.status(200).render('success.pug',{
-            message: 'Categoria Criada!'
-        })
+    static async addCategories(request, response)
+	{
+        return response.render('addCategory.pug')
     }
 
     @Router.Post('/')
-    static async insertCategory({
-        body
-    }, response) {
+    static async insertCategory({ body }, response)
+	{
+        console.log('Inserindo')
+
         const category = await $ServiceCategory.create({
             name: body.name,
             pricingType: body.pricingType
         })
-        response.status(200).render('services.pug')
+
+        response.render('services.pug')
     }
 
     @Router.Get('/:id')
-    static async find({
-        params
-    }, response) {
+    static async find({ params }, response)
+	{
         const user = await $ServiceCategory.findOne({
-            where: {
-                id: params.id
-            },
+            where: { id: params.id },
         })
-        return response.status(200).render('services.pug')
+
+        return response.render('services.pug')
     }
 }
