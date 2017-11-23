@@ -10,7 +10,9 @@ block content
 		if(user)
 			if(user.authLevel == 'Admin')
 				.stick-sidebar.list-group
-					a.btn.btn-primary(href='/services/add') Novo Serviço
+					a#list.btn.btn-primary(href='/services/add') Novo Serviço
+				.stick-sidebar.list-group
+					a#list.btn.btn-primary(href='/categories/add') Nova Categoria
 	.layout-main.card-columns.col-12.col-md-9
 		each service in services
 			+serviceCard(service)

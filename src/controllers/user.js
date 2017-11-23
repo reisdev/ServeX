@@ -102,7 +102,9 @@ export class User {
 				return user
 			})
 
-			return response.render('registerSuccess.pug')
+			return response.render('success.pug',{
+				message: 'Cadastro Concluído!'
+			})
 		} catch (e) {
 			const mapPathToErrors = {
 				email: 'E-mail já cadastrado.',

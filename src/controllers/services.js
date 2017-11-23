@@ -79,8 +79,8 @@ export class Service {
 				userId: session.user.id
 			})
 		})
-		return response.status(200).render('addServiceSucess.pug',{
-
+		return response.status(200).render('success.pug',{
+			message: 'Registro de Serviço Concluido!'
 		})
 	}
 

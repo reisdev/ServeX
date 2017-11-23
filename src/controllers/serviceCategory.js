@@ -14,24 +14,23 @@ import {
 export class ServiceCategory {
     @Router.Get('/')
     static async getCategories(request, response) {
+        const Categories = $ServiceCategory.findAll()
         return response.status(200).json({
-            payload: {
-                text: 'Teste',
-                id: '1'
-            }
+            payload: await Categories
         })
     }
 
     @Router.Get('/add')
     static async addCategories(request, response) {
-        return response.status(200).render('addCategory.pug')
+        return response.status(200).render('success.pug',{
+            message: 'Categoria Criada!'
+        })
     }
 
     @Router.Post('/')
     static async insertCategory({
         body
     }, response) {
-        console.log('Inserindo')
         const category = await $ServiceCategory.create({
             name: body.name,
             pricingType: body.pricingType
