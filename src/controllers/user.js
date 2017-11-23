@@ -7,7 +7,7 @@ import { $Address, $User, sequelize } from '../sequelize.js'
 
 const redirectIfAuthenticated = (request, response, next) =>
 {
-return request.session.user ? response.redirect('/') : next()
+	return request.session.user ? response.redirect('/') : next()
 }
 
 @Router.Route({ route: '/user' })
