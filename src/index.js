@@ -26,12 +26,15 @@ sequelize.authenticate().then(() => {
 	app.set('view engine', 'pug')
 	app.set('views', path.join(__dirname, '/views'))
 
+	const sessionStore = new SequelizeStore({ db: sequelize })
+	sessionStore.sync({ force: false })
+
 	// Enable support for sessions
 	app.use(
 		session({
 			key: 'sid',
 			resave: false,
-			store: new SequelizeStore({ db: sequelize }),
+			store: sessionStore,
 			saveUninitialized: true,
 			secret: 'Morgenstern'
 		})
