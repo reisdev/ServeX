@@ -20,9 +20,8 @@ import * as Controllers from './controllers'
 // Realiza a conexão com o banco de dados. Caso suceda, inicia o servidor HTTP.
 // Caso contrário, fecha a aplicação.
 sequelize.authenticate().then(() => {
-	const app = express()
-
 	// Inicia o servidor.
+	const app = express()
 	app.listen(SERVER_PORT, () => console.log('\x1b[34m[%s]\x1b[0m %s', 'servex', '🍻 Servidor iniciado na porta ', SERVER_PORT))
 
 	// Enable support for sessions
@@ -57,15 +56,11 @@ sequelize.authenticate().then(() => {
 
 	// Expoẽ a rota local ao pug
 	app.use((req, res, next) => {
-		res.locals.request = {
-			path: req.path
-		}
-
-		res.locals.title = 'ServeX'
-		res.locals.respath = (resource) => url.resolve('http://localhost:44800/', resource)
+		res.locals.request = req
 		res.locals.user = req.session.user
 		res.locals.uniqKey = uid.sync(18)
-		res.locals.userid = ''
+
+		res.locals.baseurl = (resource) => url.resolve('http://localhost:44800/', resource)
 
 		return next()
 	})

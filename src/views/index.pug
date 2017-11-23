@@ -1,21 +1,21 @@
 doctype html
 html(lang='pt-BR')
 	head
-		title= title
+		title ServeX
 		meta(name='viewport' content='width=device-width, initial-scale=1, shrink-to-fit=no')
 		block styles
 			link(async href='https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css' rel='stylesheet' integrity='sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN' crossorigin='anonymous')
-			link(async href=respath('public/bootstrap.min.css') rel='stylesheet')
-			link(async href=respath('public/custom.css') rel='stylesheet')
+			link(async href=baseurl('public/bootstrap.min.css') rel='stylesheet')
+			link(async href=baseurl('public/custom.css') rel='stylesheet')
 	body
 		block navbar
 			include topbar.pug
 		block header
 			div#header
-				h1.center-view.long-shadow= title 				
+				h1.center-view.long-shadow ServeX
 		.container
 			.layout.row
-				block content 		
+				block content
 		block footer
 		block scripts
 			script(src='https://code.jquery.com/jquery-3.2.1.slim.min.js' integrity='sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN' crossorigin='anonymous')

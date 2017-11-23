@@ -9,6 +9,7 @@ import { $Service, $ServiceCategory, $User, sequelize } from '../sequelize.js'
 export class Service
 {
 	@Router.Get('/')
+	@Router.Get('../')
 	static async index(request, response)
 	{
 		const services = $Service.findAll({
@@ -27,9 +28,10 @@ export class Service
 	@Router.Get('/filter/:id')
 	static async filter({ params }, response)
 	{
+		console.log(params)
 		const services = $Service.findAll({
 			raw: true,
-			where: { id: params.id },
+			where: { serviceCategoryId: params.id },
 			include: [ $ServiceCategory, $User ]
 		})
 

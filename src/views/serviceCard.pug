@@ -18,5 +18,5 @@ mixin serviceCard (service)
 		p.card-text= service.description
 		a(href='/services/' + service.id).card-link
 			+stars(service['user.rating'] || 0)
-		a(href='/categories/' + service['serviceCategory.id']).card-link
+		a(href='/services/filter/' + service['serviceCategory.id']).card-link
 			= service['serviceCategory.name']

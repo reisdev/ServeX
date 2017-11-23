@@ -7,7 +7,7 @@ block content
 		.sticky-sidebar
 			.list-group(style={ 'margin-bottom': '20px' })
 				each category in categories
-					a(href='/categories/' + category.id).list-group-item-action.list-group-item= category.name
+					a(href='/services/filter/' + category.id).list-group-item-action.list-group-item= category.name
 				if(user && user.authLevel === 'Admin')
 					a(href='/categories/add' title='Nova categoria').list-group-item-action.list-group-item.text-center.font-weight-bold +
 			if(user)
