@@ -1,17 +1,21 @@
 extends index.pug
 
 block content
-	if error
-			each err in error
-				.alert.alert-danger(role='alert').w-100
-					= err
-					button.close(type='button' data-dismiss='alert' aria-label='Fechar')
-						span(aria-hidden='true') ×
+	if errors
+		each err in errors
+			.alert.alert-danger(role='alert').w-100
+				= err
+				button.close(type='button' data-dismiss='alert' aria-label='Fechar')
+					span(aria-hidden='true') ×
+	else if success
+		.alert.alert-success(role='alert').w-100
+			= success
+			button.close(type='button' data-dismiss='alert' aria-label='Fechar')
+				span(aria-hidden='true') ×
 
-	form(action='/categories' name=uniqKey method="POST").card-group.w-100
+	form(action='/categories/new' name=uniqKey method="POST").card-group.w-100
 		.card.card-body
-			h1.card-title Inserir
-			h2.card-tile Nova Categoria de Serviço
+			h2.card-tile Cadastrar categoria de serviço
 
 			div.row
 				div.form-group.col-lg-6
@@ -19,11 +23,11 @@ block content
 					input.form-control(type='text' name='name')
 
 				div.form-group.col-lg-4
-					label(for='pricingType') Tipo de Precificação por:
+					label(for='pricingType') Cobrança por:
 					div.form-group
 						select.form-control(required name='pricingType')
 							option(value='Once') Atividade
-							option(value='Daily') Diária
+							option(value='Daily') Dia
 							option(value='Hourly') Hora
 
 			div.form-group

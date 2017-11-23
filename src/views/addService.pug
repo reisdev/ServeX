@@ -10,8 +10,7 @@ block content
 
 	form(action='/services' name=uniqKey method='POST').card-group.w-100
 		.card.card-body
-			h1.card-title Cadastrar
-			h2.card-title Informações do Serviço
+			h2.card-title Cadastrar novo serviço
 
 			div.form-group
 				label(for='fullname') Nome
@@ -31,7 +30,7 @@ block content
 						label(for='servicetype') Tipo de Serviço
 						select.form-control(required name='serviceCategoryId')#servicetype
 							each category in categories
-								option(value=category.id) #{category.name}
+								option(value=category.id) #{category.name} (#{mapPricingType(category.pricingType)})
 
 			div.form-group
 				button.btn.btn-primary(type='submit') Registrar Serviço

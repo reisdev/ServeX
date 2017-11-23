@@ -52,8 +52,17 @@ export class Service
 	{
 		const categories = $ServiceCategory.findAll({ raw: true })
 
+		const mapPricingType = (type) => {
+			switch (type) {
+				case 'Daily': return 'Pagamento por dia'
+				case 'Hourly': return 'Pagamento por hora'
+				case 'Once': return 'Pagamento único'
+			}
+		}
+
 		return response.render('addService.pug', {
-			categories: await categories
+			categories: await categories,
+			mapPricingType
 		})
 	}
 

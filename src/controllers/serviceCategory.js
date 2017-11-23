@@ -7,32 +7,36 @@ import { $ServiceCategory, sequelize } from '../sequelize.js'
 @Router.Route({ route: '/categories' })
 export class ServiceCategory
 {
-	@Router.Get('/')
-	static async getCategories(request, response)
-	{
-		const categories = $ServiceCategory.findAll()
-		return response.json({
-			payload: await categories
-		})
-	}
-
-	@Router.Get('/add')
+	@Router.Get('/new')
 	static async addCategories(request, response)
 	{
 		return response.render('addCategory.pug')
 	}
 
-	@Router.Post('/')
+	@Router.Post('/new')
 	static async insertCategory({ body }, response)
 	{
-		console.log('Inserindo')
+		const { name, pricingType } = body
 
-		const category = await $ServiceCategory.create({
-			name: body.name,
-			pricingType: body.pricingType
-		})
+		if(! name || ! pricingType )
+			return response.status(400).render('addCategory.pug', {
+				errors: [ 'Preencha todos os campos.' ]
+			})
 
-		response.render('services.pug')
+		try {
+			const category = await $ServiceCategory.create({
+				name: body.name,
+				pricingType: body.pricingType
+			})
+
+			return response.render('addCategory.pug', {
+				success: 'Categoria cadastrada com sucesso!'
+			})
+		} catch (e) {
+			return response.status(400).render('addCategory.pug', {
+				errors: e.errors.map(p => p.message)
+			})
+		}
 	}
 
 	@Router.Get('/:id')

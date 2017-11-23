@@ -9,7 +9,7 @@ block content
 				each category in categories
 					a(href='/services/filter/' + category.id).list-group-item-action.list-group-item= category.name
 				if(user && user.authLevel === 'Admin')
-					a(href='/categories/add' title='Nova categoria').list-group-item-action.list-group-item.text-center.font-weight-bold +
+					a(href='/categories/new' title='Nova categoria').list-group-item-action.list-group-item.text-center.font-weight-bold +
 			if(user)
 				a(href='/services/add').btn.btn-primary.w-100 Novo serviço
 	.layout-main.card-columns.col-12.col-md-9
