@@ -83,7 +83,7 @@ app.all('*', (request, response) => {
 // Caso contrário, fecha a aplicação.
 sequelize.authenticate().then(() => {
 	// Inicia o servidor.
-	app.listen(SERVER_PORT, () => console.log('\x1b[34m[%s]\x1b[0m %s', 'servex', '🍻 Servidor iniciado.'))
+	app.listen(SERVER_PORT, () => console.log('\x1b[34m[%s]\x1b[0m %s', 'servex', '🍻 Servidor iniciado na porta ',SERVER_PORT))
 }).catch(err => {
 	console.error('\x1b[31m[%s]\x1b[0m %s', 'server error', err)
 	process.exit(1)
