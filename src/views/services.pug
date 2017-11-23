@@ -7,8 +7,10 @@ block content
 		.sticky-sidebar.list-group(style='margin-bottom:20px')
 			each category in categories
 				a(href='/categories/' + category.id).list-group-item-action.list-group-item= category.name
-		.stick-sidebar.list-group
-			a.btn.btn-primary(href='/services/register') Novo Serviço
+		if(user)
+			if(user.authLevel == 'Admin')
+				.stick-sidebar.list-group
+					a.btn.btn-primary(href='/services/add') Novo Serviço
 	.layout-main.card-columns.col-12.col-md-9
 		each service in services
 			+serviceCard(service)

@@ -21,6 +21,12 @@ export class Service {
 		})
 	}
 
+	@Router.Get('/category/add')
+	static async addCategories(request, response) {
+
+		return response.status(200).render('addCategory.pug')
+	}
+
 	@Router.Post('/category')
 	static async insertCategory({
 		body
@@ -63,41 +69,54 @@ export class Service {
 		const categories = $ServiceCategory.findAll({
 			raw: true
 		})
-
 		return response.render('services.pug', {
+			user: request.session.user,
 			services: await services,
 			categories: await categories
 		})
 	}
 
-	@Router.Get('/register')
-	static async insertService(request, response)
-	{
+	@Router.Get('/add')
+	static async insertService(request, response) {
 		const categories = $ServiceCategory.findAll({
-			raw:true
+			raw: true
 		})
 
-		return response.render('registerService.pug', {
+		if(!request.session.user){
+			return response.render('error.pug',{
+				status: 403,
+				message: 'Acesso Negado',
+				errors: 'Nenhum usuário está conectado. Efetue login para poder adicionar novos serviços!'
+			})
+		}
+
+		return response.render('addService.pug', {
 			categories: await categories
 		})
 	}
 
 	@Router.Post('/')
 	static async insert({
-		body
+		body,
+		session
 	}, response) {
-		console.log(body)
 		const service = sequelize.transaction(async(transaction) => {
-			const category = await $ServiceCategory.findOne({
+			const category = $ServiceCategory.findOne({
 				where: {
 					id: body.serviceCategoryId
 				}
-			}, {
-				transaction
 			})
+			/*
+			if(!session.user){
+				return response.status(200).render('addService.pug', {
+					errors: [ 'Nenhum usuário logado.' ],
+					categories: await category
+				})
+			}
+			*/
 			const user = await $User.findOne({
 				where: {
-					id: body.userId
+					id: session.user.id
 				}
 			}, {
 				transaction
@@ -108,7 +127,7 @@ export class Service {
 				description: body.description,
 				basePrice: body.basePrice,
 				serviceCategoryId: category.id,
-				userId: '19beddd3-d21d-4426-bc22-9db1e9e44563'
+				userId: user
 			})
 		})
 		return response.status(200).render('regServiceSucess.pug')
