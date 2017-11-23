@@ -31,11 +31,12 @@ export class ServiceCategory {
     static async insertCategory({
         body
     }, response) {
+        console.log('Inserindo')
         const category = await $ServiceCategory.create({
             name: body.name,
             pricingType: body.pricingType
         })
-        response.status(200).render('index.pug')
+        response.status(200).render('services.pug')
     }
 
     @Router.Get('/:id')
