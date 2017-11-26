@@ -26,10 +26,30 @@ export class ServiceCategory
 				GROUP BY serviceContracts.serviceId`
 
 		try {
-			const rank = await sequelize.query(sql, {
-				type: sequelize.QueryTypes.SELECT
+			const rank = await sequelize.query(sql, { type: sequelize.QueryTypes.SELECT })
+			return response.json(rank)
+		} catch (e) {
+			return response.status(400).render('error.pug', {
+				status: '0x05',
+				error: 'Erro ao computar relatório',
+				message: 'Erro desconhecido.',
+				stack: e.stack
 			})
+		}
+	}
 
+	@Router.Get('/volume/:id')
+	static async volume({ params }, response)
+	{
+		const sql = `SELECT users.fullName AS userName, serviceCategories.name as categoryName, COUNT(*) AS count
+				FROM serviceContracts
+				INNER JOIN users ON serviceContracts.userId = users.id
+				INNER JOIN services ON serviceContracts.serviceId = services.id
+				INNER JOIN serviceCategories ON services.serviceCategoryId = serviceCategories.id
+				GROUP BY users.id`
+
+		try {
+			const rank = await sequelize.query(sql, { type: sequelize.QueryTypes.SELECT })
 			return response.json(rank)
 		} catch (e) {
 			return response.status(400).render('error.pug', {
