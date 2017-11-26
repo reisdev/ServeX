@@ -16,6 +16,31 @@ export class ServiceCategory
 		return response.render('addCategory.pug')
 	}
 
+	@Router.Get('/rank')
+	static async rank({ query }, response)
+	{
+		const sql = `SELECT serviceCategories.name, COUNT(*) AS count
+				FROM services
+				INNER JOIN serviceCategories ON serviceCategories.id = services.serviceCategoryId
+				INNER JOIN serviceContracts ON services.id = serviceContracts.serviceId
+				GROUP BY serviceContracts.serviceId`
+
+		try {
+			const rank = await sequelize.query(sql, {
+				type: sequelize.QueryTypes.SELECT
+			})
+
+			return response.json(rank)
+		} catch (e) {
+			return response.status(400).render('error.pug', {
+				status: '0x05',
+				error: 'Erro ao computar relatório',
+				message: 'Erro desconhecido.',
+				stack: e.stack
+			})
+		}
+	}
+
 	@Router.Post('/new')
 	static async insertCategory({ body }, response)
 	{

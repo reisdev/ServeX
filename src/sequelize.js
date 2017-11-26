@@ -1,7 +1,6 @@
 /**
  * @Authors: Matheus Reis <matheusdrdj@gmail.com>
  *           Raphael Nepomuceno <raphael.nepomuceno@ufv.br>
- * @Date:   2017-11-06
  */
 
 import path from 'path'
