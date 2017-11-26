@@ -6,9 +6,7 @@ import * as Middlewares from '../utils/middlewares.js'
 import { $ServiceCategory, sequelize } from '../sequelize.js'
 
 @Router.Route({ route: '/categories', middlewares: [
-	Middlewares.restrictedPage({
-		message: 'Efetue login para adicionar um serviço.'
-	})
+	Middlewares.restrictedPage({ message: 'Área restrita a administradores.' })
 ]})
 export class ServiceCategory
 {

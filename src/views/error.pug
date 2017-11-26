@@ -1,8 +1,11 @@
 extends index.pug
 
 block content
-	div.card.w-100
+	div(style={ 'margin-bottom': '20px' }).card.w-100
 		div.card-body
 			h4.card-title #{status} #{error}
-			pre #{stack}
 			pre #{message}
+	if stack
+		div.card.w-100
+			div.card-body
+				pre #{stack}

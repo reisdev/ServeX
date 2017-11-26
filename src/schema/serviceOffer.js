@@ -14,7 +14,8 @@ export default function (sequelize, DataTypes)
 		},
 		title:        DataTypes.STRING,
 		description:  DataTypes.STRING,
-		basePrice:    DataTypes.DECIMAL(10, 2)
+		basePrice:    DataTypes.DECIMAL(10, 2),
+		addedDate:    DataTypes.DATE
 	})
 
 	return Service

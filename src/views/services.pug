@@ -1,20 +1,56 @@
 extends index.pug
 
-include serviceCard.pug
+mixin stars (count)
+	- let n = parseFloat(count)
+	- let i = Math.floor(n)
+	- let j = (n % 1) != 0
+	- let k = Math.floor(5 - n)
+	span(title=n)
+		while i -- > 0
+			span.fa.fa-star
+		if j
+			span.fa.fa-star-half-o
+		while k -- > 0
+			span.fa.fa-star-o
+
+mixin serviceCard (service)
+	div.col-6.pb-2.pr-2
+		div(id=service.id).card
+			.card-body
+				h4.card-title
+					a(href='/services/' + service.id)= service.title
+				p.card-text= service.description
+				a(href='/services/' + service.id).card-link
+					+stars(service['user.rating'] || 0)
+				a(href='#' + service.id).card-link
+					= `R$ ${service.basePrice} (${mapPricingType(service['serviceCategory.pricingType'])})`
+				a(href='/services/filter/' + service['serviceCategory.id']).card-link
+					= service['serviceCategory.name']
+
+mixin lglink (target, title)
+	if target == request.path
+		a(href=target).list-group-item-action.list-group-item.active= title
+	else
+		a(href=target).list-group-item-action.list-group-item= title
 
 block content
 	.col-12.col-md-3
 		.sticky-sidebar
 			.list-group(style={ 'margin-bottom': '20px' })
+				+lglink('/services/filter/daily', 'Pagamento por dia')
+				+lglink('/services/filter/hourly', 'Pagamento por hora')
+				+lglink('/services/filter/once', 'Pagamento por atividade')
+			.list-group(style={ 'margin-bottom': '20px' })
 				each category in categories
-					a(href='/services/filter/' + category.id).list-group-item-action.list-group-item= category.name
+					+lglink('/services/filter/' + category.id, category.name)
 				if(user && user.authLevel === 'Admin')
 					a(href='/categories/new' title='Nova categoria').list-group-item-action.list-group-item.text-center.font-weight-bold +
 			if(user)
 				a(href='/services/add').btn.btn-primary.w-100 Novo serviço
-	.layout-main.card-columns.col-12.col-md-9
-		each service in services
-			+serviceCard(service)
-		else
-			div.card.card-body
-				h4.card-title Não há serviços cadastrados.
+	.layout-main.col-12.col-md-9
+		.row.no-gutters
+			each service in services
+				+serviceCard(service)
+			else
+				div.card.card-body
+					h4.card-title Não há serviços cadastrados.

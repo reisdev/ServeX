@@ -5,34 +5,60 @@ import * as Middlewares from '../utils/middlewares.js'
 
 import { $Service, $ServiceCategory, $User, sequelize } from '../sequelize.js'
 
+const mapPricingType = (type) => {
+	switch (type)
+	{
+		case 'Daily':  return 'por dia'
+		case 'Hourly': return 'por hora'
+		case 'Once':   return 'único'
+	}
+}
+
 @Router.Route({ route: '/services' })
 export class Service
 {
+
 	@Router.Get('/')
 	@Router.Get('../')
 	static async index(request, response)
 	{
 		const services = $Service.findAll({
 			raw: true,
-			include: [ $ServiceCategory, $User ]
+			include: [ $ServiceCategory, $User ],
+			order: [[ 'addedDate', 'DESC' ]]
 		})
 
 		const categories = $ServiceCategory.findAll({ raw: true })
 
 		return response.render('services.pug', {
 			services: await services,
-			categories: await categories
+			categories: await categories,
+			mapPricingType
 		})
 	}
 
 	@Router.Get('/filter/:id')
-	static async filter({ params }, response)
+	static async filter({ params }, response, next)
 	{
-		console.log(params)
+		const serviceCategoryId = {}
+		const pricingType = {}
+
+		switch(params.id)
+		{
+			case 'hourly': pricingType.pricingType = 'Hourly'; break
+			case 'daily': pricingType.pricingType = 'Daily'; break
+			case 'once': pricingType.pricingType = 'Once'; break
+			default: serviceCategoryId.serviceCategoryId = params.id
+		}
+
 		const services = $Service.findAll({
 			raw: true,
-			where: { serviceCategoryId: params.id },
-			include: [ $ServiceCategory, $User ]
+			where: serviceCategoryId,
+			order: [[ 'basePrice', 'DESC' ]],
+			include: [
+				{ model: $ServiceCategory, where: pricingType },
+				$User
+			]
 		})
 
 		const categories = $ServiceCategory.findAll({
@@ -41,7 +67,8 @@ export class Service
 
 		return response.render('services.pug', {
 			services: await services,
-			categories: await categories
+			categories: await categories,
+			mapPricingType
 		})
 	}
 
@@ -54,14 +81,6 @@ export class Service
 	{
 		const categories = $ServiceCategory.findAll({ raw: true })
 
-		const mapPricingType = (type) => {
-			switch (type) {
-				case 'Daily': return 'Pagamento por dia'
-				case 'Hourly': return 'Pagamento por hora'
-				case 'Once': return 'Pagamento único'
-			}
-		}
-
 		return response.render('addService.pug', {
 			categories: await categories,
 			mapPricingType
@@ -69,28 +88,43 @@ export class Service
 	}
 
 	@Router.Post('/', [
-		Middlewares.restrictedPage({
-			message: 'Efetue login para adicionar um serviço.'
-		})
+		Middlewares.restrictedPage({ message: 'Efetue login para adicionar um serviço.' })
 	])
 	static async doInsert ({ body, session }, response)
 	{
 		return await sequelize.transaction(async (transaction) => {
-			const category = await $ServiceCategory.findOne({
-				where: { id: body.serviceCategoryId }
-			}, { transaction })
+			try {
+				const category = await $ServiceCategory.findOne({
+					where: { id: body.serviceCategoryId }
+				}, { transaction })
 
-			if(! category)
-				return response.status(400)
+				try {
+					const service = await $Service.create({
+						... body,
+						serviceCategoryId: category.id,
+						userId: session.user.id,
+						addedDate: new Date
+					})
 
-			const service = await $Service.create({ ... body, serviceCategoryId: category.id, userId: session.user.id })
-
-			if(! service)
-				return response.status(400)
-
-			return response.render('success.pug', {
-				service, message: 'Serviço cadastrado com sucesso!'
-			})
+					return response.render('success.pug', {
+						service, message: 'Serviço cadastrado com sucesso!'
+					})
+				} catch(e) {
+					return response.status(400).render('error.pug', {
+						status: '0x01',
+						error: 'Erro ao cadastrar serviço',
+						message: 'Por algum motivo desconhecido, não foi possível cadastrar o serviço.',
+						stack: e.stack
+					})
+				}
+			} catch(e) {
+				return response.status(400).render('error.pug', {
+					status: '0x00',
+					error: 'Categoria inválida',
+					message: 'A categoria escolhida não existe.',
+					stack: e.stack
+				})
+			}
 		})
 	}
 
