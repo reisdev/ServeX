@@ -3,7 +3,7 @@
 import * as Router from '../utils/router.js'
 import * as Middlewares from '../utils/middlewares.js'
 
-import { $Service, $ServiceCategory, $User, sequelize } from '../sequelize.js'
+import { $Service, $ServiceCategory, $User, $Contract, sequelize } from '../sequelize.js'
 
 const mapPricingType = (type) => {
 	switch (type)
@@ -17,9 +17,7 @@ const mapPricingType = (type) => {
 @Router.Route({ route: '/services' })
 export class Service
 {
-
-	@Router.Get('/')
-	@Router.Get('../')
+	@Router.Get('/') @Router.Get('../')
 	static async index(request, response)
 	{
 		const services = $Service.findAll({
@@ -34,6 +32,46 @@ export class Service
 			services: await services,
 			categories: await categories,
 			mapPricingType
+		})
+	}
+
+	@Router.Get('/contract/:id')
+	static async contract({ params, session }, response)
+	{
+		return await sequelize.transaction(async (transaction) => {
+			try {
+				const service = await $Service.findOne(
+					{
+						where: { id: params.id },
+						include: [ $ServiceCategory, $User ]
+					},
+					{ transaction }
+				)
+
+				try {
+					const contract = await $Contract.create({
+						serviceId: service.id,
+						userId: session.user.id,
+						totalPrice: service.basePrice * 5
+					})
+
+					return response.status(200).json(contract)
+				} catch (e) {
+					return response.status(400).render('error.pug', {
+						status: '0x04',
+						error: 'Erro ao contratar serviço',
+						message: 'Erro desconhecido.',
+						stack: e.stack
+					})
+				}
+			} catch (e) {
+				return response.status(400).render('error.pug', {
+					status: '0x03',
+					error: 'Erro ao contratar serviço',
+					message: 'Serviço inexistente.',
+					stack: e.stack
+				})
+			}
 		})
 	}
 

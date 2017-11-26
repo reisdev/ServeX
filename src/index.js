@@ -22,6 +22,9 @@ import * as Controllers from './controllers'
 sequelize.authenticate().then(() => {
 	const app = express()
 
+	// Roteia os arquivos da front-end.
+	app.use('/public', express.static('public'))
+
 	// Carrega o engine de templates
 	app.set('view engine', 'pug')
 	app.set('views', path.join(__dirname, '/views'))
@@ -49,9 +52,6 @@ sequelize.authenticate().then(() => {
 	app.use(
 		bodyParser.urlencoded({ extended: true })
 	)
-
-	// Roteia os arquivos da front-end.
-	app.use('/public', express.static('public'))
 
 	// Expoẽ a rota local ao pug
 	app.use((req, res, next) => {

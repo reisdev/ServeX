@@ -8,12 +8,9 @@ import path from 'path'
 import bcrypt from 'bcrypt'
 
 import Sequelize from 'sequelize'
-import { SCHEMA_URI } from './settings.js'
+import { schema } from './settings.js'
 
-const sequelize = new Sequelize(SCHEMA_URI, {
-	logging: false,
-	define: { timestamps: false }
-})
+const sequelize = new Sequelize(schema.URI, schema.user, schema.password, schema.options)
 
 const $Address          = sequelize.import(path.join(__dirname, 'schema/address.js'))
 const $Contract         = sequelize.import(path.join(__dirname, 'schema/contract.js'))
