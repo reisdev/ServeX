@@ -16,7 +16,7 @@ export default function (sequelize, DataTypes)
 		email:         { type: DataTypes.STRING,                  unique: true },
 		password:      { type: DataTypes.STRING, allowNull: false              },
 		CPF:           { type: DataTypes.STRING, allowNull: true, unique: true },
-		fullName:      { type: DataTypes.STRING, allowNull: false              },
+		fullname:      { type: DataTypes.STRING, allowNull: false              },
 		rating:                DataTypes.DECIMAL(10, 1),
 		photoPath:     { type: DataTypes.STRING, allowNull: true               },
 		authLevel:     { type: DataTypes.ENUM('User', 'Admin'), allowNull: false }

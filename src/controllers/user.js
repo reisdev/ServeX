@@ -21,6 +21,100 @@ export class User
 		})
 	}
 
+	@Router.Get('/weightedRank')
+	static async weightedRating ({ params }, response)
+	{
+		const sql = `SELECT
+			receiverId,
+			(SUM((reviews.rating - 3) / 2) + 10 / (SELECT COUNT(*) + 20 FROM reviews GROUP BY receiverId)) AS weightedRating
+			FROM reviews
+			GROUP BY receiverId`
+
+		try {
+			const rank = await sequelize.query(sql, {
+				type: sequelize.QueryTypes.SELECT,
+				replacements: { id: params.id }
+			})
+
+			return response.json(rank)
+		} catch (e) {
+			return response.status(400).render('error.pug', {
+				status: '0x05',
+				error: 'Erro ao computar relatório',
+				message: 'Erro desconhecido.',
+				stack: e.stack
+			})
+		}
+	}
+
+	@Router.Get('/:id/report/services')
+	static async serviceReport ({ params }, response)
+	{
+		const sql = `SELECT users.fullname,
+			serviceCategories.name AS category,
+			services.title AS title,
+			SUM(contracts.totalPrice) AS sum,
+			COUNT(*) AS count,
+			AVG(contracts.totalPrice) AS avg
+			FROM users
+			INNER JOIN services ON users.id = services.userId
+			INNER JOIN contracts ON contracts.serviceId = services.id
+			INNER JOIN serviceCategories ON serviceCategories.id = services.serviceCategoryId
+			WHERE users.id = :id
+			GROUP BY services.id
+			ORDER BY SUM(contracts.totalPrice) DESC`
+
+		try {
+			const rank = await sequelize.query(sql, {
+				type: sequelize.QueryTypes.SELECT,
+				replacements: { id: params.id }
+			})
+
+			return response.json(rank)
+		} catch (e) {
+			return response.status(400).render('error.pug', {
+				status: '0x05',
+				error: 'Erro ao computar relatório',
+				message: 'Erro desconhecido.',
+				stack: e.stack
+			})
+		}
+	}
+
+	@Router.Get('/:id/report')
+	static async userReport ({ params }, response)
+	{
+		const sql = `SELECT
+				users.fullname AS fullname,
+				serviceCategories.name AS category,
+				services.title AS title,
+				contracts.totalPrice AS price,
+				services.basePrice AS baseprice,
+				serviceCategories.pricingType AS pricingType
+			FROM users
+			INNER JOIN contracts ON contracts.userId = users.id
+			INNER JOIN services ON contracts.serviceId = services.id
+			INNER JOIN serviceCategories ON serviceCategories.id = services.serviceCategoryId
+			WHERE users.id = :id
+			ORDER BY contracts.totalPrice DESC`
+
+		try {
+			const rank = await sequelize.query(sql, {
+				type: sequelize.QueryTypes.SELECT,
+				replacements: { id: params.id }
+			})
+
+			return response.json(rank)
+		} catch (e) {
+			return response.status(400).render('error.pug', {
+				status: '0x05',
+				error: 'Erro ao computar relatório',
+				message: 'Erro desconhecido.',
+				stack: e.stack
+			})
+		}
+	}
+
 	@Router.Get('/logout')
 	@Router.Post('/logout')
 	static async logout(request, response)

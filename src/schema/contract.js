@@ -6,7 +6,7 @@
 
 export default function (sequelize, DataTypes)
 {
-	const Contract = sequelize.define('serviceContract', {
+	const Contract = sequelize.define('contract', {
 		id: {
 			primaryKey:    true,
 			type:          DataTypes.UUID,

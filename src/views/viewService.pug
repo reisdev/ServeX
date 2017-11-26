@@ -1,0 +1,20 @@
+extends index.pug
+
+include mixins.pug
+
+block content
+	div.card.w-100
+		div.card-body
+			h4.card-title= service.title
+			p.card-text= service.description
+			
+			a(href='/services/' + service.id).card-link
+				+stars(service['user.rating'] || 0)
+			
+			a(href='#' + service.id).card-link
+				= `R$ ${service.basePrice} (${mapPricingType(service['serviceCategory.pricingType'])})`
+			
+			a(href='/services/filter/' + service['serviceCategory.id']).card-link
+				= service['serviceCategory.name']
+				
+			a(href='/services/contract/' + service.id).card-link Contratar serviço

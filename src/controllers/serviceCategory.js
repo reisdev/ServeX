@@ -22,8 +22,8 @@ export class ServiceCategory
 		const sql = `SELECT serviceCategories.name, COUNT(*) AS count
 				FROM services
 				INNER JOIN serviceCategories ON serviceCategories.id = services.serviceCategoryId
-				INNER JOIN serviceContracts ON services.id = serviceContracts.serviceId
-				GROUP BY serviceContracts.serviceId`
+				INNER JOIN contracts ON services.id = contracts.serviceId
+				GROUP BY contracts.serviceId`
 
 		try {
 			const rank = await sequelize.query(sql, { type: sequelize.QueryTypes.SELECT })
@@ -41,15 +41,20 @@ export class ServiceCategory
 	@Router.Get('/volume/:id')
 	static async volume({ params }, response)
 	{
-		const sql = `SELECT users.fullName AS userName, serviceCategories.name as categoryName, COUNT(*) AS count
-				FROM serviceContracts
-				INNER JOIN users ON serviceContracts.userId = users.id
-				INNER JOIN services ON serviceContracts.serviceId = services.id
+		const sql = `SELECT users.fullname AS userName, serviceCategories.name as categoryName, COUNT(*) AS count
+				FROM contracts
+				INNER JOIN users ON contracts.userId = users.id
+				INNER JOIN services ON contracts.serviceId = services.id
 				INNER JOIN serviceCategories ON services.serviceCategoryId = serviceCategories.id
+				WHERE serviceCategories.id = :id
 				GROUP BY users.id`
 
 		try {
-			const rank = await sequelize.query(sql, { type: sequelize.QueryTypes.SELECT })
+			const rank = await sequelize.query(sql, {
+				type: sequelize.QueryTypes.SELECT,
+				replacements: { id: params.id }
+			})
+
 			return response.json(rank)
 		} catch (e) {
 			return response.status(400).render('error.pug', {

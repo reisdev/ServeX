@@ -169,13 +169,21 @@ export class Service
 	@Router.Get('/:id')
 	static async find({ params }, response)
 	{
-		const user = await $Service.findOne({
-			where: { id: params.id },
-			attributes: { exclude: ['password', 'CPF'] }
-		})
+		try {
+			const categories = $Service.findOne({
+				raw: true,
+				where: { id: params.id },
+				include: [ $ServiceCategory, $User ]
+			})
 
-		return response.status(200).json({
-			payload: user
-		})
+			return response.render('viewService.pug', { service: await categories, mapPricingType })
+		} catch (e) {
+			return response.status(400).render('error.pug', {
+				status: '0xF00',
+				error: 'Serviço inexistente',
+				message: 'O serviço solicitado não existe.',
+				stack: e.stack
+			})
+		}
 	}
 }

@@ -1,0 +1,13 @@
+mixin stars (count)
+	- let n = parseFloat(count)
+	- let i = Math.floor(n)
+	- let j = (n % 1) != 0
+	- let k = Math.floor(5 - n)
+	
+	span(title=n)
+		while i -- > 0
+			span.fa.fa-star
+		if j
+			span.fa.fa-star-half-o
+		while k -- > 0
+			span.fa.fa-star-o
