@@ -16,6 +16,9 @@ export default function (sequelize, DataTypes)
 		hoursSpent:          DataTypes.FLOAT,
 		startDate:           DataTypes.DATE,
 		endDate:             DataTypes.DATE,
+		pending:     { type: DataTypes.BOOLEAN, defaultValue: true  },
+		accepted:    { type: DataTypes.BOOLEAN, defaultValue: false },
+		completed:   { type: DataTypes.BOOLEAN, defaultValue: false },
 	})
 
 	return Contract
