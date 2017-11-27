@@ -63,3 +63,5 @@ typings/
 # sqlite databases
 *.sqlite*
 *.db*
+
+public/upload

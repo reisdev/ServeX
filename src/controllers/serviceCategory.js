@@ -46,7 +46,10 @@ export class ServiceCategory
 	@Router.Get('/volume/:id')
 	static async volume({ params }, response)
 	{
-		const sql = `SELECT users.fullname AS userName, serviceCategories.name as categoryName, COUNT(*) AS count
+		const sql = `SELECT
+				users.fullname AS userName,
+				serviceCategories.name as categoryName,
+				COUNT(*) AS count
 				FROM contracts
 				INNER JOIN users ON contracts.userId = users.id
 				INNER JOIN services ON contracts.serviceId = services.id

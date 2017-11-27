@@ -23,7 +23,22 @@ mixin lglink (target, title)
 		a(href=target).list-group-item-action.list-group-item= title
 
 block content
-	.col-12.col-md-3
+	if ranking
+		div(style={ 'margin-bottom': '20px' }).col-12.card-group
+			each item in ranking
+				.card
+					.card-body
+						h4.card-title
+							a(href='/services/' + item.id)= item.title
+						p.card-text= item.description
+						a(href='/services/' + item.id).card-link
+							+stars(item.rating || 0)
+						a(href='/services/filter/' + item.serviceCategoryId).card-link
+							= item.category
+						a.card-link
+							= `${item.count} contratações`
+
+	div(style={ 'margin-bottom': '20px' }).col-12.col-md-3
 		.sticky-sidebar
 			.list-group(style={ 'margin-bottom': '20px' })
 				+lglink('/services/filter/daily', 'Pagamento por dia')

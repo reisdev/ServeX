@@ -1,7 +1,8 @@
-/**
- * @Author: Raphael Nepomuceno <raphael.nepomuceno@ufv.br>
- * @Date:   2017-11-06
- */
+/** @Author: Raphael Nepomuceno <raphael.nepomuceno@ufv.br> */
+
+import path from 'path'
+
+export const uploadPath = path.join(__dirname, '..', 'public', 'upload')
 
 export const SERVER_PORT = 44800
 
@@ -52,6 +53,8 @@ const SQLite = [
 		define: { timestamps: false }
 	}
 ]
+
+export const forceRebuild = false
 
 export const schema = (() => {
 	switch(process.env.USER)

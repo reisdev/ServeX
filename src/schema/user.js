@@ -13,12 +13,13 @@ export default function (sequelize, DataTypes)
 			type:          DataTypes.UUID,
 			defaultValue:  DataTypes.UUIDV4
 		},
-		email:         { type: DataTypes.STRING,                  unique: true },
-		password:      { type: DataTypes.STRING, allowNull: false              },
-		CPF:           { type: DataTypes.STRING, allowNull: true, unique: true },
-		fullname:      { type: DataTypes.STRING, allowNull: false              },
+		email:         { type: DataTypes.STRING,                  unique: true   },
+		password:      { type: DataTypes.STRING, allowNull: false                },
+		CPF:           { type: DataTypes.STRING, allowNull: true, unique: true   },
+		fullname:      { type: DataTypes.STRING, allowNull: false                },
 		rating:                DataTypes.DECIMAL(10, 9),
-		photoPath:     { type: DataTypes.STRING, allowNull: true               },
+		ratingCount:           DataTypes.INTEGER,
+		photoPath:     { type: DataTypes.STRING, allowNull: true                 },
 		authLevel:     { type: DataTypes.ENUM('User', 'Admin'), allowNull: false }
 	})
 
