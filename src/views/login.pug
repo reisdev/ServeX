@@ -7,14 +7,18 @@ block content
 			button.close(type="button" data-dismiss="alert" aria-label="Close")
 				span(aria-hidden="true") ×
 	
-	form(action='/user/login' name=uniqKey method='POST').card-group.w-100
-		.card.card-body
-			h1.card-title Entrar
-			div.form-group
-				label(for='email') E-mail
-				input.form-control(required type='email' name='email')#email
-			div.form-group
-				label(for='password') Senha
-				input.form-control(required type='password' name='password')#password
-			div.form-group
-				button.btn.btn-primary(type='submit') Entrar
+	div.row.w-100
+		div.col-sm-3
+		div.col-lg-6
+			form(action='/user/login' name=uniqKey method='POST').card-group
+				.card.card-body
+					h1.card-title Entrar
+					div.form-group
+						label(for='email') E-mail
+						input.form-control(required type='email' name='email')#email
+					div.form-group
+						label(for='password') Senha
+						input.form-control(required type='password' name='password')#password
+					div.form-group
+						button.btn.btn-primary(type='submit') Entrar
+		div.col-sm-3
