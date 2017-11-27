@@ -35,6 +35,28 @@ export class Service
 		})
 	}
 
+	@Router.Get('/pending')
+	static async pendingContract({ params, session }, response)
+	{
+		try {
+			return response.json(await $Service.findAll({
+				where: {
+					userId: session.user.id
+				},
+				include: [
+					{ model: $Contract, where: { pending: true } }
+				]
+			}))
+		} catch (e) {
+			return response.status(400).render('error.pug', {
+				status: '0x07',
+				error: 'Erro',
+				message: 'Erro.',
+				stack: e.stack
+			})
+		}
+	}
+
 	@Router.Get('/contract/:id')
 	static async contract({ params, session }, response)
 	{
@@ -52,7 +74,10 @@ export class Service
 					const contract = await $Contract.create({
 						serviceId: service.id,
 						userId: session.user.id,
-						totalPrice: service.basePrice * 5
+						totalPrice: service.basePrice * 5,
+						peding: true,
+						completed: false,
+						accepted: false
 					})
 
 					return response.status(200).json(contract)

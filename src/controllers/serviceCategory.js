@@ -3,7 +3,7 @@
 import * as Router from '../utils/router.js'
 import * as Middlewares from '../utils/middlewares.js'
 
-import { $ServiceCategory, sequelize } from '../sequelize.js'
+import { $Service, $Contract, $ServiceCategory, sequelize } from '../sequelize.js'
 
 @Router.Route({ route: '/categories', middlewares: [
 	Middlewares.restrictedPage({ message: 'Área restrita a administradores.' })
@@ -19,14 +19,19 @@ export class ServiceCategory
 	@Router.Get('/rank')
 	static async rank({ query }, response)
 	{
-		const sql = `SELECT serviceCategories.name, COUNT(*) AS count
+		const sql = `SELECT services.id, serviceCategories.name, COUNT(*) AS count
 				FROM services
 				INNER JOIN serviceCategories ON serviceCategories.id = services.serviceCategoryId
 				INNER JOIN contracts ON services.id = contracts.serviceId
-				GROUP BY contracts.serviceId`
+				GROUP BY contracts.serviceId
+				ORDER BY count DESC
+				`
 
 		try {
-			const rank = await sequelize.query(sql, { type: sequelize.QueryTypes.SELECT })
+			const rank = await sequelize.query(sql, {
+				type: sequelize.QueryTypes.SELECT
+			})
+
 			return response.json(rank)
 		} catch (e) {
 			return response.status(400).render('error.pug', {
