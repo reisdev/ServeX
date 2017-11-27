@@ -2,29 +2,56 @@
 
 import _ from 'lodash'
 
-import { provinces } from '../settings'
+import {
+	provinces
+} from '../settings'
 import * as Router from '../utils/router.js'
-import { $Address, $User, sequelize } from '../sequelize.js'
+import {
+	$Address,
+	$User,
+	sequelize
+} from '../sequelize.js'
 
-const redirectIfAuthenticated = (request, response, next) =>
-{
+const redirectIfAuthenticated = (request, response, next) => {
 	return request.session.user ? response.redirect('/') : next()
 }
 
-@Router.Route({ route: '/user' })
-export class User
-{
+@Router.Route({
+	route: '/user'
+})
+export class User {
 	@Router.Get('/')
-	static async all (request, response)
-	{
+	static async all(request, response) {
 		return response.status(200).json({
 			payload: await $User.findAll()
 		})
 	}
 
+	@Router.Get('/:id')
+	static async viewUser({
+		params
+	}, response) {
+		
+		const user = await $User.findOne({
+			where: {
+				id: params.id
+			}
+		})
+	 /* catch (error) {
+		response.status(400).render('user.pug', {
+			error: 'Usuário não encontrado',
+			message: 'O usuário solicitado não foi encontrando em nossa base de dados',
+		})
+	} */
+		response.status(200).render('user.pug', {
+			user: user.dataValues
+		})
+	}
+
 	@Router.Get('/weighted')
-	static async weightedRating ({ params }, response)
-	{
+	static async weightedRating({
+		params
+	}, response) {
 		const sql = `SELECT
 			receiverId,
 			AVG(rating) AS average,
@@ -58,8 +85,9 @@ export class User
 	}
 
 	@Router.Get('/:id/report/services')
-	static async serviceReport ({ params }, response)
-	{
+	static async serviceReport({
+		params
+	}, response) {
 		const sql = `SELECT users.fullname,
 			serviceCategories.name AS category,
 			services.title AS title,
@@ -77,7 +105,9 @@ export class User
 		try {
 			const rank = await sequelize.query(sql, {
 				type: sequelize.QueryTypes.SELECT,
-				replacements: { id: params.id }
+				replacements: {
+					id: params.id
+				}
 			})
 
 			return response.json(rank)
@@ -92,8 +122,9 @@ export class User
 	}
 
 	@Router.Get('/:id/report')
-	static async userReport ({ params }, response)
-	{
+	static async userReport({
+		params
+	}, response) {
 		const sql = `SELECT
 				users.fullname AS fullname,
 				serviceCategories.name AS category,
@@ -111,7 +142,9 @@ export class User
 		try {
 			const rank = await sequelize.query(sql, {
 				type: sequelize.QueryTypes.SELECT,
-				replacements: { id: params.id }
+				replacements: {
+					id: params.id
+				}
 			})
 
 			return response.json(rank)
@@ -127,28 +160,35 @@ export class User
 
 	@Router.Get('/logout')
 	@Router.Post('/logout')
-	static async logout(request, response)
-	{
+	static async logout(request, response) {
 		request.session.destroy()
 		return response.redirect('/user/login')
 	}
 
-	@Router.Get('/login', [ redirectIfAuthenticated ])
-	@Router.Post('/login', [ redirectIfAuthenticated ])
-	static async login (request, response)
-	{
-		const { email, password } = request.body
+	@Router.Get('/login', [redirectIfAuthenticated])
+	@Router.Post('/login', [redirectIfAuthenticated])
+	static async login(request, response) {
+		const {
+			email,
+			password
+		} = request.body
 
-		if (! email || ! password)
+		if (!email || !password)
 			return response.render('login.pug')
 
 		return await $User.findOne({
-			where: { email }
+			where: {
+				email
+			}
 		}).then(user => {
-			if (! user)
-				return response.render('login.pug', { message: 'Usuário inexistente.' })
-			else if (! user.authenticate(password))
-				return response.render('login.pug', { message: 'Senha incorreta.' })
+			if (!user)
+				return response.render('login.pug', {
+					message: 'Usuário inexistente.'
+				})
+			else if (!user.authenticate(password))
+				return response.render('login.pug', {
+					message: 'Senha incorreta.'
+				})
 
 			request.session.user = user
 
@@ -158,36 +198,50 @@ export class User
 		})
 	}
 
-	@Router.Get('/register', [ redirectIfAuthenticated ])
-	@Router.Post('/register', [ redirectIfAuthenticated ])
-	static async register ({ body }, response)
-	{
+	@Router.Get('/register', [redirectIfAuthenticated])
+	@Router.Post('/register', [redirectIfAuthenticated])
+	static async register({
+		body
+	}, response) {
 		if (_.isEmpty(body))
-			return response.status(400).render('register.pug', { provinces: provinces, error: [ 'Preencha todos os campos.' ] })
+			return response.status(400).render('register.pug', {
+				provinces: provinces,
+				error: ['Preencha todos os campos.']
+			})
 
-		if(body.password !== body.confirmPassword)
-			return response.status(400).render('register.pug', { error: [ 'As senhas inseridas não são iguais.' ] })
+		if (body.password !== body.confirmPassword)
+			return response.status(400).render('register.pug', {
+				error: ['As senhas inseridas não são iguais.']
+			})
 
 		try {
-			await sequelize.transaction(async (transaction) => {
-				const user = await $User.create({ ...body, authLevel: 'Admin', rating: 0 }, { transaction })
-				const addr = await $Address.create({ ...body, userId: user.id }, { transaction })
+			await sequelize.transaction(async(transaction) => {
+				const user = await $User.create({ ...body,
+					authLevel: 'Admin',
+					rating: 0
+				}, {
+					transaction
+				})
+				const addr = await $Address.create({ ...body,
+					userId: user.id
+				}, {
+					transaction
+				})
 
 				return user
 			})
 
-			return response.render('success.pug',{
+			return response.render('success.pug', {
 				message: 'Cadastro Concluído!'
 			})
 		} catch (e) {
-			const mapPathToErrors =
-			{
+			const mapPathToErrors = {
 				email: 'E-mail já cadastrado.',
 				CPF: 'CPF já cadastrado.'
 			}
 
 			return response.status(400).render('register.pug', {
-				error: e.errors.map(p => mapPathToErrors[ p.path ] || p.path)
+				error: e.errors.map(p => mapPathToErrors[p.path] || p.path)
 			})
 		}
 	}
