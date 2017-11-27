@@ -26,28 +26,6 @@ export class User
 		})
 	}
 
-	@Router.Get('/:id')
-	static async viewUser({
-		params
-	}, response) {
-		
-		const user = await $User.findOne({
-			where: {
-				id: params.id
-			}
-		})
-	 /* catch (error) {
-		response.status(400).render('user.pug', {
-			error: 'Usuário não encontrado',
-			message: 'O usuário solicitado não foi encontrando em nossa base de dados',
-		})
-	} */
-		console.log(user.dataValues)
-		response.status(200).render('user.pug', {
-			user: user.dataValues
-		})
-	}
-
 	@Router.Get('/weighted')
 	static async weightedRating({ params }, response)
 	{
