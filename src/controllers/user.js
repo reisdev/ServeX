@@ -21,19 +21,28 @@ export class User
 		})
 	}
 
-	@Router.Get('/weightedRank')
+	@Router.Get('/weighted')
 	static async weightedRating ({ params }, response)
 	{
 		const sql = `SELECT
 			receiverId,
-			(SUM((reviews.rating - 3) / 2) + 10 / (SELECT COUNT(*) + 20 FROM reviews GROUP BY receiverId)) AS weightedRating
+			AVG(rating) AS average,
+			COUNT(*) AS count,
+			1.0 * (:confidence * :alpha + SUM(rating)) / (:confidence + COUNT(*)) AS normalizedScore
 			FROM reviews
 			GROUP BY receiverId`
 
 		try {
 			const rank = await sequelize.query(sql, {
 				type: sequelize.QueryTypes.SELECT,
-				replacements: { id: params.id }
+				replacements: {
+					id: params.id,
+					// Represents a prior for the average of the stars.
+					alpha: 2.5,
+					// Represents how confident we're in our prior.
+					// It is equivalent to a number of observations.
+					confidence: 5.0
+				}
 			})
 
 			return response.json(rank)

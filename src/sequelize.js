@@ -42,6 +42,32 @@ $User.hasMany($Phone)
 
 sequelize.sync({ force: false })
 
+$Review.afterCreate(review => {
+	sequelize.transaction(async (transaction) => {
+		const sql = `SELECT
+			1.0 * (:confidence * :alpha + SUM(rating)) / (:confidence + COUNT(*)) AS normalizedScore
+			FROM reviews WHERE receiverId = :id`
+
+		const rank = await sequelize.query(sql, {
+			transaction,
+			type: sequelize.QueryTypes.SELECT,
+			replacements: {
+				id: params.id,
+				// Represents a prior for the average of the stars.
+				alpha: 2.5,
+				// Represents how confident we're in our prior.
+				// It is equivalent to a number of observations.
+				confidence: 5.0
+			}
+		})
+
+		return $User.update({ rating: rank.normalizedScore }, {
+			transaction,
+			where: { id: review.receiverId }
+		}).catch(() => {})
+	})
+})
+
 export {
 	sequelize, Sequelize,
 	$Address, $Contract, $CreditCard, $Phone,
