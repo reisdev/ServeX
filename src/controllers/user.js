@@ -150,7 +150,10 @@ export class User
 				return response.render('login.pug', { message: 'Senha incorreta.' })
 
 			request.session.user = user
-			return response.redirect('/')
+
+			return request.session.save(err => {
+				return response.redirect('/')
+			})
 		})
 	}
 
