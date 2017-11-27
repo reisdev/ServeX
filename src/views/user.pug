@@ -7,7 +7,11 @@ block content
 				= err
 				button.close(type='button' data-dismiss='alert' aria-label='Fechar')
 				span(aria-hidden='true') ×
-	card.card-body
-		p.h1.card-title #{user.fullname}
-		p
-			+stars(user.rating || 0)
+	card
+		img.card-img-bottom(src=user.photoPath style='width: auto; height: 100px')
+		card-body
+			p.h1.card-title #{user.fullname}
+			p
+				+stars(user.rating || 0)
+			p
+				#{user.photoPath}

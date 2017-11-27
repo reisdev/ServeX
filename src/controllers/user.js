@@ -43,6 +43,7 @@ export class User {
 			message: 'O usuário solicitado não foi encontrando em nossa base de dados',
 		})
 	} */
+		console.log(user.dataValues)
 		response.status(200).render('user.pug', {
 			user: user.dataValues
 		})
