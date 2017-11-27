@@ -2,6 +2,7 @@
 
 import _ from 'lodash'
 
+import { provinces } from '../settings'
 import * as Router from '../utils/router.js'
 import { $Address, $User, sequelize } from '../sequelize.js'
 
@@ -159,7 +160,7 @@ export class User
 	static async register ({ body }, response)
 	{
 		if (_.isEmpty(body))
-			return response.status(400).render('register.pug', { error: [ 'Preencha todos os campos.' ] })
+			return response.status(400).render('register.pug', { provinces: provinces, error: [ 'Preencha todos os campos.' ] })
 
 		if(body.password !== body.confirmPassword)
 			return response.status(400).render('register.pug', { error: [ 'As senhas inseridas não são iguais.' ] })

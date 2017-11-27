@@ -16,12 +16,21 @@ block content
 			div.form-group
 				label(for='fullname') Nome completo
 				input.form-control(required type='text' name='fullname')#fullname
+
+			div.row
+				div.col-sm-7
+					div.form-group
+						label(for='email') E-mail
+						input.form-control(required type='email' name='email')#email
+				div.col-sm-5
+					div.form-group
+						label(for='cpf') CPF
+						input.form-control(required type='text' name='CPF' pattern='\d{3}\.\d{3}\.\d{3}-\d{2}')#cpf
+			
 			div.form-group
-				label(for='email') E-mail
-				input.form-control(required type='email' name='email')#email
-			div.form-group
-				label(for='cpf') CPF
-				input.form-control(required type='text' name='CPF')#cpf
+						label(for='userImg') Foto de Perfil
+						input.form-control(type='file' name='photoPath')
+
 			div.form-group
 				label(for='password') Senha
 				input.form-control(required type='password' name='password' aria-describedby='passwd-help')#password
@@ -29,25 +38,30 @@ block content
 			div.form-group
 				label(for='confirmPassword') Repita a senha
 				input.form-control(required type='password' name='confirmPassword')#confirmPassword
-			div.form-group
-				label(for='userImg') Imagem de Perfil
-				input.form-control(type='file' name='photoPath')
 
 		.card.card-body
 			h2.card-title Endereço
 			
-			div.form-group
-				label(for='country') País
-				input.form-control(required type='text' name='country')#country
-			div.form-group
-				label(for='province') Estado
-				input.form-control(required type='text' name='province')#province
-			div.form-group
-				label(for='ZIPCode') CEP
-				input.form-control(required type='text' name='ZIPCode')#ZIPCode
-			div.form-group
-				label(for='city') Cidade
-				input.form-control(required type='text' name='city')#city
+			div.row
+				div.col-sm-7
+					div.form-group
+						label(for='country') País
+						input.form-control(required type='text' name='country')#country
+				div.col-sm-5
+					div.form-group
+						label(for='province') UF
+						select.form-control(required name='province')#province
+							each province in provinces
+								option(value=province.value) #{province.name}
+			div.row
+				div.col-sm-7
+					div.form-group
+						label(for='city') Cidade
+						input.form-control(required type='text' name='city')#city
+				div.col-sm-5
+					div.form-group
+						label(for='ZIPCode') CEP
+						input.form-control(required type='text' name='ZIPCode')#ZIPCode
 			div.form-group
 				label(for='neighborhood') Bairro
 				input.form-control(required type='text' name='neighborhood')#neighborhood
