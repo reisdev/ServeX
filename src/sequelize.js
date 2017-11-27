@@ -7,7 +7,7 @@ import path from 'path'
 import bcrypt from 'bcrypt'
 
 import Sequelize from 'sequelize'
-import { schema } from './settings.js'
+import { schema, forceRebuild } from './settings.js'
 
 const sequelize = new Sequelize(... schema)
 
@@ -40,12 +40,13 @@ $User.hasMany($Contract)
 $User.hasMany($CreditCard)
 $User.hasMany($Phone)
 
-sequelize.sync({ force: false })
+sequelize.sync({ force: forceRebuild || false })
 
 $Review.afterCreate(review => {
 	sequelize.transaction(async (transaction) => {
 		const sql = `SELECT
-			1.0 * (:confidence * :alpha + SUM(rating)) / (:confidence + COUNT(*)) AS normalizedScore
+			1.0 * (:confidence * :alpha + SUM(rating)) / (:confidence + COUNT(*)) AS normalizedScore,
+			COUNT(*) AS ratingCount
 			FROM reviews WHERE receiverId = :id`
 
 		const rank = await sequelize.query(sql, {
@@ -61,7 +62,10 @@ $Review.afterCreate(review => {
 			}
 		})
 
-		return $User.update({ rating: rank.normalizedScore }, {
+		return $User.update({
+			rating: rank.normalizedScore,
+			ratingCount: rank.ratingCount
+		}, {
 			transaction,
 			where: { id: review.receiverId }
 		}).catch(() => {})

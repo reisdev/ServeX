@@ -12,7 +12,7 @@ import url from 'url'
 
 const SequelizeStore = require('connect-session-sequelize')(session.Store)
 
-import { SERVER_PORT } from './settings.js'
+import { SERVER_PORT, forceRebuild } from './settings.js'
 import { sequelize } from './sequelize.js'
 
 import * as Controllers from './controllers'
@@ -30,7 +30,7 @@ sequelize.authenticate().then(() => {
 	app.set('views', path.join(__dirname, '/views'))
 
 	const sessionStore = new SequelizeStore({ db: sequelize })
-	sessionStore.sync({ force: false })
+	sessionStore.sync({ force: forceRebuild || false })
 
 	// Enable support for sessions
 	app.use(
