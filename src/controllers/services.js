@@ -17,6 +17,38 @@ const mapPricingType = (type) => {
 @Router.Route({ route: '/services' })
 export class Service
 {
+	static ranking(count)
+	{
+		const sql = `SELECT
+			users.fullname,
+			serviceCategories.name as category,
+			serviceCategories.pricingType,
+			users.rating,
+			users.ratingCount,
+			services.*,
+			COUNT(*) AS count
+			FROM contracts
+			LEFT OUTER JOIN users ON contracts.userId = users.id
+			LEFT OUTER JOIN services ON contracts.serviceId = services.id
+			LEFT OUTER JOIN serviceCategories ON services.serviceCategoryId = serviceCategories.id
+			GROUP BY contracts.serviceId
+			ORDER BY count DESC
+			LIMIT :count
+			`
+
+		return sequelize.query(sql, {
+			type: sequelize.QueryTypes.SELECT,
+			replacements: { count }
+		})
+	}
+
+	@Router.Get('/test')
+	static async tges (request, response)
+	{
+		const p = await Service.ranking(3)
+		return response.json(p)
+	}
+
 	@Router.Get('/') @Router.Get('../')
 	static async index(request, response)
 	{
@@ -30,6 +62,7 @@ export class Service
 
 		return response.render('services.pug', {
 			services: await services,
+			ranking: await Service.ranking(10),
 			categories: await categories,
 			mapPricingType
 		})

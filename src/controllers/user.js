@@ -30,15 +30,17 @@ export class User
 	static async weightedRating({ params }, response)
 	{
 		const sql = `SELECT
-			receiverId,
-			AVG(rating) AS average,
+			r.receiverId,
+			u.fullname,
+			AVG(r.rating) AS average,
 			COUNT(*) AS count,
-			1.0 * (:confidence * :alpha + SUM(rating)) / (:confidence + COUNT(*)) AS normalizedScore
-			FROM reviews
+			1.0 * (:confidence * :alpha + SUM(r.rating)) / (:confidence + COUNT(*)) AS normalizedScore
+			FROM reviews r
+			INNER JOIN users u ON u.id = r.receiverId
 			GROUP BY receiverId`
 
 		try {
-			const rank = await sequelize.query(sql, {
+			const ranking = await sequelize.query(sql, {
 				type: sequelize.QueryTypes.SELECT,
 				replacements: {
 					id: params.id,
@@ -50,7 +52,10 @@ export class User
 				}
 			})
 
-			return response.json(rank)
+			//return response.json(ranking)
+			return response.render('weightedRanking.pug', {
+				ranking
+			})
 		} catch (e) {
 			return response.status(400).render('error.pug', {
 				status: '0x05',
