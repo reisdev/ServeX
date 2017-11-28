@@ -1,0 +1,42 @@
+extends index.pug
+
+include mixins.pug
+
+block content
+    if error
+        each err in error
+            .alert.alert-danger(role='alert').w-100
+                = err
+                button.close(type='button' data-dismiss='alert' aria-label='Fechar')
+                    span(aria-hidden='true') ×
+
+    form(action='/services/contract' name=uniqKey method='POST').card-group.w-100
+        .card.card-body
+            h1.card-title Contratar Serviço
+            
+            div.row
+                div.col-sm-6.form-group
+                    label Serviço
+                    input.form-control(disabled type='text' placeholder=`${service.title}`) 
+                    input.form-control(type='hidden' name='id' value=`${service.id}`)
+                div.col-sm-3.form-group
+                    label Tipo de Serviço
+                    input.form-control(disabled type='text' placeholder=`${type.name}`)
+                div.col-sm-3.form-group
+                    label Preço
+                    div.input-group
+                        span.input-group-addon R$
+                        input.form-control(disabled placeholder=`${service.basePrice}`)
+                        span.input-group-addon #{type.pricingType}
+            div.row
+                div.col-sm-6.form-group
+                    label Prestador 
+                    input.form-control(disabled type='text' placeholder=`${user.fullname}`)
+                div.col-sm-3.form-group
+                    label Nota de Avaliação
+                    div(style='font-size: 23px')
+                        +stars(user.rating)
+                div.col-sm-3.form-group
+
+            div.form-group
+                button.btn.btn-primary(type='submit') Contratar
