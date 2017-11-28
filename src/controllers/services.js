@@ -114,7 +114,7 @@ export class Service {
  	{
  		if(! body.date || ! body.time || ! body.timefactor)
 			 return response.status(400).end()
-		
+
 		if(!session.user){
 			return response.status(400).render('error.pug', {
 				error: 'Problemas de autenticação',
@@ -181,17 +181,7 @@ export class Service {
 					id: service.userId
 				}
 			})
-			switch (type.pricingType) {
-				case 'Hourly':
-					type.pricingType = 'por hora'
-					break
-				case 'Daily':
-					type.pricingType = 'por Dia'
-					break
-				case 'Once':
-					type.pricingType = 'por atividade'
-					break
-			}
+			type.pricingType = mapPricingType(type.pricingType)
 
 			response.status(200).render('hireService.pug', {
 				service: service,

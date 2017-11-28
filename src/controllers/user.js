@@ -1,11 +1,12 @@
 /*! @Author: Raphael Nepomuceno <raphael.nepomuceno@ufv.br> */
 
 import _ from 'lodash'
+import moment from 'moment'
 
 import { provinces, uploadPath } from '../settings'
 import * as Router from '../utils/router.js'
 
-import { $Address, $User, sequelize } from '../sequelize.js'
+import { $Address, $User, sequelize, $CreditCard } from '../sequelize.js'
 
 import multer from 'multer'
 
@@ -195,9 +196,13 @@ export class User
 					photoPath: file.filename,
 					rating: 0
 				}, { transaction })
-
 				try {
 					const addr = await $Address.create({
+						...body, userId: user.id
+					}, { transaction })
+
+					body.validUntil = moment(`${body.validUntil}`,'MM:YYYY')
+					const card = await $CreditCard.create({
 						...body, userId: user.id
 					}, { transaction })
 
@@ -218,10 +223,9 @@ export class User
 				const mapPathToErrors = {
 					email: 'E-mail já cadastrado.', CPF: 'CPF já cadastrado.'
 				}
-
 				response.status(400).render('register.pug', {
 					provinces: provinces,
-					error: e.errors.map(p => mapPathToErrors[p.path] || p.path)
+					error: ['Problema no registro']
 				})
 			}
 		})

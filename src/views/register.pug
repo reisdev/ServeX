@@ -11,7 +11,7 @@ block content
 	form(action='/user/register' name=uniqKey method='POST' enctype='multipart/form-data').card-group.w-100
 		.card.card-body
 			h1.card-title Cadastrar
-			h2.card-title Informações pessoais 			
+			h3.card-title Informações pessoais 			
 			
 			div.form-group
 				label(for='fullname') Nome completo
@@ -40,7 +40,7 @@ block content
 				input.form-control(required type='password' name='confirmPassword')#confirmPassword
 
 		.card.card-body
-			h2.card-title Endereço
+			h3.card-title Endereço
 			
 			div.row
 				div.col-sm-7
@@ -54,23 +54,38 @@ block content
 							each province in provinces
 								option(value=province.value) #{province.name}
 			div.row
-				div.col-sm-7
+				div.col-sm-5
 					div.form-group
 						label(for='city') Cidade
 						input.form-control(required type='text' name='city')#city
-				div.col-sm-5
+				div.col-sm-3
 					div.form-group
 						label(for='ZIPCode') CEP
 						input.form-control(required type='text' name='ZIPCode')#ZIPCode
-			div.form-group
-				label(for='neighborhood') Bairro
-				input.form-control(required type='text' name='neighborhood')#neighborhood
-			div.form-group
-				label(for='street') Rua
-				input.form-control(required type='text' name='street')#street
-			div.form-group
-				label(for='number') Número
-				input.form-control(required type='text' name='number')#number
+				div.col-sm-4
+					div.form-group
+						label(for='neighborhood') Bairro
+						input.form-control(required type='text' name='neighborhood')#neighborhood
+			div.row
+				div.col.sm-7
+					div.form-group
+							label(for='street') Rua
+							input.form-control(required type='text' name='street')#street
+				div.col-sm-5
+					div.form-group
+							label(for='number') Número
+							input.form-control(required type='text' name='number')#number
+			h3 Cartão de Crédito
 
 			div.form-group
-				button.btn.btn-primary(type='submit') Cadastrar
+						label Número do Cartão
+						input.form-control(type='text' name='cardNumber')
+			div.row
+				div.col-sm-7
+					label Validade
+					input.form-control(type='text' name='validUntil')
+				div.col-sm-5
+					label CVC
+					input.form-control(type='text' name='CVC')
+			div.form-group
+				button.btn.btn-primary(type='submit' style='margin-top: 16px; padding-bottom: 5px') Cadastrar
