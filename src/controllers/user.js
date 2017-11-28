@@ -142,8 +142,9 @@ export class User
 	@Router.Post('/logout')
 	static async logout(request, response)
 	{
-		request.session.destroy()
-		return response.redirect('/user/login')
+		request.session.destroy(err => {
+			response.redirect('/user/login')
+		})
 	}
 
 	@Router.Get('/login', [ redirectIfAuthenticated ])
@@ -164,7 +165,9 @@ export class User
 				return response.render('login.pug', { message: 'Senha incorreta.' })
 
 			request.session.user = user
-			return request.session.save(err => response.redirect('/'))
+			request.session.save(err => {
+				response.redirect('/')
+			})
 		})
 	}
 
