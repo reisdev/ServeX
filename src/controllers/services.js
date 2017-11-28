@@ -25,27 +25,26 @@ const mapPricingType = (type) => {
 	}
 }
 
-@Router.Route({ route: '/services' })
-export class Service
-{
-	@Router.Get('/') @Router.Get('../')
-	static async index(request, response)
-	{
+@Router.Route({
+	route: '/services'
+})
+export class Service {
+	static ranking(count) {
 		const sql = `SELECT
-			users.fullname,
-			serviceCategories.name as category,
-			serviceCategories.pricingType,
-			users.rating,
-			users.ratingCount,
-			services.*,
-			COUNT(*) AS count
-			FROM contracts
-			LEFT OUTER JOIN users ON contracts.userId = users.id
-			LEFT OUTER JOIN services ON contracts.serviceId = services.id
-			LEFT OUTER JOIN serviceCategories ON services.serviceCategoryId = serviceCategories.id
-			GROUP BY contracts.serviceId
-			ORDER BY count DESC
-			LIMIT :count`
+		users.fullname,
+		serviceCategories.name as category,
+		serviceCategories.pricingType,
+		users.rating,
+		users.ratingCount,
+		services.*,
+		COUNT(*) AS count
+		FROM contracts
+		LEFT OUTER JOIN users ON contracts.userId = users.id
+		LEFT OUTER JOIN services ON contracts.serviceId = services.id
+		LEFT OUTER JOIN serviceCategories ON services.serviceCategoryId = serviceCategories.id
+		GROUP BY contracts.serviceId
+		ORDER BY count DESC
+		LIMIT :count`
 
 		return sequelize.query(sql, {
 			type: sequelize.QueryTypes.SELECT,
@@ -53,12 +52,6 @@ export class Service
 				count
 			}
 		})
-	}
-
-	@Router.Get('/test')
-	static async tges(request, response) {
-		const p = await Service.ranking(3)
-		return response.json(p)
 	}
 
 	@Router.Get('/') @Router.Get('../')
@@ -71,17 +64,22 @@ export class Service
 			]
 		})
 
-		const ranking = sequelize.query(sql, {
-			type: sequelize.QueryTypes.SELECT,
-			replacements: { count: 3 }
-		}).then(ranking => ! _.isEmpty(ranking) && ranking)
+		const categories = $ServiceCategory.findAll({
+			raw: true
+		})
 
 		return response.render('services.pug', {
 			services: await services,
-			ranking: await ranking,
+			ranking: await Service.ranking(10),
 			categories: await categories,
 			mapPricingType
 		})
+	}
+
+	@Router.Get('/test')
+	static async tges(request, response) {
+		const p = await Service.ranking(3)
+		return response.json(p)
 	}
 
 	@Router.Get('/pending')
@@ -111,6 +109,58 @@ export class Service
 		}
 	}
 
+	@Router.Post('/contract/')
+ 	static async contract({ body, session }, response)
+ 	{
+ 		if(! body.date || ! body.time || ! body.timefactor)
+			 return response.status(400).end()
+		
+		if(!session.user){
+			return response.status(400).render('error.pug', {
+				error: 'Problemas de autenticação',
+				message: 'Faça login para contratar novo serviço'
+			})
+		}
+ 
+ 		return await sequelize.transaction(async (transaction) => {
+ 			try {
+ 				const service = await $Service.findOne({
+ 					where: { id: body.id }, include: [ $ServiceCategory, $User ]
+ 				}, { transaction })
+ 				try {
+ 					const startDate = moment(`${body.date} ${body.time}`, 'YYYY-MM-DD hh:mm')
+ 
+ 					const contract = await $Contract.create({
+ 						serviceId: service.id,
+ 						userId: session.user.id,
+ 						totalPrice: service.dataValues.basePrice * body.timefactor,
+ 						startDate,
+ 						peding: true,
+ 						completed: false,
+ 						accepted: false
+ 					})
+ 
+ 					return response.status(200).json(contract)
+ 				} catch (e) {
+ 					return response.status(400).render('error.pug', {
+ 						status: '0x04',
+ 						error: 'Erro ao contratar serviço',
+ 						message: 'Erro desconhecido.',
+ 						stack: e.stack
+ 					})
+ 				}
+ 			} catch (e) {
+ 				return response.status(400).render('error.pug', {
+ 					status: '0x03',
+ 					error: 'Erro ao contratar serviço',
+ 					message: 'Serviço inexistente.',
+ 					stack: e.stack
+ 				})
+ 			}
+ 		})
+ 	}
+
+
 	@Router.Get('/contract/:id')
 	static async doContract({
 		params
@@ -118,12 +168,12 @@ export class Service
 		try {
 			const service = await $Service.findOne({
 				where: {
-					id : params.id
+					id: params.id
 				}
 			})
 			const type = await $ServiceCategory.findOne({
 				where: {
-					id : service.serviceCategoryId
+					id: service.serviceCategoryId
 				}
 			})
 			const user = await $User.findOne({
@@ -131,7 +181,7 @@ export class Service
 					id: service.userId
 				}
 			})
-			switch(type.pricingType) {
+			switch (type.pricingType) {
 				case 'Hourly':
 					type.pricingType = 'por hora'
 					break
@@ -142,14 +192,13 @@ export class Service
 					type.pricingType = 'por atividade'
 					break
 			}
-			
+
 			response.status(200).render('hireService.pug', {
-				service : service,
-				type : type,
+				service: service,
+				type: type,
 				user: user
 			})
-		}
-		catch(error){
+		} catch (error) {
 			response.status(400).render('error.pug', {
 				error: 'Serviço Inexistente',
 				message: 'Não foi possível encontrar o serviço solicitado'
@@ -157,50 +206,7 @@ export class Service
 		}
 	}
 
-	@Router.Post('/contract')
-	static async contract({ body, session }, response)
-	{
-		if(! body.date || ! body.time || ! body.timefactor)
-			return response.status(404).end()
-
-		return await sequelize.transaction(async (transaction) => {
-			try {
-				const service = await $Service.findOne({
-					where: { id: body.id }, include: [ $ServiceCategory, $User ]
-				}, { transaction })
-
-				try {
-					const startDate = moment(`${body.date} ${body.time}`, 'YYYY-MM-DD hh:mm')
-
-					const contract = await $Contract.create({
-						serviceId: service.id,
-						userId: session.user.id,
-						totalPrice: service.basePrice * body.timefactor,
-						startDate,
-						peding: true,
-						completed: false,
-						accepted: false
-					})
-					return response.status(200).json(contract)
-				} catch (e) {
-					return response.status(400).render('error.pug', {
-						status: '0x04',
-						error: 'Erro ao contratar serviço',
-						message: 'Erro desconhecido.',
-						stack: e.stack
-					})
-				}
-			} catch (e) {
-				return response.status(400).render('error.pug', {
-					status: '0x03',
-					error: 'Erro ao contratar serviço',
-					message: 'Serviço inexistente.',
-					stack: e.stack
-				})
-			}
-		})
-	}
-
+	
 	@Router.Get('/filter/:id')
 	static async filter({
 		params

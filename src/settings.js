@@ -34,6 +34,15 @@ export const provinces = [
 	{ name: 'Fora do Brasil', value: 'EX'}
 ]
 
+const Postgres = [
+	'postgres://postgres:servex@localhost:5432/servex',
+	{
+		dialect: 'postgres',
+		logging: false,
+		define: { timestamps: false}
+	}
+]
+
 const SQLite = [
 	null, // URI
 	null, // Username

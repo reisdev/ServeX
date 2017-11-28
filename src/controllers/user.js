@@ -113,9 +113,9 @@ export class User
 				services.basePrice AS baseprice,
 				serviceCategories.pricingType AS pricingType
 			FROM users
-			INNER JOIN contracts ON contracts.userId = users.id
-			INNER JOIN services ON contracts.serviceId = services.id
-			INNER JOIN serviceCategories ON serviceCategories.id = services.serviceCategoryId
+			INNER JOIN contracts ON "contracts.userId" = users.id
+			INNER JOIN services ON "contracts.serviceId" = services.id
+			INNER JOIN serviceCategories ON serviceCategories.id = "services.serviceCategoryId"
 			WHERE users.id = :id
 			ORDER BY contracts.totalPrice DESC`
 
