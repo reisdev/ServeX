@@ -9,6 +9,7 @@ import path from 'path'
 import session from 'express-session'
 import uid from 'uid-safe'
 import url from 'url'
+import _ from 'lodash'
 
 const SequelizeStore = require('connect-session-sequelize')(session.Store)
 
@@ -58,6 +59,7 @@ sequelize.authenticate().then(() => {
 		res.locals.request = req
 		res.locals.user = req.session.user
 		res.locals.uniqKey = uid.sync(18)
+		res.locals.isLoggedIn = ! _.isEmpty(req.session.user)
 
 		res.locals.baseurl = function (resource) {
 			return url.resolve('http://localhost:44800/', resource)

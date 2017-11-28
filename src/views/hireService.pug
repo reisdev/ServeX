@@ -30,11 +30,11 @@ block content
 			div.row
 				div.col-sm-6.form-group
 					label Prestador
-					input.form-control(disabled type='text' placeholder=`${user.fullname}`)
+					input.form-control(disabled type='text' placeholder=`${service['user.fullname']}`)
 				div.col-sm-3.form-group
 					label Nota de Avaliação
 					div(style='font-size: 23px')
-						+stars(user.rating)
+						+stars(service['user.rating'])
 				div.col-sm-3
 
 			div.row
@@ -63,5 +63,6 @@ block content
 									input.form-control(required type='text' name='timefactor')
 									span.input-group-addon dias
 							break
-			div.form-group
-				button.btn.btn-primary(type='submit') Contratar
+			if isLoggedIn
+				div.form-group
+					button.btn.btn-primary(type='submit') Contratar
