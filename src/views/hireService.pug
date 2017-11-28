@@ -3,68 +3,65 @@ extends index.pug
 include mixins.pug
 
 block content
-    if error
-        each err in error
-            .alert.alert-danger(role='alert').w-100
-                = err
-                button.close(type='button' data-dismiss='alert' aria-label='Fechar')
-                    span(aria-hidden='true') ×
+	if error
+		each err in error
+			.alert.alert-danger(role='alert').w-100
+				= err
+				button.close(type='button' data-dismiss='alert' aria-label='Fechar')
+					span(aria-hidden='true') ×
 
-    form(action='/services/contract' name=uniqKey method='POST').card-group.w-100
-        .card.card-body
-            h1.card-title Contratar Serviço
-            
-            div.row
-                div.col-sm-6.form-group
-                    label Serviço
-                    input.form-control(disabled type='text' placeholder=`${service.title}`) 
-                    input.form-control(type='hidden' name='id' value=`${service.id}`)
-                div.col-sm-3.form-group
-                    label Tipo de Serviço
-                    input.form-control(disabled type='text' placeholder=`${type.name}`)
-                div.col-sm-3.form-group
-                    label Preço
-                    div.input-group
-                        span.input-group-addon R$
-                        input.form-control(disabled placeholder=`${service.basePrice}`)
-                        span.input-group-addon #{type.pricingType}
-            div.row
-                div.col-sm-6.form-group
-                    label Prestador 
-                    input.form-control(disabled type='text' placeholder=`${user.fullname}`)
-                div.col-sm-3.form-group
-                    label Nota de Avaliação
-                    div(style='font-size: 23px')
-                        +stars(user.rating)
-                div.col-sm-3.form-group
+	form(action=`/services/hire/${service.id}` name=uniqKey method='POST').card-group.w-100
+		.card.card-body
+			h1.card-title Contratar Serviço
 
-            div.row 				
-                div.form-group.col-4
-                    label(for='date') Data de início
-                    input.form-control(required type='date' name='date')
+			div.row
+				div.col-sm-6.form-group
+					label Serviço
+					input.form-control(disabled type='text' placeholder=`${service.title}`)
+				div.col-sm-3.form-group
+					label Tipo de Serviço
+					input.form-control(disabled type='text' placeholder=`${service['serviceCategory.name']}`)
+				div.col-sm-3.form-group
+					label Preço
+					div.input-group
+						span.input-group-addon R$
+						input.form-control(disabled placeholder=`${service.basePrice}`)
+						span.input-group-addon #{mapPricingType(service['serviceCategory.pricingType'])}
+			div.row
+				div.col-sm-6.form-group
+					label Prestador
+					input.form-control(disabled type='text' placeholder=`${user.fullname}`)
+				div.col-sm-3.form-group
+					label Nota de Avaliação
+					div(style='font-size: 23px')
+						+stars(user.rating)
+				div.col-sm-3
 
-                div.form-group.col-4
-                    label(for='time') Hora de ínicio
-                    input.form-control(required type='time' name='time')
+			div.row
+				div.form-group.col-4
+					label(for='date') Data de início
+					input.form-control(required type='date' name='date')
 
-                case type.pricingType
-                        when 'por atividade'
-                            break
-                        when 'por hora'
-                            div.form-group.col-4
-                                label(for='timefactor') Tempo de contratação
-                                .input-group
-                                    input.form-control(required type='text' name='timefactor')
-                                    span.input-group-addon horas
-                            break
-                        when 'por dia'
-                            div.form-group.col-4
-                                label(for='timefactor') Tempo de contratação
-                                .input-group
-                                    input.form-control(required type='text' name='timefactor')
-                                    span.input-group-addon dias
-                            break
-            div.form-group
-                button.btn.btn-primary(type='submit') Contratar
-            
+				div.form-group.col-4
+					label(for='time') Hora de ínicio
+					input.form-control(required type='time' name='time')
 
+				case service['serviceCategory.pricingType']
+						when 'Once'
+							break
+						when 'Hourly'
+							div.form-group.col-4
+								label(for='timefactor') Tempo de contratação
+								.input-group
+									input.form-control(required type='text' name='timefactor')
+									span.input-group-addon horas
+							break
+						when 'Daily'
+							div.form-group.col-4
+								label(for='timefactor') Tempo de contratação
+								.input-group
+									input.form-control(required type='text' name='timefactor')
+									span.input-group-addon dias
+							break
+			div.form-group
+				button.btn.btn-primary(type='submit') Contratar
