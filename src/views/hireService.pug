@@ -38,5 +38,33 @@ block content
                         +stars(user.rating)
                 div.col-sm-3.form-group
 
+            div.row 				
+                div.form-group.col-4
+                    label(for='date') Data de início
+                    input.form-control(required type='date' name='date')
+
+                div.form-group.col-4
+                    label(for='time') Hora de ínicio
+                    input.form-control(required type='time' name='time')
+
+                case type.pricingType
+                        when 'por atividade'
+                            break
+                        when 'por hora'
+                            div.form-group.col-4
+                                label(for='timefactor') Tempo de contratação
+                                .input-group
+                                    input.form-control(required type='text' name='timefactor')
+                                    span.input-group-addon horas
+                            break
+                        when 'por dia'
+                            div.form-group.col-4
+                                label(for='timefactor') Tempo de contratação
+                                .input-group
+                                    input.form-control(required type='text' name='timefactor')
+                                    span.input-group-addon dias
+                            break
             div.form-group
                 button.btn.btn-primary(type='submit') Contratar
+            
+
