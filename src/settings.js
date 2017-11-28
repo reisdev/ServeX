@@ -34,15 +34,6 @@ export const provinces = [
 	{ name: 'Fora do Brasil', value: 'EX'}
 ]
 
-const Postgres = [
-	'postgres://postgres:servex@localhost:5432/servex', // URI
-	{ // Options
-		dialect: 'postgres',
-		logging: false,
-		define: { timestamps: false }
-	}
-]
-
 const SQLite = [
 	null, // URI
 	null, // Username
@@ -55,11 +46,4 @@ const SQLite = [
 ]
 
 export const forceRebuild = false
-
-export const schema = (() => {
-	switch(process.env.USER)
-	{
-		case 'kurumi': return SQLite
-		default: return Postgres
-	}
-})()
+export const schema = SQLite
