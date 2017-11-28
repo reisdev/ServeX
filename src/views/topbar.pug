@@ -15,6 +15,7 @@ nav.navbar.navbar-expand-lg.navbar-dark.bg-dark
 			div.navbar-nav
 				+navlink('/services', 'Serviços') 					
 				if user
+					+navlink(`/user/profile/${user.id}`, 'Meu perfil')
 					+navlink('/user/logout', 'Encerrar sessão')
 				else
 					+navlink('/user/register', 'Cadastre-se')

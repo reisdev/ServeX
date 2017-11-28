@@ -173,7 +173,7 @@ export class User
 
 	@Router.Get('/register', [ redirectIfAuthenticated, upload.single('photoPath') ])
 	@Router.Post('/register', [ redirectIfAuthenticated, upload.single('photoPath') ])
-	static async register({ body, file }, response)
+	static async register({ body, file, session }, response)
 	{
 		if (_.isEmpty(body))
 			return response.status(400).render('register.pug', {
@@ -187,45 +187,47 @@ export class User
 				error: ['As senhas inseridas não são iguais.']
 			})
 
-
-		try {
-			await sequelize.transaction(async(transaction) => {
+		await sequelize.transaction(async (transaction) => {
+			try {
 				const user = await $User.create({
 					...body,
 					authLevel: 'Admin',
 					photoPath: file.filename,
 					rating: 0
-				}, {
-					transaction
+				}, { transaction })
+
+				try {
+					const addr = await $Address.create({
+						...body, userId: user.id
+					}, { transaction })
+
+					session.user = user
+					session.save(err => {
+						response.render('success.pug', {
+							user,
+							message: 'Cadastro Concluído!'
+						})
+					})
+				} catch (e) {
+					response.status(400).render('register.pug', {
+						provinces: provinces,
+						error: [ 'Erro ao cadastrar endereço.' ]
+					})
+				}
+			} catch (e) {
+				const mapPathToErrors = {
+					email: 'E-mail já cadastrado.', CPF: 'CPF já cadastrado.'
+				}
+
+				response.status(400).render('register.pug', {
+					provinces: provinces,
+					error: e.errors.map(p => mapPathToErrors[p.path] || p.path)
 				})
-
-				const addr = await $Address.create({
-					...body,
-					userId: user.id
-				}, {
-					transaction
-				})
-
-				return user
-			})
-
-			return response.render('success.pug', {
-				message: 'Cadastro Concluído!'
-			})
-		} catch (e) {
-			const mapPathToErrors = {
-				email: 'E-mail já cadastrado.',
-				CPF: 'CPF já cadastrado.'
 			}
-
-			return response.status(400).render('register.pug', {
-				provinces: provinces,
-				error: e.errors.map(p => mapPathToErrors[p.path] || p.path)
-			})
-		}
+		})
 	}
 
-	@Router.Get('/:id')
+	@Router.Get('/profile/:id')
 	static async viewUser({ params }, response)
 	{
 		const user = await $User.findOne({
