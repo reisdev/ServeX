@@ -1,5 +1,8 @@
 /* @Author: Raphael Nepomuceno <raphael.nepomuceno@ufv.br> */
 
+import _ from 'lodash'
+import moment from 'moment'
+
 import * as Router from '../utils/router.js'
 import * as Middlewares from '../utils/middlewares.js'
 
@@ -17,7 +20,8 @@ const mapPricingType = (type) => {
 @Router.Route({ route: '/services' })
 export class Service
 {
-	static ranking(count)
+	@Router.Get('/') @Router.Get('../')
+	static async index(request, response)
 	{
 		const sql = `SELECT
 			users.fullname,
@@ -33,36 +37,24 @@ export class Service
 			LEFT OUTER JOIN serviceCategories ON services.serviceCategoryId = serviceCategories.id
 			GROUP BY contracts.serviceId
 			ORDER BY count DESC
-			LIMIT :count
-			`
+			LIMIT :count`
 
-		return sequelize.query(sql, {
-			type: sequelize.QueryTypes.SELECT,
-			replacements: { count }
-		})
-	}
+		const categories = $ServiceCategory.findAll({ raw: true })
 
-	@Router.Get('/test')
-	static async tges (request, response)
-	{
-		const p = await Service.ranking(3)
-		return response.json(p)
-	}
-
-	@Router.Get('/') @Router.Get('../')
-	static async index(request, response)
-	{
 		const services = $Service.findAll({
 			raw: true,
 			include: [ $ServiceCategory, $User ],
 			order: [[ 'addedDate', 'DESC' ]]
 		})
 
-		const categories = $ServiceCategory.findAll({ raw: true })
+		const ranking = sequelize.query(sql, {
+			type: sequelize.QueryTypes.SELECT,
+			replacements: { count: 3 }
+		}).then(ranking => ! _.isEmpty(ranking) && ranking)
 
 		return response.render('services.pug', {
 			services: await services,
-			ranking: await Service.ranking(10),
+			ranking: await ranking,
 			categories: await categories,
 			mapPricingType
 		})
@@ -88,49 +80,6 @@ export class Service
 				stack: e.stack
 			})
 		}
-	}
-
-	@Router.Get('/contract/:id')
-	static async contract({ params, session }, response)
-	{
-		return await sequelize.transaction(async (transaction) => {
-			try {
-				const service = await $Service.findOne(
-					{
-						where: { id: params.id },
-						include: [ $ServiceCategory, $User ]
-					},
-					{ transaction }
-				)
-
-				try {
-					const contract = await $Contract.create({
-						serviceId: service.id,
-						userId: session.user.id,
-						totalPrice: service.basePrice * 5,
-						peding: true,
-						completed: false,
-						accepted: false
-					})
-
-					return response.status(200).json(contract)
-				} catch (e) {
-					return response.status(400).render('error.pug', {
-						status: '0x04',
-						error: 'Erro ao contratar serviço',
-						message: 'Erro desconhecido.',
-						stack: e.stack
-					})
-				}
-			} catch (e) {
-				return response.status(400).render('error.pug', {
-					status: '0x03',
-					error: 'Erro ao contratar serviço',
-					message: 'Serviço inexistente.',
-					stack: e.stack
-				})
-			}
-		})
 	}
 
 	@Router.Get('/filter/:id')
@@ -243,5 +192,50 @@ export class Service
 				stack: e.stack
 			})
 		}
+	}
+
+	@Router.Post('/contract/:id')
+	static async contract({ params, body, session }, response)
+	{
+		if(! body.date || ! body.time || ! body.timefactor)
+			return response.status(404).end()
+
+		return await sequelize.transaction(async (transaction) => {
+			try {
+				const service = await $Service.findOne({
+					where: { id: params.id }, include: [ $ServiceCategory, $User ]
+				}, { transaction })
+
+				try {
+					const startDate = moment(`${body.date} ${body.time}`, 'YYYY-MM-DD hh:mm')
+
+					const contract = await $Contract.create({
+						serviceId: service.id,
+						userId: session.user.id,
+						totalPrice: service.basePrice * body.timefactor,
+						startDate,
+						peding: true,
+						completed: false,
+						accepted: false
+					})
+
+					return response.status(200).json(contract)
+				} catch (e) {
+					return response.status(400).render('error.pug', {
+						status: '0x04',
+						error: 'Erro ao contratar serviço',
+						message: 'Erro desconhecido.',
+						stack: e.stack
+					})
+				}
+			} catch (e) {
+				return response.status(400).render('error.pug', {
+					status: '0x03',
+					error: 'Erro ao contratar serviço',
+					message: 'Serviço inexistente.',
+					stack: e.stack
+				})
+			}
+		})
 	}
 }

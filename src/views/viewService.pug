@@ -3,18 +3,45 @@ extends index.pug
 include mixins.pug
 
 block content
-	div.card.w-100
-		div.card-body
-			h4.card-title= service.title
-			p.card-text= service.description
-			
-			a(href='/services/' + service.id).card-link
+	form(action='/services/contract/' + service.id name=uniqKey method='POST').card.w-100
+		.card-body
+			h1.card-title= service.title
+			h4.card-title
 				+stars(service['user.rating'] || 0)
-			
-			a(href='#' + service.id).card-link
-				= `R$ ${service.basePrice} (${mapPricingType(service['serviceCategory.pricingType'])})`
+			p.card-text= service.description
+			p.card-text
+				= `Preço: ${service.basePrice} ${mapPricingType(service['serviceCategory.pricingType'])}`
 			
 			a(href='/services/filter/' + service['serviceCategory.id']).card-link
 				= service['serviceCategory.name']
-				
-			a(href='/services/contract/' + service.id).card-link Contratar serviço
+			
+		.card-body
+			h2.card-title Contratar serviço
+
+			.row 				
+				div.form-group.col-4
+					label(for='date') Data de início
+					input.form-control(required type='date' name='date')
+
+				div.form-group.col-4
+					label(for='time') Hora de ínicio
+					input.form-control(required type='time' name='time')
+
+				case service['serviceCategory.pricingType']
+					when 'Once'
+						- break
+					when 'Hourly'
+						div.form-group.col-4
+							label(for='timefactor') Tempo de contratação
+							.input-group
+								input.form-control(required type='text' name='timefactor')
+								span.input-group-addon horas
+					when 'Daily'
+						div.form-group.col-4
+							label(for='timefactor') Tempo de contratação
+							.input-group
+								input.form-control(required type='text' name='timefactor')
+								span.input-group-addon dias
+
+			div.form-group
+				button.btn.btn-primary(type='submit') Contratar
