@@ -34,14 +34,13 @@ block content
 					label Avaliação do prestador
 					h4
 						+stars(service['user.rating'])
-				.col-sm-3
 
 			.row
-				.form-group.col-4
+				.form-group.col-3
 					label Data de início
 					input.form-control(required type='date' name='date')
 
-				.form-group.col-4
+				.form-group.col-2
 					label Hora de ínicio
 					input.form-control(required type='time' name='time')
 
@@ -49,19 +48,27 @@ block content
 						when 'Once'
 							break
 						when 'Hourly'
-							.form-group.col-4
+							.form-group.col-2
 								label Tempo de contratação
 								.input-group
 									input.form-control(required type='text' name='expectedDuration')
 									.input-group-addon horas
 							break
 						when 'Daily'
-							.form-group.col-4
+							.form-group.col-2
 								label Tempo de contratação
 								.input-group
 									input.form-control(required type='text' name='expectedDuration')
 									.input-group-addon dias
 							break
+				.form-group.col-5
+					label Endereço
+					select.form-control
+						if addresses
+							each address in addresses
+								option(name='addressId' value=`${address.id}`) #{address.street} , #{address.number} 
+						else
+							option Nenhum endereço cadastrado
 			.row
 				.form-group.col-12
 					label Mensagem para o contratado

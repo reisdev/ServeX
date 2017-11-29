@@ -40,12 +40,7 @@ export class Address {
                     where: { userId: session.user.id }
                 })
 
-                response.status(200).render('user.pug',{
-                    user,
-                    addresses,
-                    provinces,
-                    success: ['Endereço inserido com sucesso']
-                })
+                response.status(200).redirect(`../../user/profile/${user.id}`)
             } catch(e){
                 response.status(400).render('error.pug',{
                     error: 'Não foi possível inserir novo endereço',
@@ -85,12 +80,7 @@ export class Address {
                         userId: user.id
                     }
                 })
-                response.status(200).render('user.pug',{
-                    user,
-                    addresses,
-                    provinces,
-                    success: ['Endereço removido com sucesso']
-                })
+                response.status(200).redirect(`../../user/profile/${user.id}`)
             } catch(e) {
                 response.status(400).render('error.pug',{
                     error: 'Problema ao apagar endereço',
