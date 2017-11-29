@@ -1,0 +1,17 @@
+extends index.pug
+
+block header
+
+block content
+	.card.mx-auto
+		.card-body
+			if title
+				h1.card-title= title
+			if message
+				p= message
+
+			.mt-4
+				a(href='/').card-link.btn.btn-primary Página inicial
+
+				for p in links
+					a(href=p.to).card-link.btn.btn-primary= p.title

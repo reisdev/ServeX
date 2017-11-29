@@ -3,20 +3,16 @@ mixin navlink (target, title)
 		a(href=target).nav-item.nav-link.active= title
 	else
 		a(href=target).nav-item.nav-link= title
-		
-nav.navbar.navbar-expand-lg.navbar-dark.bg-dark
+
+nav.navbar.navbar-expand.navbar-dark.bg-dark
 	.container
 		a(href='/').navbar-brand.mb-0 ServeX
-		button.navbar-toggler.navbar-toggler-right(type='button' data-toggle='collapse' data-target='#navbarNavAltMarkup' aria-controls='navbarNavAltMarkup' aria-expanded='false' aria-label='Toggle navigation')
-			.navbar-toggler-icon
-		#navbarNavAltMarkup.collapse.navbar-collapse
-			form.form-inline.mr-auto
-				input.form-control.mr-sm-2(placeholder='Buscar serviços' type='text')
-			.navbar-nav
-				+navlink('/services', 'Serviços') 					
-				if isLoggedIn
-					+navlink(`/user/profile/${user.id}`, 'Meu perfil')
-					+navlink('/user/logout', 'Encerrar sessão')
-				else
-					+navlink('/user/register', 'Cadastre-se')
-					+navlink('/user/login', 'Entrar')
+		.navbar-nav
+			+navlink('/services', 'Serviços')
+			if isLoggedIn
+				+navlink(`/cpanel`, 'Panel administrativo')
+				+navlink(`/user/logout`, 'Encerrar sessão')
+				+navlink(`/user/profile/${user.id}`, 'Meu perfil')
+			else
+				+navlink('/user/register', 'Cadastre-se')
+				+navlink('/user/login', 'Entrar')

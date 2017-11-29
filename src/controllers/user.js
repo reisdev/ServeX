@@ -246,7 +246,7 @@ export class User
 				error: 'Usuário não encontrado',
 				message: 'O usuário solicitado não foi encontrando em nossa base de dados'
 			})
-			
+
 		return response.render('user.pug', { user, addresses, provinces })
 	}
 }

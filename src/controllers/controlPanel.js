@@ -23,35 +23,83 @@ export const translatePricing = (type) => {
 ])
 export class ControlPanel
 {
-	@Router.Get('/')
-	static async main({ session }, response){
-		const pendings = await $Service.count({
-			where: {userId: session.user.id },
-			include: [
-				$ServiceCategory,
-				{ model: $Contract, where: { pending: true }, include: [$User]}
-			]
-		})
-		return response.status(200).render('controlPanel/main.pug', {
-			pendings: pendings
-		})
+	static stopgap(title, message, links)
+	{
+		return (response) => response.render('controlPanel/stopgap.pug', { title, message, links })
 	}
 
-	@Router.Get('/pending')
-	static async pending ({ params, session }, response)
-	{
-		const service = await $Service.findAll({
+	@Router.Get('/')
+	static async main({ session }, response){
+		const pendingCount = await $Service.count({
 			where: { userId: session.user.id },
 			include: [
 				$ServiceCategory,
 				{ model: $Contract, where: { pending: true }, include: [ $User ] }
 			]
 		})
-		console.log(service)
+
+		return response.status(200).render('controlPanel/index.pug', { pendingCount })
+	}
+
+	@Router.Get('/pending')
+	static async pending ({ params, session }, response)
+	{
+		const services = await $Service.findAll({
+			where: { userId: session.user.id },
+			include: [
+				$ServiceCategory,
+				{ model: $Contract, where: { pending: true }, include: [ $User ] }
+			]
+		})
+
 		return response.render('controlPanel/pending.pug', {
 			moment,
-			translatePricing,
-			service: service
+			services,
+			translatePricing
+		})
+	}
+
+	@Router.Get('/pending/:type(accept|refuse)/:id')
+	static async accept ({ params, session }, response)
+	{
+		await sequelize.transaction(async (transaction) => {
+			const contract = await $Contract.findOne({
+				transaction,
+				where: { pending: true, id: params.id },
+				include: [
+					{
+						model: $Service,
+						include: [
+							{ model: $User, where: { id: session.user.id } }
+						]
+					}
+				]
+			})
+
+			if (! contract)
+				return ControlPanel.stopgap(`Operação inválida.`, null, [
+					{ to: '/cpanel', title: 'Panel administrativo' },
+					{ to: '/cpanel/pending', title: 'Serviços pendentes' }
+				])(response)
+
+			const p = params.type === 'accept'
+				? { pending: false, accepted: true,  completed: false }
+				: { pending: false, accepted: false, completed: true  }
+
+			await contract.update(p, { transaction })
+			return response.redirect('/pending/accepted')
+		})
+	}
+
+	@Router.Get('/pending/accepted')
+	static accepted (request, response)
+	{
+		return response.render('controlPanel/success.pug', {
+			title: 'Contrato aceito!',
+			links: [
+				{ to: '/cpanel', title: 'Panel administrativo' },
+				{ to: '/cpanel/pending', title: 'Serviços pendentes' }
+			]
 		})
 	}
 }
