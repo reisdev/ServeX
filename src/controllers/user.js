@@ -193,7 +193,7 @@ export class User
 				const user = await $User.create({
 					...body,
 					authLevel: 'Admin',
-					photoPath: file.filename,
+					photoPath: file ? file.filename : null,
 					rating: 0
 				}, { transaction })
 				try {
@@ -201,7 +201,7 @@ export class User
 						...body, userId: user.id
 					}, { transaction })
 
-					body.validUntil = moment(`${body.validUntil}`,'MM:YYYY')
+					body.validUntil = moment(`${body.validUntil}`,'MM YYYY')
 					const card = await $CreditCard.create({
 						...body, userId: user.id
 					}, { transaction })
@@ -216,16 +216,16 @@ export class User
 				} catch (e) {
 					response.status(400).render('register.pug', {
 						provinces: provinces,
-						error: [ 'Erro ao cadastrar endereço.' ]
+						error: [ 'Erro ao cadastrar endereço ou cartão.' ]
 					})
 				}
 			} catch (e) {
 				const mapPathToErrors = {
 					email: 'E-mail já cadastrado.', CPF: 'CPF já cadastrado.'
 				}
-				response.status(400).render('register.pug', {
-					provinces: provinces,
-					error: ['Problema no registro']
+				response.status(400).render('error.pug', {
+					error: 'Erro ao cadastrar',
+					stack: e.stack
 				})
 			}
 		})
