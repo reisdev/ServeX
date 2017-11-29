@@ -23,21 +23,34 @@ export const translatePricing = (type) => {
 ])
 export class ControlPanel
 {
+	@Router.Get('/')
+	static async main({ session }, response){
+		const pendings = await $Service.count({
+			where: {userId: session.user.id },
+			include: [
+				$ServiceCategory,
+				{ model: $Contract, where: { pending: true }, include: [$User]}
+			]
+		})
+		return response.status(200).render('controlPanel/main.pug', {
+			pendings: pendings
+		})
+	}
+
 	@Router.Get('/pending')
 	static async pending ({ params, session }, response)
 	{
-		const service = await $Service.findOne({
+		const service = await $Service.findAll({
 			where: { userId: session.user.id },
 			include: [
 				$ServiceCategory,
 				{ model: $Contract, where: { pending: true }, include: [ $User ] }
 			]
 		})
-
 		return response.render('controlPanel/pending.pug', {
 			moment,
 			translatePricing,
-			service: service,
+			service: service
 		})
 	}
 }

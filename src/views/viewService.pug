@@ -9,7 +9,7 @@ block content
 			+stars(service['user.rating'] || 0)
 		p.card-text= service.description
 		p.card-text
-			= `Preço: ${service.basePrice} ${mapPricingType(service['serviceCategory.pricingType'])}`
+			= `Preço: R$ ${service.basePrice} ${mapPricingType(service['serviceCategory.pricingType'])}`
 		
 		a(href='/services/filter/' + service['serviceCategory.id']).card-link
 			= service['serviceCategory.name']

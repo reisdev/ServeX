@@ -91,7 +91,6 @@ export class User
 					id: params.id
 				}
 			})
-
 			return response.json(rank)
 		} catch (e) {
 			return response.status(400).render('error.pug', {

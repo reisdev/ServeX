@@ -34,9 +34,14 @@ block content
 								td(colspan=4).align-middle
 									strong= 'Mensagem do contratante: '
 									= ct.message
-								td.align-middle
-									a(href=`/cpanel/accept/${ct.ctId}`).btn.btn-primary.btn-sm.btn-block
-										| Aceitar
+								td.align-left
+									.btn-group.btn-group-sm(role='toolbar')
+										a(href=`/cpanel/accept/${ct.ctId}`)
+											button.btn.btn-success
+												| V
+										a(href=`/cpanel/reject/`)
+											button.btn.btn-danger
+												| X
 					else
 						tr
 							td(colspan=6).center-text Não há contratos pendentes.
