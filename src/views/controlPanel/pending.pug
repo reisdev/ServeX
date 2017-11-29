@@ -1,4 +1,4 @@
-extends ../index.pug
+extends index.pug
 include ../mixins.pug
 
 block header
@@ -41,7 +41,7 @@ block content
 										.btn-group.btn-group-sm
 											a(href=`/cpanel/pending/accept/${ct.id}`).btn.btn-success.btn-small
 												.fa.fa-fw.fa-check
-											a(href=`/cpanel/pending/reject/${ct.id}`).btn.btn-danger.btn-small
+											a(href=`/cpanel/pending/refuse/${ct.id}`).btn.btn-danger.btn-small
 												.fa.fa-fw.fa-times
 						else
 							tr
