@@ -237,12 +237,16 @@ export class User
 			where: { id: params.id }
 		})
 
+		const addresses = await $Address.findAll({
+			where: { userId: params.id}
+		})
+
 		if(! user)
 			return response.status(400).render('error.pug', {
 				error: 'Usuário não encontrado',
 				message: 'O usuário solicitado não foi encontrando em nossa base de dados'
 			})
-
-		return response.render('user.pug', { user })
+			
+		return response.render('user.pug', { user, addresses, provinces })
 	}
 }

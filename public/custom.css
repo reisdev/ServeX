@@ -21,8 +21,8 @@ body {
 #header {
 	position: relative;
 	width: 100vw;
-	min-height: 180px;
-	padding: 20px;
+	min-height: 170px;
+	padding: 10px;
 	background: #2b3e50 url(tile.jpg) repeat;
 }
 
