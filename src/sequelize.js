@@ -20,11 +20,11 @@ const $Review           = sequelize.import(path.join(__dirname, 'schema/review.j
 const $ServiceCategory  = sequelize.import(path.join(__dirname, 'schema/serviceType.js'))
 const $User             = sequelize.import(path.join(__dirname, 'schema/user.js'))
 
-$Address.hasMany($Contract)
-$Address.hasMany($CreditCard)
+$Address.belongsTo($Contract)
 
 $Contract.hasMany($Review)
 $Contract.belongsTo($User)
+$Contract.hasOne($Address)
 
 $CreditCard.hasMany($Contract)
 
