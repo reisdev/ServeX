@@ -32,6 +32,7 @@ $Review.belongsTo($User, { as: 'receiver' })
 $Review.belongsTo($User, { as: 'sender' })
 
 $Service.hasMany($Contract)
+$Contract.belongsTo($Service)
 
 $Service.belongsTo($ServiceCategory)
 $Service.belongsTo($User)
@@ -41,6 +42,7 @@ $User.hasMany($CreditCard)
 $User.hasMany($Phone)
 
 sequelize.sync({ force: forceRebuild || false })
+$Address.sync({ force: true })
 
 $Review.afterCreate(review => {
 	sequelize.transaction(async (transaction) => {

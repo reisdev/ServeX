@@ -12,13 +12,14 @@ export default function (sequelize, DataTypes)
 			type:          DataTypes.UUID,
 			defaultValue:  DataTypes.UUIDV4
 		},
-		street:        { type: DataTypes.STRING, allowNull: false },
-		neighborhood:  { type: DataTypes.STRING, allowNull: false },
-		city:          { type: DataTypes.STRING, allowNull: false },
-		ZIPCode:       { type: DataTypes.STRING, allowNull: false },
-		province:      { type: DataTypes.STRING, allowNull: false },
-		country:       { type: DataTypes.STRING, allowNull: false },
-		number:        { type: DataTypes.STRING, allowNull: false }
+		street:        { type: DataTypes.STRING, unique: 'address', allowNull: false },
+		neighborhood:  { type: DataTypes.STRING, unique: 'address', allowNull: false },
+		city:          { type: DataTypes.STRING, unique: 'address', allowNull: false },
+		ZIPCode:       { type: DataTypes.STRING, unique: 'address', allowNull: false },
+		province:      { type: DataTypes.STRING, unique: 'address', allowNull: false },
+		country:       { type: DataTypes.STRING, unique: 'address', allowNull: false },
+		number:        { type: DataTypes.STRING, unique: 'address', allowNull: false },
+		userId:        { type: DataTypes.UUID,   unique: 'address' }
 	})
 
 	return Address

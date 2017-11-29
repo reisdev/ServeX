@@ -19,33 +19,30 @@ block content
 						th(scope='col') Data marcada
 						th(scope='col') Duração
 				tbody
-					if service
-						each one, index in service
-							each ct in one.contracts
+					if services
+						each sv, index in services
+							each ct in sv.contracts
 								tr
-									th.align-middle(scope='row')= index + 1
-									td.align-middle #{one.title}
-									td.align-middle= ct.user.fullname
-									td.align-middle
+									th(scope='row')= index + 1
+									td #{sv.title}
+									td= ct.user.fullname
+									td
 										+stars (ct.user.rating)
-									td.align-middle= `R$ ${ct.totalPrice.toFixed(2)}`
-									td.align-middle= moment(ct.startDate).format('LLLL')
-									td.align-middle= `${ct.expectedDuration} ${translatePricing(one.serviceCategory.pricingType)}`
+									td= `R$ ${ct.totalPrice.toFixed(2)}`
+									td= moment(ct.startDate).format('LLLL')
+									td= `${ct.expectedDuration} ${translatePricing(sv.serviceCategory.pricingType)}`
 								tr
 									td.align-middle
 										.fa.fa-level-up.fa-rotate-90
-									td(colspan=4).align-middle
+									td(colspan=5).align-middle
 										strong= 'Mensagem do contratante: '
 										= ct.message
-									td.align-right
-									td.align-right
-										.btn-group.btn-group-sm(role='toolbar')
-											a(href=`/cpanel/accept/${ct.ctId}`)
-												button.btn.btn-success
-													.fa.fa-check
-											a(href=`/cpanel/reject/`)
-												button.btn.btn-danger
-													.fa.fa-times
+									td.align-middle
+										.btn-group.btn-group-sm
+											a(href=`/cpanel/pending/accept/${ct.id}`).btn.btn-success.btn-small
+												.fa.fa-fw.fa-check
+											a(href=`/cpanel/pending/reject/${ct.id}`).btn.btn-danger.btn-small
+												.fa.fa-fw.fa-times
 						else
 							tr
 								td(colspan=6).center-text Não há contratos pendentes.
