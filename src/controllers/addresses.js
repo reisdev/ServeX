@@ -41,7 +41,10 @@ export class Address {
                 })
 
                 response.status(200).render('user.pug',{
-                    user, addresses, provinces
+                    user,
+                    addresses,
+                    provinces,
+                    success: ['Endereço inserido com sucesso']
                 })
             } catch(e){
                 response.status(400).render('error.pug',{
@@ -82,11 +85,11 @@ export class Address {
                         userId: user.id
                     }
                 })
-                console.log(addresses)
                 response.status(200).render('user.pug',{
-                    user: user,
-                    provinces: provinces,
-                    addresses: addresses
+                    user,
+                    addresses,
+                    provinces,
+                    success: ['Endereço removido com sucesso']
                 })
             } catch(e) {
                 response.status(400).render('error.pug',{
