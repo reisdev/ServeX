@@ -58,7 +58,7 @@ sequelize.authenticate().then(() => {
 	app.use((req, res, next) => {
 		res.locals.request = req
 		res.locals.user = req.session.user
-		res.locals.uniqKey = uid.sync(18)
+		res.locals.uniqueFormKey = uid.sync(18)
 		res.locals.isLoggedIn = ! _.isEmpty(req.session.user)
 
 		res.locals.baseurl = function (resource) {
@@ -69,6 +69,7 @@ sequelize.authenticate().then(() => {
 	})
 
 	// Registra as rotas
+	Controllers.Hire.registerRoutes(app)
 	Controllers.User.registerRoutes(app)
 	Controllers.Service.registerRoutes(app)
 	Controllers.ServiceCategory.registerRoutes(app)

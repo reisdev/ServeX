@@ -24,8 +24,7 @@ export class ServiceCategory
 				INNER JOIN serviceCategories ON serviceCategories.id = services.serviceCategoryId
 				INNER JOIN contracts ON services.id = contracts.serviceId
 				GROUP BY contracts.serviceId
-				ORDER BY count DESC
-				`
+				ORDER BY count DESC`
 
 		try {
 			const rank = await sequelize.query(sql, {

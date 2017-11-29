@@ -1,6 +1,5 @@
-extends index.pug
-
-include mixins.pug
+extends ../index.pug
+include ../mixins.pug
 
 block content
 	if error
@@ -10,30 +9,31 @@ block content
 				button.close(type='button' data-dismiss='alert' aria-label='Fechar')
 					span(aria-hidden='true') ×
 
-	form(action=`/services/hire/${service.id}` name=uniqKey method='POST').card-group.w-100
+	form(action=`/hire/submit` name=uniqueFormKey method='POST').card-group.w-100
+		input(type='hidden' value=service.id name='__serviceId')
 		.card.card-body
 			h1.card-title Contratar Serviço
 
 			div.row
 				div.col-sm-6.form-group
 					label Serviço
-					input.form-control(disabled type='text' placeholder=`${service.title}`)
+					input.form-control(disabled type='text' value=service.title)
 				div.col-sm-3.form-group
 					label Tipo de Serviço
-					input.form-control(disabled type='text' placeholder=`${service['serviceCategory.name']}`)
+					input.form-control(disabled type='text' value=service['serviceCategory.name'])
 				div.col-sm-3.form-group
 					label Preço
 					div.input-group
 						span.input-group-addon R$
-						input.form-control(disabled placeholder=`${service.basePrice}`)
-						span.input-group-addon #{mapPricingType(service['serviceCategory.pricingType'])}
+						input.form-control(disabled value=service.basePrice)
+						span.input-group-addon= mapPricingType(service['serviceCategory.pricingType'])
 			div.row
 				div.col-sm-6.form-group
 					label Prestador
-					input.form-control(disabled type='text' placeholder=`${service['user.fullname']}`)
+					input.form-control(disabled type='text' value=service['user.fullname'])
 				div.col-sm-3.form-group
 					label Nota de Avaliação
-					div(style='font-size: 23px')
+					h4
 						+stars(service['user.rating'])
 				div.col-sm-3
 
