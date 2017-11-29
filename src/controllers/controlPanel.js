@@ -47,6 +47,7 @@ export class ControlPanel
 				{ model: $Contract, where: { pending: true }, include: [ $User ] }
 			]
 		})
+		console.log(service)
 		return response.render('controlPanel/pending.pug', {
 			moment,
 			translatePricing,

@@ -12,36 +12,40 @@ block content
 				thead
 					tr
 						th(scope='col') #
+						th(scope='col') Serviço
 						th(scope='col') Contratante
 						th(scope='col') Avaliação
 						th(scope='col') Preço total
 						th(scope='col') Data marcada
 						th(scope='col') Duração
 				tbody
-					if service && service.contracts
-						each ct, index in service.contracts
+					if service
+						each one, index in service
+							each ct in one.contracts
+								tr
+									th.align-middle(scope='row')= index + 1
+									td.align-middle #{one.title}
+									td.align-middle= ct.user.fullname
+									td.align-middle
+										+stars (ct.user.rating)
+									td.align-middle= `R$ ${ct.totalPrice.toFixed(2)}`
+									td.align-middle= moment(ct.startDate).format('LLLL')
+									td.align-middle= `${ct.expectedDuration} ${translatePricing(one.serviceCategory.pricingType)}`
+								tr
+									td.align-middle
+										.fa.fa-level-up.fa-rotate-90
+									td(colspan=4).align-middle
+										strong= 'Mensagem do contratante: '
+										= ct.message
+									td.align-right
+									td.align-right
+										.btn-group.btn-group-sm(role='toolbar')
+											a(href=`/cpanel/accept/${ct.ctId}`)
+												button.btn.btn-success
+													| V
+											a(href=`/cpanel/reject/`)
+												button.btn.btn-danger
+													| X
+						else
 							tr
-								th.align-middle(scope='row')= index + 1
-								td.align-middle= ct.user.fullname
-								td.align-middle
-									+stars (ct.user.rating)
-								td.align-middle= `R$ ${ct.totalPrice.toFixed(2)}`
-								td.align-middle= moment(ct.startDate).format('LLLL')
-								td.align-middle= `${ct.expectedDuration} ${translatePricing(service.serviceCategory.pricingType)}`
-							tr
-								td.align-middle
-									.fa.fa-level-up.fa-rotate-90
-								td(colspan=4).align-middle
-									strong= 'Mensagem do contratante: '
-									= ct.message
-								td.align-left
-									.btn-group.btn-group-sm(role='toolbar')
-										a(href=`/cpanel/accept/${ct.ctId}`)
-											button.btn.btn-success
-												| V
-										a(href=`/cpanel/reject/`)
-											button.btn.btn-danger
-												| X
-					else
-						tr
-							td(colspan=6).center-text Não há contratos pendentes.
+								td(colspan=6).center-text Não há contratos pendentes.
