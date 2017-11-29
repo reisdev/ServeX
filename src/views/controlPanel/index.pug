@@ -1,0 +1,12 @@
+extends ../index.pug
+
+block content
+	.card.card-body
+		h1.card-title Painel administrativo
+		.row
+			.col-sm-3
+				a(href='/cpanel/pending').btn.btn-primary(type='button')
+					span.mr-2 Serviços pendentes
+					span.badge.badge-light #{pendingCount}
+			.col-sm-6
+			.col-sm-3
