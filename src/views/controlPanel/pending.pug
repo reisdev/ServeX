@@ -1,48 +1,39 @@
-extends index.pug
+extends ../index.pug
 include ../mixins.pug
 
 block header
 
-block content
-	.card.w-100
-		.card-body
-			h4.card-title Contratos pendentes
-			table.table.table-hover
-				caption Contratos pendentes
-				thead
-					tr
-						th(scope='col') #
-						th(scope='col') Serviço
-						th(scope='col') Contratante
-						th(scope='col') Avaliação
-						th(scope='col') Preço total
-						th(scope='col') Data marcada
-						th(scope='col') Duração
-				tbody
-					if services
-						each sv, index in services
-							each ct in sv.contracts
-								tr
-									th(scope='row')= index + 1
-									td #{sv.title}
-									td= ct.user.fullname
-									td
-										+stars (ct.user.rating)
-									td= `R$ ${ct.totalPrice.toFixed(2)}`
-									td= moment(ct.startDate).format('LLLL')
-									td= `${ct.expectedDuration} ${translatePricing(sv.serviceCategory.pricingType)}`
-								tr
-									td.align-middle
-										.fa.fa-level-up.fa-rotate-90
-									td(colspan=5).align-middle
-										strong= 'Mensagem do contratante: '
-										= ct.message
-									td.align-middle
-										.btn-group.btn-group-sm
-											a(href=`/cpanel/pending/accept/${ct.id}`).btn.btn-success.btn-small
-												.fa.fa-fw.fa-check
-											a(href=`/cpanel/pending/refuse/${ct.id}`).btn.btn-danger.btn-small
-												.fa.fa-fw.fa-times
-						else
-							tr
-								td(colspan=6).center-text Não há contratos pendentes.
+block inner
+	if services
+		each sv, index in services
+			h1.card-title= sv.title
+			.card-columns
+				each ct in sv.contracts
+					.card.border-0.list-group
+						.list-group-item
+							h3.mb-0= ct.user.fullname
+						.list-group-item
+							p
+								.fa.mr-2.fa-fw.fa-lg.fa-keyboard-o
+								= ct.message
+							p
+								.fa.mr-2.fa-fw.fa-lg.fa-balance-scale
+								+stars (ct.user.rating) 							
+							p
+								.fa.mr-2.fa-fw.fa-lg.fa-usd
+								= `R$ ${ct.totalPrice.toFixed(2)}`
+							p
+								.fa.mr-2.fa-fw.fa-lg.fa-calendar-o
+								= moment(ct.startDate).format('LLLL')
+							p
+								.fa.mr-2.fa-fw.fa-lg.fa-clock-o
+								= `${ct.expectedDuration} ${translatePricing(sv.serviceCategory.pricingType)}`
+							p
+								.fa.mr-2.fa-fw.fa-lg.fa-location-arrow
+								= `${ct.address.street}, ${ct.address.number}, ${ct.address.neighborhood}, ${ct.address.city}, ${ct.address.province}`
+						a(href=`/cpanel/pending/accept/${ct.id}`).list-group-item.list-group-item-action
+							.fa.mr-2.fa-fw.fa-lg.fa-check
+							| Aceitar contrato
+						a(href=`/cpanel/pending/refuse/${ct.id}`).list-group-item.list-group-item-action
+							.fa.mr-2.fa-fw.fa-lg.fa-times
+							| Recusar contrato

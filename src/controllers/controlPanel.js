@@ -7,7 +7,7 @@ import * as Router from '../utils/router.js'
 import * as Middlewares from '../utils/middlewares.js'
 import * as Utils from '../utils/utils.js'
 
-import { $Service, $ServiceCategory, $User, $Contract, sequelize } from '../sequelize.js'
+import { $Address, $Service, $ServiceCategory, $User, $Contract, sequelize } from '../sequelize.js'
 
 export const translatePricing = (type) => {
 	switch (type)
@@ -48,7 +48,7 @@ export class ControlPanel
 			where: { userId: session.user.id },
 			include: [
 				$ServiceCategory,
-				{ model: $Contract, where: { pending: true }, include: [ $User ] }
+				{ model: $Contract, where: { pending: true }, include: [ $User, $Address ] }
 			]
 		})
 
@@ -62,6 +62,8 @@ export class ControlPanel
 	@Router.Get('/pending/:type(accept|refuse)/:id')
 	static async accept ({ params, session }, response)
 	{
+		const isAccept = params.type === 'accept'
+
 		await sequelize.transaction(async (transaction) => {
 			const contract = await $Contract.findOne({
 				transaction,
@@ -82,24 +84,25 @@ export class ControlPanel
 					{ to: '/cpanel/pending', title: 'Serviços pendentes' }
 				])(response)
 
-			const p = params.type === 'accept'
+			const p = isAccept
 				? { pending: false, accepted: true,  completed: false }
 				: { pending: false, accepted: false, completed: true  }
 
 			await contract.update(p, { transaction })
-			return response.redirect('/pending/accepted')
+			return response.redirect(`/cpanel/pending/${isAccept ? 'accepted' : 'refused'}`)
 		})
 	}
 
-	@Router.Get('/pending/accepted')
-	static accepted (request, response)
+	@Router.Get('/pending/:type(accepted|refused)')
+	static accepted ({ params }, response)
 	{
-		return response.render('controlPanel/success.pug', {
-			title: 'Contrato aceito!',
-			links: [
+		return ControlPanel.stopgap(
+			params.type === 'accepted' ? 'Contrato aceito.' : 'Contrato recusado.',
+			null,
+			[
 				{ to: '/cpanel', title: 'Panel administrativo' },
 				{ to: '/cpanel/pending', title: 'Serviços pendentes' }
 			]
-		})
+		)(response)
 	}
 }
