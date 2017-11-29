@@ -13,7 +13,7 @@ export default function (sequelize, DataTypes)
 			defaultValue:  DataTypes.UUIDV4
 		},
 		title:        DataTypes.STRING,
-		description:  DataTypes.STRING,
+		description:  DataTypes.TEXT,
 		basePrice:    DataTypes.DECIMAL(10, 2),
 		addedDate:    DataTypes.DATE
 	})

@@ -1,0 +1,42 @@
+extends ../index.pug
+include ../mixins.pug
+
+block header
+
+block content
+	.card.w-100
+		.card-body
+			h4.card-title Contratos pendentes
+			table.table.table-hover
+				caption Contratos pendentes
+				thead
+					tr
+						th(scope='col') #
+						th(scope='col') Contratante
+						th(scope='col') Avaliação
+						th(scope='col') Preço total
+						th(scope='col') Data marcada
+						th(scope='col') Duração
+				tbody
+					if service && service.contracts
+						each ct, index in service.contracts
+							tr
+								th.align-middle(scope='row')= index + 1
+								td.align-middle= ct.user.fullname
+								td.align-middle
+									+stars (ct.user.rating)
+								td.align-middle= `R$ ${ct.totalPrice.toFixed(2)}`
+								td.align-middle= moment(ct.startDate).format('LLLL')
+								td.align-middle= `${ct.expectedDuration} ${translatePricing(service.serviceCategory.pricingType)}`
+							tr
+								td.align-middle
+									.fa.fa-level-up.fa-rotate-90
+								td(colspan=4).align-middle
+									strong= 'Mensagem do contratante: '
+									= ct.message
+								td.align-middle
+									a(href=`/cpanel/accept/${ct.ctId}`).btn.btn-primary.btn-sm.btn-block
+										| Aceitar
+					else
+						tr
+							td(colspan=6).center-text Não há contratos pendentes.

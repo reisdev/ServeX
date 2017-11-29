@@ -16,7 +16,7 @@ const redirectIfAuthenticated = (request, response, next) => {
 	return request.session.user ? response.redirect('/') : next()
 }
 
-@Router.Route({ route: '/user' })
+@Router.Route('/user')
 export class User
 {
 	@Router.Get('/')

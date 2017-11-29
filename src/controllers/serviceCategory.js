@@ -5,9 +5,12 @@ import * as Middlewares from '../utils/middlewares.js'
 
 import { $Service, $Contract, $ServiceCategory, sequelize } from '../sequelize.js'
 
-@Router.Route({ route: '/categories', middlewares: [
-	Middlewares.restrictedPage({ message: 'Área restrita a administradores.' })
-]})
+@Router.Route('/categories', [
+	Middlewares.restrictedPage({
+		test: (user) => user.authLevel === 'Admin',
+		message: 'Área restrita a administradores.'
+	})
+])
 export class ServiceCategory
 {
 	@Router.Get('/new')

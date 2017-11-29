@@ -12,20 +12,9 @@ export default function (sequelize, DataTypes)
 			primaryKey: true,
 			defaultValue: DataTypes.UUIDV4
 		},
-		cardNumber: {
-			type: DataTypes.STRING,
-			allowNull: false,
-			unique: 'cardNumberCVC'
-		},
-		validUntil: {
-			type: DataTypes.DATE,
-			allowNull: false
-		},
-		CVC: {
-			type: DataTypes.INTEGER,
-			allowNull: false,
-			unique: 'cardNumberCVC'
-		}
+		cardNumber: { type: DataTypes.STRING,  allowNull: false, unique: 'cardNumberCVC' },
+		CVC:        { type: DataTypes.INTEGER, allowNull: false, unique: 'cardNumberCVC' },
+		validUntil: { type: DataTypes.DATE,    allowNull: false },
 	})
 
 	return CreditCard

@@ -5,7 +5,7 @@
 
 import { posix as path } from 'path'
 
-export function Route ({ route = '/', middlewares = [] })
+export function Route (route = '/', middlewares = [])
 {
 	return function (target, name, descriptor)
 	{
@@ -32,20 +32,6 @@ function httpMethod (method, route, middlewares = [])
 
 		return descriptor
 	}
-}
-
-export function MuteExceptions(target, name, descriptor)
-{
-	const original = descriptor.value
-	descriptor.value = async (req, res, next) => {
-		try {
-			return await original.call(this, req, res, next)
-		} catch (e) {
-			return res.status(500).end()
-		}
-	}
-
-	return descriptor
 }
 
 export function Get (route, middlewares = [])

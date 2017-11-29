@@ -38,11 +38,11 @@ block content
 
 			.row
 				.form-group.col-4
-					label(for='date') Data de início
+					label Data de início
 					input.form-control(required type='date' name='date')
 
 				.form-group.col-4
-					label(for='time') Hora de ínicio
+					label Hora de ínicio
 					input.form-control(required type='time' name='time')
 
 				case service['serviceCategory.pricingType']
@@ -50,18 +50,22 @@ block content
 							break
 						when 'Hourly'
 							.form-group.col-4
-								label(for='timefactor') Tempo de contratação
+								label Tempo de contratação
 								.input-group
-									input.form-control(required type='text' name='timefactor')
+									input.form-control(required type='text' name='expectedDuration')
 									.input-group-addon horas
 							break
 						when 'Daily'
 							.form-group.col-4
-								label(for='timefactor') Tempo de contratação
+								label Tempo de contratação
 								.input-group
-									input.form-control(required type='text' name='timefactor')
+									input.form-control(required type='text' name='expectedDuration')
 									.input-group-addon dias
 							break
+			.row
+				.form-group.col-12
+					label Mensagem para o contratado
+					textarea(name='message' rows=2).form-control
 			if isLoggedIn
 				.form-group
 					button.btn.btn-primary(type='submit') Contratar

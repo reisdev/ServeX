@@ -9,11 +9,9 @@ import * as Utils from '../utils/utils.js'
 
 import { $Service, $ServiceCategory, $User, $Contract, sequelize } from '../sequelize.js'
 
-@Router.Route({
-	route: '/hire', middlewares: [
-		Middlewares.restrictedPage({ message: 'Efetue login para contratar um serviço.' })
-	]
-})
+@Router.Route('/hire', [
+	Middlewares.restrictedPage({ message: 'Efetue login para contratar um serviço.' })
+])
 export class Hire
 {
 	static findServiceById(id)
@@ -64,9 +62,9 @@ export class Hire
 			return die(response)
 
 		if(service['serviceCategory.pricingType'] === 'Once')
-			body.timefactor = 1
+			body.expectedDuration = 1
 
-		if (! body.date || ! body.time || ! body.timefactor)
+		if (! body.date || ! body.time || ! body.expectedDuration)
 			return Hire.render(service, [ 'Preencha todos os campos' ])(response)
 
 		const startDate = moment(`${body.date} ${body.time}`, 'YYYY-MM-DD hh:mm')
@@ -78,7 +76,9 @@ export class Hire
 			const contract = await $Contract.create({
 				serviceId: service.id,
 				userId: session.user.id,
-				totalPrice: service.basePrice * body.timefactor,
+				totalPrice: service.basePrice * body.expectedDuration,
+				expectedDuration: body.expectedDuration,
+				message: body.message,
 				startDate,
 				peding: true,
 				completed: false,

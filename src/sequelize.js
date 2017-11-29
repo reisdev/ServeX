@@ -24,6 +24,7 @@ $Address.hasMany($Contract)
 $Address.hasMany($CreditCard)
 
 $Contract.hasMany($Review)
+$Contract.belongsTo($User)
 
 $CreditCard.hasMany($Contract)
 
@@ -36,7 +37,6 @@ $Service.belongsTo($ServiceCategory)
 $Service.belongsTo($User)
 
 $User.hasMany($Address)
-$User.hasMany($Contract)
 $User.hasMany($CreditCard)
 $User.hasMany($Phone)
 

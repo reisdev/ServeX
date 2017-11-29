@@ -3,13 +3,16 @@
  * @Date:   2017-11-06
  */
 
+import _ from 'lodash'
 import bodyParser from 'body-parser'
 import express from 'express'
+import moment from 'moment'
 import path from 'path'
 import session from 'express-session'
 import uid from 'uid-safe'
 import url from 'url'
-import _ from 'lodash'
+
+import 'moment/locale/pt-br'
 
 const SequelizeStore = require('connect-session-sequelize')(session.Store)
 
@@ -22,6 +25,8 @@ import * as Controllers from './controllers'
 // Caso contrário, fecha a aplicação.
 sequelize.authenticate().then(() => {
 	const app = express()
+
+	moment.locale('pt-br')
 
 	// Roteia os arquivos da front-end.
 	app.use('/public', express.static('public'))
@@ -69,10 +74,9 @@ sequelize.authenticate().then(() => {
 	})
 
 	// Registra as rotas
-	Controllers.Hire.registerRoutes(app)
-	Controllers.User.registerRoutes(app)
-	Controllers.Service.registerRoutes(app)
-	Controllers.ServiceCategory.registerRoutes(app)
+	Object.getOwnPropertyNames(Controllers).forEach(p => {
+		Controllers[p].registerRoutes && Controllers[p].registerRoutes(app)
+	})
 
 	// Página 404
 	app.all('*', (request, response) => {

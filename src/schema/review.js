@@ -13,7 +13,7 @@ export default function (sequelize, DataTypes)
 			defaultValue:  DataTypes.UUIDV4
 		},
 		rating:   DataTypes.DECIMAL(10, 2),
-		message:  DataTypes.STRING
+		message:  DataTypes.TEXT
 	})
 
 	return Review

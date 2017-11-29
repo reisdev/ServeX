@@ -17,7 +17,7 @@ const mapPricingType = (type) => {
 	}
 }
 
-@Router.Route({ route: '/services' })
+@Router.Route('/services')
 export class Service
 {
 	@Router.Get('/') @Router.Get('../')
