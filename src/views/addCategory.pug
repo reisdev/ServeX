@@ -17,18 +17,18 @@ block content
 		.card.card-body
 			h2.card-tile Cadastrar categoria de serviço
 
-			div.row
-				div.form-group.col-lg-6
+			.row
+				.form-group.col-lg-6
 					label(for='categoryName') Nome
 					input.form-control(type='text' name='name')
 
-				div.form-group.col-lg-4
+				.form-group.col-lg-4
 					label(for='pricingType') Cobrança por:
-					div.form-group
+					.form-group
 						select.form-control(required name='pricingType')
 							option(value='Once') Atividade
 							option(value='Daily') Dia
 							option(value='Hourly') Hora
 
-			div.form-group
+			.form-group
 				button.btn.btn-primary(type='submit') Adicionar categoria

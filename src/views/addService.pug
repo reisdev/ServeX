@@ -12,25 +12,25 @@ block content
 		.card.card-body
 			h2.card-title Cadastrar novo serviço
 
-			div.form-group
+			.form-group
 				label(for='fullname') Nome
 				input.form-control(required type='text' name='title')#serviceName
-			div.form-group
+			.form-group
 				label(for='description') Descrição
 				textarea.form-control(required name='description' rows='4' maxlength=200)#description
-			div.form-group
-				div.row
-					div.col-lg-3
+			.form-group
+				.row
+					.col-lg-3
 						label(for='baseprice') Preço
-						div.input-group
-							span.input-group-addon(type='text') R$
+						.input-group
+							.input-group-addon R$
 							input.form-control(required type='number' min='1' max='9999999999.9' name='basePrice')#baseprice
 
-					div.col-lg-4
+					.col-lg-4
 						label(for='servicetype') Tipo de Serviço
 						select.form-control(required name='serviceCategoryId')#servicetype
 							each category in categories
 								option(value=category.id) #{category.name} (#{mapPricingType(category.pricingType)})
 
-			div.form-group
+			.form-group
 				button.btn.btn-primary(type='submit') Registrar Serviço

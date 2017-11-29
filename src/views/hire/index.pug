@@ -12,37 +12,36 @@ block content
 	form(action=`/hire/submit` name=uniqueFormKey method='POST').card-group.w-100
 		input(type='hidden' value=service.id name='__serviceId')
 		.card.card-body
-			h1.card-title Contratar Serviço
-
-			div.row
-				div.col-sm-6.form-group
-					label Serviço
+			h1.card-title Contratar serviço
+			.row
+				.col-sm-6.form-group
+					label Nome de serviço
 					input.form-control(disabled type='text' value=service.title)
-				div.col-sm-3.form-group
-					label Tipo de Serviço
+				.col-sm-3.form-group
+					label Categoria do serviço
 					input.form-control(disabled type='text' value=service['serviceCategory.name'])
-				div.col-sm-3.form-group
+				.col-sm-3.form-group
 					label Preço
-					div.input-group
-						span.input-group-addon R$
+					.input-group
+						.input-group-addon R$
 						input.form-control(disabled value=service.basePrice)
-						span.input-group-addon= mapPricingType(service['serviceCategory.pricingType'])
-			div.row
-				div.col-sm-6.form-group
-					label Prestador
+						.input-group-addon= mapPricingType(service['serviceCategory.pricingType'])
+			.row
+				.col-sm-6.form-group
+					label Nome do prestador
 					input.form-control(disabled type='text' value=service['user.fullname'])
-				div.col-sm-3.form-group
-					label Nota de Avaliação
+				.col-sm-3.form-group
+					label Avaliação do prestador
 					h4
 						+stars(service['user.rating'])
-				div.col-sm-3
+				.col-sm-3
 
-			div.row
-				div.form-group.col-4
+			.row
+				.form-group.col-4
 					label(for='date') Data de início
 					input.form-control(required type='date' name='date')
 
-				div.form-group.col-4
+				.form-group.col-4
 					label(for='time') Hora de ínicio
 					input.form-control(required type='time' name='time')
 
@@ -50,19 +49,19 @@ block content
 						when 'Once'
 							break
 						when 'Hourly'
-							div.form-group.col-4
+							.form-group.col-4
 								label(for='timefactor') Tempo de contratação
 								.input-group
 									input.form-control(required type='text' name='timefactor')
-									span.input-group-addon horas
+									.input-group-addon horas
 							break
 						when 'Daily'
-							div.form-group.col-4
+							.form-group.col-4
 								label(for='timefactor') Tempo de contratação
 								.input-group
 									input.form-control(required type='text' name='timefactor')
-									span.input-group-addon dias
+									.input-group-addon dias
 							break
 			if isLoggedIn
-				div.form-group
+				.form-group
 					button.btn.btn-primary(type='submit') Contratar

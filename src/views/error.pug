@@ -2,10 +2,10 @@ extends index.pug
 
 block content
 	div(style={ 'margin-bottom': '20px' }).card.w-100
-		div.card-body
+		.card-body
 			h4.card-title #{status} #{error}
 			pre #{message}
 	if stack
-		div.card.w-100
-			div.card-body
+		.card.w-100
+			.card-body
 				pre #{stack}

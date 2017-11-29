@@ -13,79 +13,79 @@ block content
 			h1.card-title Cadastrar
 			h3.card-title Informações pessoais 			
 			
-			div.form-group
+			.form-group
 				label(for='fullname') Nome completo
 				input.form-control(required type='text' name='fullname')#fullname
 
-			div.row
-				div.col-sm-7
-					div.form-group
+			.row
+				.col-sm-7
+					.form-group
 						label(for='email') E-mail
 						input.form-control(required type='email' name='email')#email
-				div.col-sm-5
-					div.form-group
+				.col-sm-5
+					.form-group
 						label(for='cpf') CPF
 						input.form-control(required type='text' name='CPF')#cpf
 			
-			div.form-group
+			.form-group
 						label(for='userImg') Foto de Perfil
 						input.form-control(type='file' name='photoPath')
 
-			div.form-group
+			.form-group
 				label(for='password') Senha
 				input.form-control(required type='password' name='password' aria-describedby='passwd-help')#password
 				small.form-text.text-muted#passwd-help Deve conter pelo menos 6 caracteres.
-			div.form-group
+			.form-group
 				label(for='confirmPassword') Repita a senha
 				input.form-control(required type='password' name='confirmPassword')#confirmPassword
 
 		.card.card-body
 			h3.card-title Endereço
 			
-			div.row
-				div.col-sm-7
-					div.form-group
+			.row
+				.col-sm-7
+					.form-group
 						label(for='country') País
 						input.form-control(required type='text' name='country')#country
-				div.col-sm-5
-					div.form-group
+				.col-sm-5
+					.form-group
 						label(for='province') UF
 						select.form-control(required name='province')#province
 							each province in provinces
 								option(value=province.value) #{province.name}
-			div.row
-				div.col-sm-5
-					div.form-group
+			.row
+				.col-sm-5
+					.form-group
 						label(for='city') Cidade
 						input.form-control(required type='text' name='city')#city
-				div.col-sm-3
-					div.form-group
+				.col-sm-3
+					.form-group
 						label(for='ZIPCode') CEP
 						input.form-control(required type='text' name='ZIPCode')#ZIPCode
-				div.col-sm-4
-					div.form-group
+				.col-sm-4
+					.form-group
 						label(for='neighborhood') Bairro
 						input.form-control(required type='text' name='neighborhood')#neighborhood
-			div.row
-				div.col.sm-7
-					div.form-group
+			.row
+				.col.sm-7
+					.form-group
 							label(for='street') Rua
 							input.form-control(required type='text' name='street')#street
-				div.col-sm-5
-					div.form-group
+				.col-sm-5
+					.form-group
 							label(for='number') Número
 							input.form-control(required type='text' name='number')#number
 			h3 Cartão de Crédito
 
-			div.form-group
+			.form-group
 						label Número do Cartão
 						input.form-control(type='text' name='cardNumber')
-			div.row
-				div.col-sm-7
+			.row
+				.col-sm-7
 					label Validade
 					input.form-control(type='text' name='validUntil')
-				div.col-sm-5
+				.col-sm-5
 					label CVC
 					input.form-control(type='text' name='CVC')
-			div.form-group
+			.form-group
 				button.btn.btn-primary(type='submit' style='margin-top: 16px; padding-bottom: 5px') Cadastrar

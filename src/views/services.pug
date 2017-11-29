@@ -3,7 +3,7 @@ extends index.pug
 include mixins.pug
 
 mixin serviceCard (service)
-	div.col-6.pb-2.pr-2
+	.col-6.pb-2.pr-2
 		div(id=service.id).card
 			.card-body
 				h4.card-title
@@ -56,5 +56,5 @@ block content
 			each service in services
 				+serviceCard(service)
 			else
-				div.card.card-body
+				.card.card-body
 					h4.card-title Não há serviços cadastrados.
