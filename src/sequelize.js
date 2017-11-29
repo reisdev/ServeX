@@ -20,28 +20,29 @@ const $Review           = sequelize.import(path.join(__dirname, 'schema/review.j
 const $ServiceCategory  = sequelize.import(path.join(__dirname, 'schema/serviceType.js'))
 const $User             = sequelize.import(path.join(__dirname, 'schema/user.js'))
 
+$Address.belongsTo($User)
+$Address.hasMany($Contract)
 
-$Contract.hasMany($Review)
-$Contract.belongsTo($User)
-$Contract.belongsTo($Service)
 $Contract.belongsTo($Address)
+$Contract.belongsTo($Service)
+$Contract.belongsTo($User)
+$Contract.hasMany($Review)
 
 $CreditCard.hasMany($Contract)
 
+$Review.belongsTo($Contract)
 $Review.belongsTo($User, { as: 'receiver' })
 $Review.belongsTo($User, { as: 'sender' })
 
-$Service.hasMany($Contract)
-
 $Service.belongsTo($ServiceCategory)
 $Service.belongsTo($User)
+$Service.hasMany($Contract)
 
 $User.hasMany($Address)
 $User.hasMany($CreditCard)
 $User.hasMany($Phone)
 
 sequelize.sync({ force: forceRebuild || false })
-$Address.sync({ force: true })
 
 $Review.afterCreate(review => {
 	sequelize.transaction(async (transaction) => {

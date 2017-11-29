@@ -153,15 +153,16 @@ export class User
 	{
 		const { email, password } = request.body
 
-		if (!email || !password)
+		if (! email || ! password)
 			return response.render('login.pug')
 
 		return await $User.findOne({
-			where: { email }
+			where: { email },
+			include: [ $Address ]
 		}).then(user => {
-			if (!user)
+			if (! user)
 				return response.render('login.pug', { message: 'Usuário inexistente.' })
-			else if (!user.authenticate(password))
+			else if (! user.authenticate(password))
 				return response.render('login.pug', { message: 'Senha incorreta.' })
 
 			request.session.user = user
@@ -184,7 +185,7 @@ export class User
 		if (body.password !== body.confirmPassword)
 			return response.status(400).render('register.pug', {
 				provinces: provinces,
-				error: ['As senhas inseridas não são iguais.']
+				error: [ 'As senhas inseridas devem ser iguais.' ]
 			})
 
 		await sequelize.transaction(async (transaction) => {
@@ -209,7 +210,7 @@ export class User
 					session.save(err => {
 						response.render('success.pug', {
 							user,
-							message: 'Cadastro Concluído!'
+							message: 'Cadastro concluído com sucesso.'
 						})
 					})
 				} catch (e) {
