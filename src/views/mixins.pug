@@ -1,10 +1,10 @@
 mixin stars (count)
 	- let n = parseFloat(count)
 	- let i = Math.floor(n)
-	- let j = (n % 1) != 0
-	- let k = Math.floor(5 - n)
+	- let j = (n % 1) >= 0.5
+	- let k = 5 - i - j
 	
-	span(title=n)
+	span(title=n.toFixed(2))
 		while i -- > 0
 			.fa.fa-star
 		if j

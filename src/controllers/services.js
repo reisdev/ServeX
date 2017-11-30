@@ -35,6 +35,8 @@ export class Service
 			LEFT OUTER JOIN users ON contracts.userId = users.id
 			LEFT OUTER JOIN services ON contracts.serviceId = services.id
 			LEFT OUTER JOIN serviceCategories ON services.serviceCategoryId = serviceCategories.id
+			WHERE contracts.accepted = 1
+			AND contracts.completed = 1
 			GROUP BY contracts.serviceId
 			ORDER BY count DESC
 			LIMIT :count`

@@ -12,8 +12,11 @@ export default function (sequelize, DataTypes)
 			type:          DataTypes.UUID,
 			defaultValue:  DataTypes.UUIDV4
 		},
-		rating:   DataTypes.DECIMAL(10, 2),
-		message:  DataTypes.TEXT
+		rating:             DataTypes.DECIMAL(10, 2),
+		message:            DataTypes.TEXT,
+		senderId:   { type: DataTypes.UUID,   unique: 'rv' },
+		receiverId: { type: DataTypes.UUID,   unique: 'rv' },
+		contractId: { type: DataTypes.UUID,   unique: 'rv' },
 	})
 
 	return Review

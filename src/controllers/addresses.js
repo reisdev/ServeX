@@ -7,87 +7,43 @@ import * as Router from '../utils/router.js'
 import * as Middlewares from '../utils/middlewares.js'
 import { $Address, $User, sequelize } from '../sequelize.js'
 
-@Router.Route('/address')
+@Router.Route('/address', [
+	Middlewares.restrictedPage({ message: 'Página restrita a usuários cadastrados.' })
+])
+export class Address
+{
+	@Router.Post('/add')
+	static async insert({ body, session }, response)
+	{
+		const address = $Address.create({
+			... body, userId: session.user.id
+		})
 
-export class Address {
+		if(! address)
+			return response.render('error.pug', {
+				error: 'Não foi possível inserir novo endereço',
+				message: 'Entre em contato com o suporte',
+				stack: e.stack
+			})
 
-    @Router.Get('/')
-    static async getAddresses(request, response){
-        const addresses = await $Address.findAll({
-           attributes: ['id','street']
-        })
-        return response.status(200).json(addresses)
-    }
+		session.user.addresses = [ ... session.user.addresses, body ]
 
-    @Router.Post('/add', [
-        Middlewares.restrictedPage({
-            message: 'Efetue login para adicionar um endereço.'
-        })
-    ])
-    static async insert({body, session}, response) {
-        await sequelize.transaction( async(transaction) => {
-            try {
-                const newAddress = await $Address.create({
-                    ...body,
-                    userId: session.user.id
-                },{transaction})
+		session.save(err => {
+			response.redirect(`/user/profile/${session.user.id}`)
+		})
+	}
 
-                const user = await $User.findOne({
-                    where: { id: session.user.id }
-                })
-                
-                const addresses = await $Address.findAll({
-                    where: { userId: session.user.id }
-                })
 
-                response.status(200).redirect(`../../user/profile/${user.id}`)
-            } catch(e){
-                response.status(400).render('error.pug',{
-                    error: 'Não foi possível inserir novo endereço',
-                    message: 'Entre em contato com o suporte',
-                    stack: e.stack
-                })
-                }
-            })
-    }
+	@Router.Post('/remove')
+	static async removeAddress({ body, session }, response)
+	{
+		await $Address.destroy({
+			where: { id: body.id, userId: session.user.id }
+		})
 
-    @Router.Get('/get/:id')
-    static async getAddresses({ params }, response){
-        const addresses = await $Address.findAll({
-           where: { id: params.id }
-        })
-        return response.status(200).json(addresses)
-    }
-
-    @Router.Post('/remove')
-    static async removeAddress({ body, session}, response) {
-        console.log(body)
-        await sequelize.transaction( async(transaction)=>{
-            try {
-                const user = await $User.findOne({
-                    where: {
-                        id: session.user.id
-                    }
-                })
-                const removed = await $Address.destroy({
-                    where: {
-                        id: body.id,
-                        userId: session.user.id
-                    }
-                })
-                const addresses = await $Address.findAll({
-                    where:{
-                        userId: user.id
-                    }
-                })
-                response.status(200).redirect(`../../user/profile/${user.id}`)
-            } catch(e) {
-                response.status(400).render('error.pug',{
-                    error: 'Problema ao apagar endereço',
-                    message: 'Erro desconhecido',
-                    stack: e.stack
-                })
-            }
-        })
-    }
+		session.user.addresses = session.user.addresses.filter(p => p.id !== body.id)
+		session.save(err => {
+			response.redirect(`/user/profile/${session.user.id}`)
+		})
+	}
 }

@@ -1,7 +1,9 @@
 /**
- * @Author: Raphael Nepomuceno <raphael.nepomuceno@ufv.br>
- * @Date:   2017-11-06
- */
+* @Author: Raphael Nepomuceno <raphael.nepomuceno@ufv.br>
+* @Date:   2017-11-06
+*/
+
+import 'moment/locale/pt-br'
 
 import _ from 'lodash'
 import bodyParser from 'body-parser'
@@ -12,14 +14,12 @@ import session from 'express-session'
 import uid from 'uid-safe'
 import url from 'url'
 
-import 'moment/locale/pt-br'
+import * as Controllers from './controllers'
+
+import { sequelize } from './sequelize'
+import { SERVER_PORT, forceRebuild } from './settings'
 
 const SequelizeStore = require('connect-session-sequelize')(session.Store)
-
-import { SERVER_PORT, forceRebuild } from './settings.js'
-import { sequelize } from './sequelize.js'
-
-import * as Controllers from './controllers'
 
 // Realiza a conexão com o banco de dados. Caso suceda, inicia o servidor HTTP.
 // Caso contrário, fecha a aplicação.
@@ -39,57 +39,47 @@ sequelize.authenticate().then(() => {
 	sessionStore.sync({ force: forceRebuild || false })
 
 	// Enable support for sessions
-	app.use(
-		session({
-			key: 'sid',
-			resave: false,
-			store: sessionStore,
-			saveUninitialized: true,
-			secret: 'Morgenstern'
-		})
-	)
+	app.use(session({
+		key: 'sid',
+		resave: false,
+		saveUninitialized: false,
+		secret: 'Morgenstern',
+		store: sessionStore,
+	}))
 
 	// To support JSON-encoded bodies
-	app.use(
-		bodyParser.json()
-	)
+	app.use(bodyParser.json())
 
 	// To support URL-encoded bodies
-	app.use(
-		bodyParser.urlencoded({ extended: true })
-	)
+	app.use(bodyParser.urlencoded({ extended: true }))
 
 	// Expoẽ a rota local ao pug
 	app.use((req, res, next) => {
 		res.locals.request = req
 		res.locals.user = req.session.user
 		res.locals.uniqueFormKey = uid.sync(18)
-		res.locals.isLoggedIn = ! _.isEmpty(req.session.user)
+		res.locals.isLoggedIn = !_.isEmpty(req.session.user)
 
-		res.locals.baseurl = function (resource) {
-			return url.resolve('http://localhost:44800/', resource)
-		}
+		res.locals.baseurl = resource => url.resolve('http://localhost:44800/', resource)
 
 		return next()
 	})
 
 	// Registra as rotas
-	Object.getOwnPropertyNames(Controllers).forEach(p => {
-		Controllers[p].registerRoutes && Controllers[p].registerRoutes(app)
+	Object.getOwnPropertyNames(Controllers).forEach((p) => {
+		if (Controllers[p].registerRoutes) Controllers[p].registerRoutes(app)
 	})
 
 	// Página 404
-	app.all('*', (request, response) => {
-		return response.status(404).render('error.pug', {
-			status: 404,
-			message: 'Página não encontrada',
-			error: 'Página não encontrada'
-		})
-	})
+	app.all('*', (request, response) => response.status(404).render('error.pug', {
+		status: 404,
+		message: 'Página não encontrada',
+		error: 'Página não encontrada',
+	}))
 
 	// Inicia o servidor.
 	app.listen(SERVER_PORT, () => console.log('\x1b[34m[%s]\x1b[0m %s', 'servex', '🍻 Servidor iniciado na porta', SERVER_PORT))
-}).catch(err => {
+}).catch((err) => {
 	console.error('\x1b[31m[%s]\x1b[0m %s', 'server error', err)
 	process.exit(1)
 })

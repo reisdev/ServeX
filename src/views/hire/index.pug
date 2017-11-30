@@ -9,7 +9,7 @@ block content
 				button.close(type='button' data-dismiss='alert' aria-label='Fechar')
 					span(aria-hidden='true') ×
 
-	form(action=`/hire/submit` name=uniqueFormKey method='POST').card-group.w-100
+	form(action=`/hire/submit` method='POST').card-group.w-100
 		input(type='hidden' value=service.id name='__serviceId')
 		.card.card-body
 			h1.card-title Contratar serviço

@@ -8,9 +8,9 @@ export default function (sequelize, DataTypes)
 {
 	const CreditCard = sequelize.define('creditCard', {
 		id: {
-			type: DataTypes.UUID,
-			primaryKey: true,
-			defaultValue: DataTypes.UUIDV4
+			primaryKey:    true,
+			type:          DataTypes.UUID,
+			defaultValue:  DataTypes.UUIDV4
 		},
 		cardNumber: { type: DataTypes.STRING,  allowNull: false, unique: 'cardNumberCVC' },
 		CVC:        { type: DataTypes.INTEGER, allowNull: false, unique: 'cardNumberCVC' },

@@ -38,12 +38,15 @@ export class Hire
 	}
 
 	@Router.Get('/:id')
-	static async index({ params }, response)
+	static async index ({ params, session }, response)
 	{
 		const service = await Hire.findServiceById(params.id)
 
 		if (! service)
 			return Hire.die('Serviço inexistente', 'O serviço solicitado não existe.')(response)
+
+		if (service.userId === session.user.id)
+			return Hire.die('Erro', 'Não é permitido contratar seu próprio serviço.')(response)
 
 		return Hire.render(service)(response)
 	}
@@ -60,6 +63,9 @@ export class Hire
 
 		if (! service)
 			return die(response)
+
+		if (service.userId === session.user.id)
+			return Hire.die('Erro', 'Não é permitido contratar seu próprio serviço.')(response)
 
 		if(service['serviceCategory.pricingType'] === 'Once')
 			body.expectedDuration = 1

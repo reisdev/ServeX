@@ -55,7 +55,7 @@ $Review.afterCreate(review => {
 			transaction,
 			type: sequelize.QueryTypes.SELECT,
 			replacements: {
-				id: params.id,
+				id: review.receiverId,
 				// Represents a prior for the average of the stars.
 				alpha: 2.5,
 				// Represents how confident we're in our prior.
@@ -65,8 +65,8 @@ $Review.afterCreate(review => {
 		})
 
 		return $User.update({
-			rating: rank.normalizedScore,
-			ratingCount: rank.ratingCount
+			rating: rank[0].normalizedScore,
+			ratingCount: rank[0].ratingCount
 		}, {
 			transaction,
 			where: { id: review.receiverId }

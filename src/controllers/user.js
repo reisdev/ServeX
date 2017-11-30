@@ -197,16 +197,17 @@ export class User
 					rating: 0
 				}, { transaction })
 				try {
-					const addr = await $Address.create({
-						...body, userId: user.id
+					const addr = await $Address.create({ ...body, userId: user.id
 					}, { transaction })
 
 					body.validUntil = moment(`${body.validUntil}`,'MM YYYY')
+
 					const card = await $CreditCard.create({
 						...body, userId: user.id
 					}, { transaction })
 
 					session.user = user
+					session.user.addresses = [ ... session.user.addresses, addr ]
 					session.save(err => {
 						response.render('success.pug', {
 							user,
