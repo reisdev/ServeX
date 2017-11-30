@@ -8,7 +8,7 @@ import * as Middlewares from '../utils/middlewares.js'
 import { $Address, $User, sequelize } from '../sequelize.js'
 
 @Router.Route('/address', [
-	Middlewares.restrictedPage({ message: 'Página restrita a usuários cadastrados.' })
+	Middlewares.restrictedPage({ message: 'Área restrita a usuários cadastrados.' })
 ])
 export class Address
 {

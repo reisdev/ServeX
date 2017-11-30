@@ -12,43 +12,47 @@ block content
 			= success
 			button.close(type='button' data-dismiss='alert' aria-label='Fechar')
 				span(aria-hidden='true') ×
-				
-	card.card-body.col-sm-5
-		.row
-			p.h1.card-title #{user.fullname}
-		div.row
-				+stars(user.rating || 0)
-		div.row
-			img.card-img-top(src=baseurl(`public/upload/${user.photoPath}`) style='width: auto; height: 100px')
-		
 
-	card.card-body.col-sm-7
-		h1.card-title Endereços Cadastrados
-		table.table.table-hover
-			caption Endereços
-			thead
-				tr
-					th(scope='col') Rua
-					th(scope='col') Nº
-					th(scope='col') Cidade
-					th(scope='col')
-			tbody
-				if addresses
-					each one,index in addresses
-						tr
-							td #{one.street}
-							td #{one.number}
-							td #{one.city}
-							td
-								form(action=`/address/remove/` method='POST' name=uniqFormKey)
-									input.form-control(name='id' type='hidden' value=`${one.id}`)
-									button.form-control.btn.btn-danger.btn-sm(type='submit')
-										span.fa.fa-times
-				else
-					tr
-						td Nenhum endereço cadastrado
-				tr
-					td
-						button.btn.btn-primary(data-toggle='modal' data-target='#address')
-							span.fa.fa-plus
-	include addAddress.pug
+	.col-4
+		.card
+			.card-body
+				h1.card-title #{viewUser.fullname}
+				p
+					+stars(viewUser.rating || 0, true)
+			img(src=baseurl(`public/upload/${viewUser.photoPath}`)).card-img-bottom
+
+	.col-8
+		if user.id === viewUser.id
+			.card
+				.card-body
+					h1.card-title Endereços Cadastrados
+					table.table.table-hover
+						caption Endereços
+						thead
+							tr
+								th(scope='col') Endereço
+								th(scope='col') Cidade
+								th(scope='col')
+						tbody
+							each one, index in viewUser.addresses
+								tr
+									td.align-middle
+										div Rua #{one.street}, #{one.number}
+										div Bairro #{one.neighborhood}
+									td.align-middle
+										div #{one.city}, #{one.province}, #{one.country}
+										div #{one.ZIPCode}
+									td.align-middle
+										form(action=`/address/remove/` method='POST')
+											input(name='id' type='hidden' value=one.id)
+											button(type='submit').btn.btn-danger
+												.fa.fa-times
+							else
+								tr
+									td(colspan=3) Nenhum endereço cadastrado
+
+					button(data-toggle='modal' data-target='#address').btn.btn-primary.card-link
+						.fa.fa-plus.mr-1
+						| Novo endereço
+
+			include addAddress.pug

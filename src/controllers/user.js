@@ -4,7 +4,10 @@ import _ from 'lodash'
 import moment from 'moment'
 
 import { provinces, uploadPath } from '../settings'
+
 import * as Router from '../utils/router.js'
+import * as Middlewares from '../utils/middlewares.js'
+import * as Utils from '../utils/utils.js'
 
 import { $Address, $User, sequelize, $CreditCard } from '../sequelize.js'
 
@@ -16,7 +19,9 @@ const redirectIfAuthenticated = (request, response, next) => {
 	return request.session.user ? response.redirect('/') : next()
 }
 
-@Router.Route('/user')
+@Router.Route('/user', [
+	Middlewares.restrictedPage({ message: 'Área restrita a usuários cadastrados.' })
+])
 export class User
 {
 	@Router.Get('/')
@@ -236,11 +241,8 @@ export class User
 	static async viewUser({ params }, response)
 	{
 		const user = await $User.findOne({
-			where: { id: params.id }
-		})
-
-		const addresses = await $Address.findAll({
-			where: { userId: params.id}
+			where: { id: params.id },
+			include: [ $Address ]
 		})
 
 		if(! user)
@@ -249,6 +251,6 @@ export class User
 				message: 'O usuário solicitado não foi encontrando em nossa base de dados'
 			})
 
-		return response.render('user.pug', { user, addresses, provinces })
+		return response.render('user.pug', { viewUser: user, provinces })
 	}
 }

@@ -10,7 +10,7 @@ import * as Utils from '../utils/utils.js'
 import { $Address, $Service, $ServiceCategory, $User, $Contract, sequelize } from '../sequelize.js'
 
 @Router.Route('/hire', [
-	Middlewares.restrictedPage({ message: 'Efetue login para contratar um serviço.' })
+	Middlewares.restrictedPage({ message: 'Área restrita a usuários cadastrados.' })
 ])
 export class Hire
 {
