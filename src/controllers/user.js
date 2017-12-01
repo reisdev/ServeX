@@ -62,7 +62,7 @@ export class User
 	}
 
 	@Router.Get('/register', [ redirectIfAuthenticated, upload.single('photoPath') ])
-	static async register (request, response)
+	static async registerPage (request, response)
 	{
 		return response.render('register.pug', { provinces })
 	}

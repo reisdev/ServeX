@@ -9,8 +9,10 @@ nav.navbar.navbar-expand.navbar-dark.bg-dark
 		a(href='/').navbar-brand.mb-0 ServeX
 		.navbar-nav
 			+navlink('/services', 'Serviços')
+			if isLoggedIn && user.authLevel === 'Admin'
+				+navlink('/cpanel', 'Administração')
 			if isLoggedIn
-				+navlink('/svpanel', 'Painel administrativo')
+				+navlink('/svpanel', 'Controle de serviços')
 				+navlink('/user/profile', 'Meu perfil')
 				+navlink('/user/logout', 'Encerrar sessão')
 			else

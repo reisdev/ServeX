@@ -5,7 +5,7 @@ import * as Middlewares from '../utils/middlewares.js'
 
 import { $Service, $Contract, $ServiceCategory, sequelize } from '../sequelize.js'
 
-@Router.Route('/control', [
+@Router.Route('/cpanel', [
 	Middlewares.restrictedPage({
 		message: 'Área restrita a administradores.',
 		test: (user) => user.authLevel === 'Admin'
@@ -15,6 +15,12 @@ export class ControlPanel
 {
 	@Router.Get('/')
 	static async index ({ params }, response)
+	{
+		return response.render('controlPanel/index.pug')
+	}
+
+	@Router.Get('/rank/users')
+	static async rankUsers ({ params }, response)
 	{
 		const sql = `SELECT
 			r.receiverId,
@@ -39,9 +45,7 @@ export class ControlPanel
 				}
 			})
 
-			return response.render('controlPanel/weightedRanking.pug', {
-				ranking
-			})
+			return response.render('controlPanel/weightedRanking.pug', { ranking })
 		} catch (e) {
 			return response.status(400).render('error.pug', {
 				status: '0x05',
@@ -52,22 +56,28 @@ export class ControlPanel
 		}
 	}
 
-	@Router.Get('/rank')
+	@Router.Get('/rank/categories')
 	static async rank({ query }, response)
 	{
-		const sql = `SELECT services.id, serviceCategories.name, COUNT(*) AS count
+		const sql = `SELECT
+				serviceCategories.name AS category,
+				serviceCategories.id AS categoryId,
+				COUNT(*) AS count,
+				AVG(users.rating) AS rating,
+				SUM(contracts.totalPrice) AS totalprice
 				FROM services
 				INNER JOIN serviceCategories ON serviceCategories.id = services.serviceCategoryId
 				INNER JOIN contracts ON services.id = contracts.serviceId
-				GROUP BY contracts.serviceId
+				INNER JOIN users ON users.id = services.userId
+				GROUP BY services.id
 				ORDER BY count DESC`
 
 		try {
-			const rank = await sequelize.query(sql, {
+			const ranking = await sequelize.query(sql, {
 				type: sequelize.QueryTypes.SELECT
 			})
 
-			return response.json(rank)
+			return response.render('controlPanel/categoryRanking.pug', { ranking })
 		} catch (e) {
 			return response.status(400).render('error.pug', {
 				status: '0x05',
@@ -83,7 +93,7 @@ export class ControlPanel
 	{
 		const sql = `SELECT
 				users.fullname AS userName,
-				serviceCategories.name as categoryName,
+				serviceCategories.name AS categoryName,
 				COUNT(*) AS count
 				FROM contracts
 				INNER JOIN users ON contracts.userId = users.id

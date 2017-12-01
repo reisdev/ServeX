@@ -41,7 +41,7 @@ export class ServicePanel
 			message,
 			links: [
 				... links,
-				{ to: '/svpanel', title: 'Panel administrativo' },
+				{ to: '/svpanel', title: 'Panel de controle' },
 				{ to: '/svpanel/pending', title: 'Serviços pendentes' },
 			]
 		})
