@@ -10,9 +10,9 @@ nav.navbar.navbar-expand.navbar-dark.bg-dark
 		.navbar-nav
 			+navlink('/services', 'Serviços')
 			if isLoggedIn
-				+navlink(`/cpanel`, 'Painel administrativo')
-				+navlink(`/user/profile/${user.id}`, 'Meu perfil')
-				+navlink(`/user/logout`, 'Encerrar sessão')
+				+navlink('/cpanel', 'Painel administrativo')
+				+navlink('/user/profile', 'Meu perfil')
+				+navlink('/user/logout', 'Encerrar sessão')
 			else
 				+navlink('/user/register', 'Cadastre-se')
 				+navlink('/user/login', 'Entrar')

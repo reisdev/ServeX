@@ -12,7 +12,7 @@ export class UserProfile
 {
 	@Router.Get('/')
 	@Router.Get('/:id')
-	static async viewUser({ params }, response)
+	static async viewUser({ params, session }, response)
 	{
 		const user = await $User.findOne({
 			where: { id: params.id || session.user.id },

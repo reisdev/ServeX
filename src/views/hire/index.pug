@@ -64,9 +64,8 @@ block content
 				.form-group.col-5
 					label Endereço
 					select(name='addressId').form-control
-						if user.addresses
-							each address in user.addresses
-								option(value=address.id) #{address.street} , #{address.number}
+						each address in user.addresses
+							option(value=address.id) #{address.street} , #{address.number}
 						else
 							option Nenhum endereço cadastrado
 			.row

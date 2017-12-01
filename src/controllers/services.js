@@ -32,8 +32,8 @@ export class Service
 			services.*,
 			COUNT(*) AS count
 			FROM contracts
-			LEFT OUTER JOIN users ON contracts.userId = users.id
 			LEFT OUTER JOIN services ON contracts.serviceId = services.id
+			LEFT OUTER JOIN users ON services.userId = users.id
 			LEFT OUTER JOIN serviceCategories ON services.serviceCategoryId = serviceCategories.id
 			WHERE contracts.accepted = 1
 			AND contracts.completed = 1

@@ -191,6 +191,7 @@ export class User
 					photoPath: file ? file.filename : null,
 					rating: 0
 				}, { transaction })
+
 				try {
 					const addr = await $Address.create({ ...body, userId: user.id
 					}, { transaction })
@@ -202,7 +203,7 @@ export class User
 					}, { transaction })
 
 					session.user = user
-					session.user.addresses = [ ... session.user.addresses, addr ]
+					session.user.addresses = [ ... session.user.addresses || [], addr ]
 					session.save(err => {
 						response.render('success.pug', {
 							user,
