@@ -1,0 +1,9 @@
+extends ../index.pug
+
+block content
+	.card.w-100
+		.card-body
+			h1.card-title Painel administrativo
+			a(href='/svpanel/pending').card-link.btn.btn-primary Serviços pendentes
+			a(href='/svpanel/active').card-link.btn.btn-primary Serviços ativos
+			a(href='/svpanel/history').card-link.btn.btn-primary Histórico de serviços e avaliações

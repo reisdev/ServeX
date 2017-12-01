@@ -19,63 +19,6 @@ export class ServiceCategory
 		return response.render('addCategory.pug')
 	}
 
-	@Router.Get('/rank')
-	static async rank({ query }, response)
-	{
-		const sql = `SELECT services.id, serviceCategories.name, COUNT(*) AS count
-				FROM services
-				INNER JOIN serviceCategories ON serviceCategories.id = services.serviceCategoryId
-				INNER JOIN contracts ON services.id = contracts.serviceId
-				GROUP BY contracts.serviceId
-				ORDER BY count DESC`
-
-		try {
-			const rank = await sequelize.query(sql, {
-				type: sequelize.QueryTypes.SELECT
-			})
-
-			return response.json(rank)
-		} catch (e) {
-			return response.status(400).render('error.pug', {
-				status: '0x05',
-				error: 'Erro ao computar relatório',
-				message: 'Erro desconhecido.',
-				stack: e.stack
-			})
-		}
-	}
-
-	@Router.Get('/volume/:id')
-	static async volume({ params }, response)
-	{
-		const sql = `SELECT
-				users.fullname AS userName,
-				serviceCategories.name as categoryName,
-				COUNT(*) AS count
-				FROM contracts
-				INNER JOIN users ON contracts.userId = users.id
-				INNER JOIN services ON contracts.serviceId = services.id
-				INNER JOIN serviceCategories ON services.serviceCategoryId = serviceCategories.id
-				WHERE serviceCategories.id = :id
-				GROUP BY users.id`
-
-		try {
-			const rank = await sequelize.query(sql, {
-				type: sequelize.QueryTypes.SELECT,
-				replacements: { id: params.id }
-			})
-
-			return response.json(rank)
-		} catch (e) {
-			return response.status(400).render('error.pug', {
-				status: '0x05',
-				error: 'Erro ao computar relatório',
-				message: 'Erro desconhecido.',
-				stack: e.stack
-			})
-		}
-	}
-
 	@Router.Post('/new')
 	static async insertCategory({ body }, response)
 	{

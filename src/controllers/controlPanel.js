@@ -1,198 +1,182 @@
 /* @Author: Raphael Nepomuceno <raphael.nepomuceno@ufv.br> */
 
-import _ from 'lodash'
-import moment from 'moment'
-
 import * as Router from '../utils/router.js'
 import * as Middlewares from '../utils/middlewares.js'
-import * as Utils from '../utils/utils.js'
 
-import { Op as $ } from 'sequelize'
-import Sequelize from 'sequelize'
+import { $Service, $Contract, $ServiceCategory, sequelize } from '../sequelize.js'
 
-import {
-	$Address,
-	$Contract,
-	$Review,
-	$Service,
-	$ServiceCategory,
-	$User,
-	sequelize,
-} from '../sequelize.js'
-
-export const translatePricing = (type) => {
-	switch (type)
-	{
-		case 'Daily':  return 'dia(s)'
-		case 'Hourly': return 'hora(s)'
-		case 'Once':   return 'serviço'
-	}
-}
-
-@Router.Route('/cpanel', [
-	Middlewares.restrictedPage({ message: 'Área restrita a usuários cadastrados.' })
+@Router.Route('/control', [
+	Middlewares.restrictedPage({
+		message: 'Área restrita a administradores.',
+		test: (user) => user.authLevel === 'Admin'
+	})
 ])
 export class ControlPanel
 {
-	static stopgap (title, message, links = [])
-	{
-		return (response) => response.render('controlPanel/stopgap.pug', {
-			title,
-			message,
-			links: [
-				... links,
-				{ to: '/cpanel', title: 'Panel administrativo' },
-				{ to: '/cpanel/pending', title: 'Serviços pendentes' },
-			]
-		})
-	}
-
 	@Router.Get('/')
-	static async index ({ session }, response)
+	static async index ({ params }, response)
 	{
-		return response.render('controlPanel/index.pug')
-	}
+		const sql = `SELECT
+			r.receiverId,
+			u.fullname,
+			AVG(r.rating) AS average,
+			COUNT(*) AS count,
+			1.0 * (:confidence * :alpha + SUM(r.rating)) / (:confidence + COUNT(*)) AS normalizedScore
+			FROM reviews r
+			INNER JOIN users u ON u.id = r.receiverId
+			GROUP BY receiverId`
 
-	@Router.Get('/pending')
-	static async pending ({ params, session }, response)
-	{
-		const services = await $Service.findAll({
-			where: { userId: session.user.id },
-			include: [
-				$ServiceCategory,
-				{
-					model: $Contract,
-					where: { pending: true },
-					include: [ $User, $Address ]
+		try {
+			const ranking = await sequelize.query(sql, {
+				type: sequelize.QueryTypes.SELECT,
+				replacements: {
+					id: params.id,
+					// Represents a prior for the average of the stars.
+					alpha: 2.5,
+					// Represents how confident we're in our prior.
+					// It is equivalent to a number of observations.
+					confidence: 5.0
 				}
-			]
-		})
-
-		return response.render('controlPanel/pending.pug', { moment, services, translatePricing })
-	}
-
-	@Router.Get('/active')
-	static async active ({ params, session }, response)
-	{
-		const services = await $Service.findAll({
-			where: { userId: session.user.id },
-			include: [
-				$ServiceCategory,
-				{
-					model: $Contract,
-					where: { completed: false, accepted: true },
-					include: [ $User, $Address ]
-				}
-			]
-		})
-
-		return response.render('controlPanel/active.pug', { moment, services, translatePricing })
-	}
-
-	@Router.Get('/history')
-	static async history ({ params, session }, response)
-	{
-		const services = await $Service.findAll({
-			where: {
-				[$.or]: [
-					{ 'userId': session.user.id },
-					Sequelize.where(sequelize.col('contracts.userId'), session.user.id)
-				]
-			},
-			include: [
-				$ServiceCategory,
-				$User,
-				{
-					model: $Contract,
-					where: { completed: true },
-					include: [
-						$User,
-						$Address,
-						{
-							model: $Review,
-							include: [{ model: $User, as: 'sender' }],
-							required: false
-						}
-					]
-				}
-			],
-			order: [[ sequelize.col('contracts.accepted'), 'DESC' ]]
-		})
-
-		return response.render('controlPanel/history.pug', {
-			moment, services, translatePricing, _
-		})
-	}
-
-	@Router.Post('/rate')
-	static async rate ({ body, session }, response)
-	{
-		await sequelize.transaction(async (transaction) => {
-			const contract = await $Contract.findOne({
-				transaction,
-				where: {
-					id: body.contractId,
-					[$.or]: [
-						{ 'userId': session.user.id },
-						Sequelize.where(sequelize.col('service.userId'), session.user.id)
-					]
-				},
-				include: [{ model: $Service }]
 			})
 
-			const review = await $Review.create({
-				contractId: contract.id,
-				message: body.message,
-				senderId: session.user.id,
-				rating: body.score,
-				receiverId: contract.userId === session.user.id
-					? contract.service.userId
-					: contract.userId
-			}, { transaction })
-
-			return response.json({ contract, body, review })
-		})
+			return response.render('controlPanel/weightedRanking.pug', {
+				ranking
+			})
+		} catch (e) {
+			return response.status(400).render('error.pug', {
+				status: '0x05',
+				error: 'Erro ao computar relatório',
+				message: 'Erro desconhecido.',
+				stack: e.stack
+			})
+		}
 	}
 
-	@Router.Get('/pending/:type(accept|refuse)/:id')
-	static async accept ({ params, session }, response)
+	@Router.Get('/rank')
+	static async rank({ query }, response)
 	{
-		const accepted = params.type === 'accept'
+		const sql = `SELECT services.id, serviceCategories.name, COUNT(*) AS count
+				FROM services
+				INNER JOIN serviceCategories ON serviceCategories.id = services.serviceCategoryId
+				INNER JOIN contracts ON services.id = contracts.serviceId
+				GROUP BY contracts.serviceId
+				ORDER BY count DESC`
 
-		await sequelize.transaction(async (transaction) => {
-			const contract = await $Contract.findOne({
-				transaction,
-				where: { pending: true, id: params.id },
-				include: [ { model: $Service, userId: session.user.id } ]
+		try {
+			const rank = await sequelize.query(sql, {
+				type: sequelize.QueryTypes.SELECT
 			})
 
-			if (! contract)
-				return ControlPanel.stopgap(`Operação inválida.`)(response)
-
-			const p = accepted
-				? { pending: false, accepted: true,  completed: false }
-				: { pending: false, accepted: false, completed: true  }
-
-			await contract.update(p, { transaction })
-			return ControlPanel.stopgap(`Contrato ${accepted ? 'aceito' : 'recusado'}.`)(response)
-		})
+			return response.json(rank)
+		} catch (e) {
+			return response.status(400).render('error.pug', {
+				status: '0x05',
+				error: 'Erro ao computar relatório',
+				message: 'Erro desconhecido.',
+				stack: e.stack
+			})
+		}
 	}
 
-	@Router.Get('/active/complete/:id')
-	static async complete ({ params, session }, response)
+	@Router.Get('/volume/:id')
+	static async volume({ params }, response)
 	{
-		await sequelize.transaction(async (transaction) => {
-			const contract = await $Contract.findOne({
-				transaction,
-				where: { accepted: true, id: params.id },
-				include: [ { model: $Service, userId: session.user.id } ]
+		const sql = `SELECT
+				users.fullname AS userName,
+				serviceCategories.name as categoryName,
+				COUNT(*) AS count
+				FROM contracts
+				INNER JOIN users ON contracts.userId = users.id
+				INNER JOIN services ON contracts.serviceId = services.id
+				INNER JOIN serviceCategories ON services.serviceCategoryId = serviceCategories.id
+				WHERE serviceCategories.id = :id
+				GROUP BY users.id`
+
+		try {
+			const rank = await sequelize.query(sql, {
+				type: sequelize.QueryTypes.SELECT,
+				replacements: { id: params.id }
 			})
 
-			if (! contract)
-				return ControlPanel.stopgap(`Operação inválida.`)(response)
+			return response.json(rank)
+		} catch (e) {
+			return response.status(400).render('error.pug', {
+				status: '0x05',
+				error: 'Erro ao computar relatório',
+				message: 'Erro desconhecido.',
+				stack: e.stack
+			})
+		}
+	}
 
-			await contract.update({ completed: true }, { transaction })
-			return ControlPanel.stopgap('Serviço concluído.')(response)
-		})
+	@Router.Get('/:id/report/services')
+	static async serviceReport({ params }, response)
+	{
+		const sql = `SELECT users.fullname,
+			serviceCategories.name AS category,
+			services.title AS title,
+			SUM(contracts.totalPrice) AS sum,
+			COUNT(*) AS count,
+			AVG(contracts.totalPrice) AS avg
+			FROM users
+			INNER JOIN services ON users.id = services.userId
+			INNER JOIN contracts ON contracts.serviceId = services.id
+			INNER JOIN serviceCategories ON serviceCategories.id = services.serviceCategoryId
+			WHERE users.id = :id
+			GROUP BY services.id
+			ORDER BY SUM(contracts.totalPrice) DESC`
+
+		try {
+			const rank = await sequelize.query(sql, {
+				type: sequelize.QueryTypes.SELECT,
+				replacements: {
+					id: params.id
+				}
+			})
+			return response.json(rank)
+		} catch (e) {
+			return response.status(400).render('error.pug', {
+				status: '0x05',
+				error: 'Erro ao computar relatório',
+				message: 'Erro desconhecido.',
+				stack: e.stack
+			})
+		}
+	}
+
+	@Router.Get('/:id/report')
+	static async userReport({ params }, response)
+	{
+		const sql = `SELECT
+				users.fullname AS fullname,
+				serviceCategories.name AS category,
+				services.title AS title,
+				contracts.totalPrice AS price,
+				services.basePrice AS baseprice,
+				serviceCategories.pricingType AS pricingType
+			FROM users
+			INNER JOIN contracts ON "contracts.userId" = users.id
+			INNER JOIN services ON "contracts.serviceId" = services.id
+			INNER JOIN serviceCategories ON serviceCategories.id = "services.serviceCategoryId"
+			WHERE users.id = :id
+			ORDER BY contracts.totalPrice DESC`
+
+		try {
+			const rank = await sequelize.query(sql, {
+				type: sequelize.QueryTypes.SELECT,
+				replacements: {
+					id: params.id
+				}
+			})
+
+			return response.json(rank)
+		} catch (e) {
+			return response.status(400).render('error.pug', {
+				status: '0x05',
+				error: 'Erro ao computar relatório',
+				message: 'Erro desconhecido.',
+				stack: e.stack
+			})
+		}
 	}
 }

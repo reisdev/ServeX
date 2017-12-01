@@ -70,7 +70,7 @@ block inner
 							.list-group-item
 								h3.mb-1 Avaliar
 								
-								form(action='/cpanel/rate' method='POST')
+								form(action='/svpanel/rate' method='POST')
 									input(type='hidden' value=ct.id name='contractId')
 										
 									.form-group
@@ -99,13 +99,17 @@ block inner
 						else if ct.reviews.length === 2
 							each rv in ct.reviews
 								.list-group-item
-									h3.mb-1 Avaliação do serviço
-									p
-										.fa.mr-2.fa-fw.fa-lg.fa-user-o
-										= `Enviada por ${rv.sender.fullname}`
+									h3.mb-1
+										if rv.sender.id === user.id
+											| Avaliação enviada por mim
+										else
+											| Avaliação recebida
 									p
 										.fa.mr-2.fa-fw.fa-lg.fa-balance-scale
 										+stars (rv.rating)
 									p
 										.fa.mr-2.fa-fw.fa-lg.fa-keyboard-o
 										= rv.message
+									p
+										.fa.mr-2.fa-fw.fa-lg.fa-user-o
+										= `Enviada por ${rv.sender.fullname}`
