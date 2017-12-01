@@ -15,29 +15,28 @@ export class Address
 	@Router.Post('/add')
 	static async insert({ body, session }, response)
 	{
-		const address = $Address.create({
-			... body, userId: session.user.id
-		})
+		try {
+			const address = $Address.create({ ... body, userId: session.user.id })
 
-		if(! address)
+			session.user.addresses = [ ... session.user.addresses || [], body ]
+			session.save(err => {
+				response.redirect(`/user/profile/${session.user.id}`)
+			})
+		} catch (e) {
 			return response.render('error.pug', {
 				error: 'Não foi possível inserir novo endereço',
 				message: 'Entre em contato com o suporte',
 				stack: e.stack
 			})
-
-		session.user.addresses = [ ... session.user.addresses, body ]
-
-		session.save(err => {
-			response.redirect(`/user/profile/${session.user.id}`)
-		})
+		}
 	}
-
 
 	@Router.Post('/remove')
 	static async removeAddress({ body, session }, response)
 	{
-		await $Address.destroy({
+		await $Address.update({
+			enabled: false
+		}, {
 			where: { id: body.id, userId: session.user.id }
 		})
 

@@ -1,4 +1,5 @@
-extends services.pug
+extends ../index.pug
+include ../mixins.pug
 
 block content
 	if error
@@ -55,4 +56,4 @@ block content
 						.fa.fa-plus.mr-1
 						| Novo endereço
 
-			include addAddress.pug
+			include ../addAddress.pug

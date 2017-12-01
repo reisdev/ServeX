@@ -19,19 +19,9 @@ const redirectIfAuthenticated = (request, response, next) => {
 	return request.session.user ? response.redirect('/') : next()
 }
 
-@Router.Route('/user', [
-	Middlewares.restrictedPage({ message: 'Área restrita a usuários cadastrados.' })
-])
+@Router.Route('/user')
 export class User
 {
-	@Router.Get('/')
-	static async all(request, response)
-	{
-		return response.status(200).json({
-			payload: await $User.findAll()
-		})
-	}
-
 	@Router.Get('/weighted')
 	static async weightedRating({ params }, response)
 	{
@@ -163,7 +153,7 @@ export class User
 
 		return await $User.findOne({
 			where: { email },
-			include: [ $Address ]
+			include: [{ model: $Address, where: { enabled: true } }]
 		}).then(user => {
 			if (! user)
 				return response.render('login.pug', { message: 'Usuário inexistente.' })
@@ -235,22 +225,5 @@ export class User
 				})
 			}
 		})
-	}
-
-	@Router.Get('/profile/:id')
-	static async viewUser({ params }, response)
-	{
-		const user = await $User.findOne({
-			where: { id: params.id },
-			include: [ $Address ]
-		})
-
-		if(! user)
-			return response.status(400).render('error.pug', {
-				error: 'Usuário não encontrado',
-				message: 'O usuário solicitado não foi encontrando em nossa base de dados'
-			})
-
-		return response.render('user.pug', { viewUser: user, provinces })
 	}
 }

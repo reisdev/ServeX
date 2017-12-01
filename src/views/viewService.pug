@@ -3,16 +3,17 @@ extends index.pug
 include mixins.pug
 
 block content
-	.card-body
-		h1.card-title= service.title
-		h4.card-title
-			+stars(service['user.rating'] || 0)
-		p.card-text= service.description
-		p.card-text
-			= `Preço: R$ ${service.basePrice} ${mapPricingType(service['serviceCategory.pricingType'])}`
-		
-		a(href='/services/filter/' + service['serviceCategory.id']).card-link
-			= service['serviceCategory.name']
-		
-	.card-body
-		a(href=`/hire/${service.id}`).btn.btn-primary Contratar serviço
+	.card.w-100
+		.card-body
+			h1.card-title= service.title
+			.card-title
+				+stars(service['user.rating'] || 0, true)
+			p.card-text= service.description
+			p.card-text
+				= `Preço: R$ ${service.basePrice} ${mapPricingType(service['serviceCategory.pricingType'])}`
+			
+			a(href=`/services/filter/${service['serviceCategory.id']}`).card-link.btn.btn-secondary
+				= service['serviceCategory.name']
+				
+			a(href=`/hire/${service.id}`).card-link.btn.btn-primary
+				| Contratar serviço

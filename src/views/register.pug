@@ -11,81 +11,91 @@ block content
 	form(action='/user/register' method='POST' enctype='multipart/form-data').card-group.w-100
 		.card.card-body
 			h1.card-title Cadastrar
-			h3.card-title Informações pessoais 			
-			
-			.form-group
-				label(for='fullname') Nome completo
-				input.form-control(required type='text' name='fullname')#fullname
+			h3.card-title Informações pessoais
 
 			.row
-				.col-sm-7
-					.form-group
-						label(for='email') E-mail
-						input.form-control(required type='email' name='email')#email
-				.col-sm-5
-					.form-group
-						label(for='cpf') CPF
-						input.form-control(required type='text' name='CPF')#cpf
-			
-			.form-group
-						label(for='userImg') Foto de Perfil
-						input.form-control(type='file' name='photoPath')
+				.col-12.form-group
+					label(for='fullname') Nome completo
+					input(required type='text' name='fullname').form-control#fullname
 
-			.form-group
-				label(for='password') Senha
-				input.form-control(required type='password' name='password' aria-describedby='passwd-help')#password
-				small.form-text.text-muted#passwd-help Deve conter pelo menos 6 caracteres.
-			.form-group
-				label(for='confirmPassword') Repita a senha
-				input.form-control(required type='password' name='confirmPassword')#confirmPassword
+				.col-7.form-group
+					label(for='email') E-mail
+					input(required type='email' name='email').form-control#email
+
+				.col-5.form-group
+					label(for='cpf') CPF
+					input(required type='text' name='CPF' data-inputmask-mask='999.999.999-99').form-control#cpf
+
+				.col-12.form-group
+					label(for='userImg') Foto de Perfil
+					input(type='file' name='photoPath').form-control
+
+				.col-6.form-group
+					label(for='password') Senha
+					input(required type='password' name='password' aria-describedby='passwd-help').form-control#password
+					small.form-text.text-muted#passwd-help Deve conter pelo menos 6 caracteres.
+
+				.col-6.form-group
+					label(for='confirmPassword') Repita a senha
+					input(required type='password' name='confirmPassword').form-control#confirmPassword
 
 		.card.card-body
 			h3.card-title Endereço
-			
+
 			.row
-				.col-sm-7
-					.form-group
-						label(for='country') País
-						input.form-control(required type='text' name='country')#country
-				.col-sm-5
-					.form-group
+				.col-7.form-group
+					label(for='street') Rua
+					input(required type='text' name='street').form-control#street
+
+				.col-5.form-group
+					label(for='number') Número
+					input(required type='text' name='number').form-control#number
+
+				.col-6.form-group
+						label(for='neighborhood') Bairro
+						input(required type='text' name='neighborhood').form-control#neighborhood
+
+				.col-6.form-group
+						label(for='city') Cidade
+						input(required type='text' name='city').form-control#city
+
+				.col-5.form-group
 						label(for='province') UF
-						select.form-control(required name='province')#province
+						select(required name='province').form-control#province
 							each province in provinces
 								option(value=province.value) #{province.name}
-			.row
-				.col-sm-5
-					.form-group
-						label(for='city') Cidade
-						input.form-control(required type='text' name='city')#city
-				.col-sm-3
-					.form-group
+
+				.col-3.form-group
 						label(for='ZIPCode') CEP
-						input.form-control(required type='text' name='ZIPCode')#ZIPCode
-				.col-sm-4
-					.form-group
-						label(for='neighborhood') Bairro
-						input.form-control(required type='text' name='neighborhood')#neighborhood
-			.row
-				.col.sm-7
-					.form-group
-							label(for='street') Rua
-							input.form-control(required type='text' name='street')#street
-				.col-sm-5
-					.form-group
-							label(for='number') Número
-							input.form-control(required type='text' name='number')#number
+						input(required type='text' name='ZIPCode' data-inputmask-mask='99999-999').form-control#ZIPCode
+
+				.col-4.form-group
+						label(for='country') País
+						input(required type='text' name='country').form-control#country
+
 			h3 Cartão de Crédito
 
-			.form-group
-						label Número do Cartão
-						input.form-control(type='text' name='cardNumber')
 			.row
-				.col-sm-7
+				.col-6.form-group
+					label Número do Cartão
+					input(type='text' name='cardNumber' data-inputmask-mask='9999 9999 9999 9999').form-control
+
+				.col-3.form-group
 					label Validade
-					input.form-control(type='text' name='validUntil')
-				.col-sm-5
+					input(type='text' name='validUntil' data-inputmask-mask='99 9999').form-control
+					small.form-text.text-muted MM AAAA
+
+				.col-3.form-group
 					label CVC
-					input.form-control(type='text' name='CVC')
-			.form-group
-				button.btn.btn-primary(type='submit' style='margin-top: 16px; padding-bottom: 5px') Cadastrar
+					input(type='text' name='CVC' data-inputmask-mask='999').form-control
+
+			.row
+				.col-12
+					button(type='submit').btn.btn-primary Cadastrar
+
+block append scripts
+	script(type='text/javascript' src='https://unpkg.com/inputmask@3.3.11/dist/min/jquery.inputmask.bundle.min.js' crossorigin='anonymous')
+	script(type='text/javascript').
+		$(document).ready(function() {
+			$(':input').inputmask();
+		})

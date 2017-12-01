@@ -60,7 +60,11 @@ export class ControlPanel
 			where: { userId: session.user.id },
 			include: [
 				$ServiceCategory,
-				{ model: $Contract, where: { pending: true }, include: [ $User, $Address ] }
+				{
+					model: $Contract,
+					where: { pending: true },
+					include: [ $User, $Address ]
+				}
 			]
 		})
 

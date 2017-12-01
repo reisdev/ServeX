@@ -17,7 +17,7 @@ import url from 'url'
 import * as Controllers from './controllers'
 
 import { sequelize } from './sequelize'
-import { SERVER_PORT, forceRebuild } from './settings'
+import { SERVER_PORT, forceRebuild, provinces } from './settings'
 
 const SequelizeStore = require('connect-session-sequelize')(session.Store)
 
@@ -59,6 +59,7 @@ sequelize.authenticate().then(() => {
 		res.locals.user = req.session.user
 		res.locals.uniqueFormKey = uid.sync(18)
 		res.locals.isLoggedIn = !_.isEmpty(req.session.user)
+		res.locals.provinces = provinces
 
 		res.locals.baseurl = resource => url.resolve('http://localhost:44800/', resource)
 
