@@ -1,0 +1,26 @@
+extends ../index.pug
+
+block content
+	.card.w-100
+		.card-body
+			h4.card-title Categorias mais contratadas
+			table.table.table-hover
+				caption Relação de estados ordenados por maior quantidade de serviços contratados.
+				thead
+					tr
+						th(scope='col') #
+						th(scope='col') Estado
+						th(scope='col') Contratos
+						th(scope='col') Valor total das transações
+						th(scope='col') Nota média dos prestadores
+				tbody
+					each row, index in ranking
+						tr
+							th(scope='row')= index + 1
+							td= provinces.find(p => p.value == row.province).name
+							td= row.count
+							td R$ #{row.totalprice.toFixed(2)}
+							td= row.rating.toFixed(2)
+					else
+						tr
+							td(colspan=5).center-text Não há avaliações cadastradas

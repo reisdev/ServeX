@@ -37,7 +37,7 @@ export class User
 		return response.render('login.pug')
 	}
 
-	@Router.Post('/login', [ redirectIfAuthenticated ])
+	@Router.Post('/login/do', [ redirectIfAuthenticated ])
 	static async login(request, response)
 	{
 		const { email, password } = request.body
@@ -67,7 +67,7 @@ export class User
 		return response.render('register.pug', { provinces })
 	}
 
-	@Router.Post('/register', [ redirectIfAuthenticated, upload.single('photoPath') ])
+	@Router.Post('/register/do', [ redirectIfAuthenticated, upload.single('photoPath') ])
 	static async register ({ body, file, session }, response)
 	{
 		if (_.isEmpty(body))

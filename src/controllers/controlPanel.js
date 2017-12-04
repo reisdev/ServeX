@@ -88,6 +88,40 @@ export class ControlPanel
 		}
 	}
 
+	@Router.Get('/rank/state')
+	static async states ({ query }, response)
+	{
+		const sql = `SELECT
+				serviceCategories.name AS category,
+				serviceCategories.id AS categoryId,
+				COUNT(*) AS count,
+				AVG(users.rating) AS rating,
+				SUM(contracts.totalPrice) AS totalprice,
+				addresses.province AS province
+				FROM services
+				INNER JOIN serviceCategories ON serviceCategories.id = services.serviceCategoryId
+				INNER JOIN contracts ON services.id = contracts.serviceId
+				INNER JOIN users ON users.id = services.userId
+				INNER JOIN addresses ON contracts.addressId = addresses.id
+				GROUP BY province
+				ORDER BY count DESC`
+
+		try {
+			const ranking = await sequelize.query(sql, {
+				type: sequelize.QueryTypes.SELECT
+			})
+
+			return response.render('controlPanel/stateRanking.pug', { ranking })
+		} catch (e) {
+			return response.status(400).render('error.pug', {
+				status: '0x05',
+				error: 'Erro ao computar relatório',
+				message: 'Erro desconhecido.',
+				stack: e.stack
+			})
+		}
+	}
+
 	@Router.Get('/volume/:id')
 	static async volume({ params }, response)
 	{
