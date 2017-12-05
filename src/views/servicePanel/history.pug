@@ -67,7 +67,7 @@ block inner
 								= ct.message
 
 						if ct.accepted && !((ct.reviews[0] && ct.reviews[0].sender.id === user.id) || (ct.reviews[1] && ct.reviews[1].sender.id === user.id))
-							.list-group-item
+							div(id=ct.id).list-group-item
 								h3.mb-1 Avaliar
 								
 								form(action='/svpanel/rate' method='POST')

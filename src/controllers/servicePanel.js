@@ -192,7 +192,10 @@ export class ServicePanel
 				return ServicePanel.stopgap(`Operação inválida.`)(response)
 
 			await contract.update({ completed: true }, { transaction })
-			return ServicePanel.stopgap('Serviço concluído.')(response)
+
+			return ServicePanel.stopgap('Serviço concluído.', null, [
+				{ to: `/svpanel/history/#${contract.id}`, title: 'Avaliar' }
+			])(response)
 		})
 	}
 }

@@ -14,7 +14,7 @@ import { $Address, $Service, $ServiceCategory, $User, $Contract, sequelize } fro
 ])
 export class Hire
 {
-	static findServiceById(id)
+	static findServiceById (id)
 	{
 		return $Service.findOne({
 			raw: true,
@@ -23,20 +23,17 @@ export class Hire
 		})
 	}
 
-	static findAddressById(id){
-		return $Address.findAll({
-			where: {
-				userId: id
-			}
-		})
+	static findAddressById (id)
+	{
+		return $Address.findAll({ where: { userId: id } })
 	}
 
-	static die(error, message)
+	static die (error, message)
 	{
 		return (response) => response.render('error.pug', { error, message })
 	}
 
-	static render(service, addresses, error)
+	static render (service, addresses, error)
 	{
 		return (response) => response.render('hire/index.pug', {
 			service,
@@ -58,7 +55,7 @@ export class Hire
 		if (service.userId === session.user.id)
 			return Hire.die('Erro', 'Não é permitido contratar seu próprio serviço.')(response)
 
-		return Hire.render(service,address)(response)
+		return Hire.render(service, address)(response)
 	}
 
 	@Router.Post('/submit')
