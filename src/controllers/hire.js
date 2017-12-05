@@ -23,16 +23,25 @@ export class Hire
 		})
 	}
 
+	static findAddressById(id){
+		return $Address.findAll({
+			where: {
+				userId: id
+			}
+		})
+	}
+
 	static die(error, message)
 	{
 		return (response) => response.render('error.pug', { error, message })
 	}
 
-	static render(service, error)
+	static render(service, addresses, error)
 	{
 		return (response) => response.render('hire/index.pug', {
 			service,
 			error,
+			addresses,
 			mapPricingType: Utils.mapPricingType
 		})
 	}
@@ -41,6 +50,7 @@ export class Hire
 	static async index ({ params, session }, response)
 	{
 		const service = await Hire.findServiceById(params.id)
+		const address = await Hire.findAddressById(session.user.id)
 
 		if (! service)
 			return Hire.die('Serviço inexistente', 'O serviço solicitado não existe.')(response)
@@ -48,7 +58,7 @@ export class Hire
 		if (service.userId === session.user.id)
 			return Hire.die('Erro', 'Não é permitido contratar seu próprio serviço.')(response)
 
-		return Hire.render(service)(response)
+		return Hire.render(service,address)(response)
 	}
 
 	@Router.Post('/submit')

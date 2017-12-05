@@ -64,10 +64,11 @@ block content
 				.form-group.col-5
 					label Endereço
 					select(name='addressId').form-control
-						each address in user.addresses
-							option(value=address.id) #{address.street} , #{address.number}
-						else
-							option Nenhum endereço cadastrado
+						if addresses
+							each address in addresses
+								option(value=address.id) #{address.street} , #{address.number}
+							else
+								option Nenhum endereço cadastrado
 			.row
 				.form-group.col-12
 					label Mensagem para o contratado
