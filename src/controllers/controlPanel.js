@@ -3,6 +3,8 @@
 import * as Router from '../utils/router.js'
 import * as Middlewares from '../utils/middlewares.js'
 
+import moment from 'moment'
+
 import { $Service, $Contract, $ServiceCategory, sequelize } from '../sequelize.js'
 
 @Router.Route('/cpanel', [
@@ -56,6 +58,7 @@ export class ControlPanel
 		}
 	}
 
+	// Relação de N tipos de serviços mais procurados
 	@Router.Get('/rank/categories')
 	static async rank({ query }, response)
 	{
@@ -70,7 +73,7 @@ export class ControlPanel
 				INNER JOIN contracts ON services.id = contracts.serviceId
 				INNER JOIN users ON users.id = services.userId
 				GROUP BY services.id
-				ORDER BY count DESC`
+				ORDER BY startDate DESC`
 
 		try {
 			const ranking = await sequelize.query(sql, {
@@ -122,6 +125,7 @@ export class ControlPanel
 		}
 	}
 
+	// Listar clientes com maior volume de contratações, por tipo de serviço
 	@Router.Get('/volume/:id')
 	static async volume({ params }, response)
 	{
@@ -188,32 +192,33 @@ export class ControlPanel
 		}
 	}
 
-	@Router.Get('/:id/report')
+	// Relatório financeiro de clientes e prestadores
+	@Router.Get('/user/:id/report')
 	static async userReport({ params }, response)
 	{
-		const sql = `SELECT
-				users.fullname AS fullname,
-				serviceCategories.name AS category,
-				services.title AS title,
-				contracts.totalPrice AS price,
-				services.basePrice AS baseprice,
-				serviceCategories.pricingType AS pricingType
+		const query = `SELECT
+			users.fullname AS hirer,
+			providers.fullname AS hired,
+			serviceCategories.name AS category,
+			serviceCategories.id AS categoryId,
+			services.title AS service,
+			services.basePrice AS baseprice,
+			contracts.*
 			FROM users
-			INNER JOIN contracts ON "contracts.userId" = users.id
-			INNER JOIN services ON "contracts.serviceId" = services.id
-			INNER JOIN serviceCategories ON serviceCategories.id = "services.serviceCategoryId"
-			WHERE users.id = :id
+			INNER JOIN contracts ON contracts.userId = users.id
+			INNER JOIN services ON services.id = contracts.serviceId
+			INNER JOIN serviceCategories ON serviceCategories.id = services.serviceCategoryId
+			INNER JOIN users AS providers ON providers.id = services.userId
+			WHERE users.id = :id OR providers.id = :id
 			ORDER BY contracts.totalPrice DESC`
 
 		try {
-			const rank = await sequelize.query(sql, {
+			const report = await sequelize.query(query, {
 				type: sequelize.QueryTypes.SELECT,
-				replacements: {
-					id: params.id
-				}
+				replacements: { id: params.id }
 			})
 
-			return response.json(rank)
+			return response.render('controlPanel/userReport.pug', { report, moment })
 		} catch (e) {
 			return response.status(400).render('error.pug', {
 				status: '0x05',

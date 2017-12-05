@@ -8,7 +8,7 @@ block append stylesheet
 		.star-rating {
 			direction: rtl
 		}
-		
+
 		.star-rating label {
 			margin: 0;
 			padding: 0;
@@ -29,7 +29,7 @@ block inner
 					.card.border-0.list-group.mb-5
 						if ! ct.accepted && ct.completed
 							.list-group-item.list-group-item-warning Recusado
-							
+
 						.list-group-item
 							h3= sv.title
 							p
@@ -41,7 +41,7 @@ block inner
 							p
 								.fa.mr-2.fa-fw.fa-lg.fa-clock-o
 								= `${ct.expectedDuration} ${translatePricing(sv.serviceCategory.pricingType)}`
-								
+
 						.list-group-item
 							h3 Contratado
 							p
@@ -50,7 +50,7 @@ block inner
 							p
 								.fa.mr-2.fa-fw.fa-lg.fa-balance-scale
 								+stars (sv.user.rating)
-								
+
 						.list-group-item
 							h3 Contratante
 							p
@@ -69,14 +69,14 @@ block inner
 						if ct.accepted && !((ct.reviews[0] && ct.reviews[0].sender.id === user.id) || (ct.reviews[1] && ct.reviews[1].sender.id === user.id))
 							div(id=ct.id).list-group-item
 								h3.mb-1 Avaliar
-								
+
 								form(action='/svpanel/rate' method='POST')
 									input(type='hidden' value=ct.id name='contractId')
-										
+
 									.form-group
 										label(for='message') Mensagem
 										textarea(name='message' rows=2).form-control#message
-									
+
 									.star-rating.mb-3
 										input(type='radio' name='score' required hidden value=5)#s5
 										label(for='s5')

@@ -1,0 +1,31 @@
+extends ../index.pug
+
+block content
+	.card.w-100
+		.card-body
+			h4.card-title Relatório de usuário
+			table.table.table-hover
+				caption Contratações e serviços prestados
+				thead
+					tr
+						th(scope='col') #
+						th(scope='col') Categoria
+						th(scope='col') Serviço
+						th(scope='col') Contratador
+						th(scope='col') Contratado
+						th(scope='col') Preço do serviço
+						th(scope='col') Data de ínicio
+				tbody
+					each row, index in report
+						tr
+							th(scope='row')= index + 1
+							td
+								a(href=`/cpanel/volume/${row.categoryId}`)= row.category
+							td= row.service
+							td= row.hirer
+							td= row.hired
+							td R$ #{row.totalPrice.toFixed(2)}
+							td= moment(new Date(row.startDate)).format('LLLL')
+					else
+						tr
+							td(colspan=7).center-text O usuário não tomou parte em serviços.
