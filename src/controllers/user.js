@@ -26,9 +26,7 @@ export class User
 	@Router.Post('/logout')
 	static async logout(request, response)
 	{
-		request.session.destroy(err => {
-			response.redirect('/user/login')
-		})
+		request.session.destroy(err => response.redirect('/user/login'))
 	}
 
 	@Router.Get('/login', [ redirectIfAuthenticated ])
@@ -47,7 +45,7 @@ export class User
 
 		return await $User.findOne({
 			where: { email },
-			include: [{ model: $Address, where: { enabled: true } }]
+			include: [{ model: $Address, required: false, where: { enabled: true } }]
 		}).then(user => {
 			if (! user)
 				return response.render('login.pug', { message: 'Usuário inexistente.' })
@@ -55,9 +53,7 @@ export class User
 				return response.render('login.pug', { message: 'Senha incorreta.' })
 
 			request.session.user = user
-			request.session.save(err => {
-				response.redirect('/')
-			})
+			request.session.save(err => response.redirect('/'))
 		})
 	}
 
@@ -90,17 +86,18 @@ export class User
 				}, { transaction })
 
 				try {
-					const addr = await $Address.create({ ...body, userId: user.id
-					}, { transaction })
+					const addr = await $Address.create(
+						{ ... body, userId: user.id },
+						{ transaction }
+					)
 
 					body.validUntil = moment(`${body.validUntil}`,'MM YYYY')
 
 					const card = await $CreditCard.create({
-						...body, userId: user.id
+						... body, userId: user.id
 					}, { transaction })
 
 					session.user = user
-					session.user.addresses = [ ... session.user.addresses || [], addr ]
 					session.save(err => {
 						response.render('success.pug', {
 							user,

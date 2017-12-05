@@ -16,7 +16,7 @@ export class UserProfile
 	{
 		const user = await $User.findOne({
 			where: { id: params.id || session.user.id },
-			include: [{ model: $Address, where: { enabled: true } }]
+			include: [{ model: $Address, required: false, where: { enabled: true } }]
 		})
 
 		if(! user)

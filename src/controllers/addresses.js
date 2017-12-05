@@ -13,15 +13,12 @@ import { $Address, $User, sequelize } from '../sequelize.js'
 export class Address
 {
 	@Router.Post('/add')
-	static async insert({ body, session }, response)
+	static async add ({ body, session }, response)
 	{
 		try {
 			const address = $Address.create({ ... body, userId: session.user.id })
 
-			session.user.addresses = [ ... session.user.addresses || [], body ]
-			session.save(err => {
-				response.redirect(`/user/profile/${session.user.id}`)
-			})
+			session.save(err => response.redirect(`/user/profile/${session.user.id}`))
 		} catch (e) {
 			return response.render('error.pug', {
 				error: 'Não foi possível inserir novo endereço',
@@ -32,17 +29,13 @@ export class Address
 	}
 
 	@Router.Post('/remove')
-	static async removeAddress({ body, session }, response)
+	static async remove ({ body, session }, response)
 	{
-		await $Address.update({
-			enabled: false
-		}, {
-			where: { id: body.id, userId: session.user.id }
-		})
+		await $Address.update(
+			{ enabled: false },
+			{ where: { id: body.id, userId: session.user.id } }
+		)
 
-		session.user.addresses = session.user.addresses.filter(p => p.id !== body.id)
-		session.save(err => {
-			response.redirect(`/user/profile/${session.user.id}`)
-		})
+		session.save(err => response.redirect(`/user/profile/${session.user.id}`))
 	}
 }
