@@ -105,6 +105,7 @@ export class ControlPanel
 			FROM contracts
 			INNER JOIN services ON services.id = contracts.serviceId
 			INNER JOIN serviceCategories ON serviceCategories.id = services.serviceCategoryId
+			WHERE endDate IS NOT NULL
 			GROUP BY contracts.serviceId
 			ORDER BY averageDays DESC
 			`
