@@ -163,7 +163,8 @@ export class ControlPanel
 				INNER JOIN services ON contracts.serviceId = services.id
 				INNER JOIN serviceCategories ON services.serviceCategoryId = serviceCategories.id
 				WHERE serviceCategories.id = :id
-				GROUP BY users.id`
+				GROUP BY users.id
+				ORDER BY count DESC`
 
 		const list = await sequelize.query(sql, {
 			type: sequelize.QueryTypes.SELECT,
