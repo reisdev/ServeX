@@ -92,6 +92,30 @@ export class ControlPanel
 		}
 	}
 
+	// Duração média de contrato por tipo de serviço
+	@Router.Get('/rank/length')
+	static async rankLength ({ query }, response)
+	{
+		const sql = `SELECT
+			serviceCategories.name AS category,
+			serviceCategories.id AS categoryId,
+			COUNT(*) AS count,
+			AVG(julianday(contracts.endDate) - julianday(contracts.startDate)) AS averageDays,
+			SUM(contracts.totalPrice) AS totalprice
+			FROM contracts
+			INNER JOIN services ON services.id = contracts.serviceId
+			INNER JOIN serviceCategories ON serviceCategories.id = services.serviceCategoryId
+			GROUP BY contracts.serviceId
+			ORDER BY averageDays DESC
+			`
+
+		const ranking = await sequelize.query(sql, {
+			type: sequelize.QueryTypes.SELECT
+		})
+
+		return response.render('controlPanel/lengthRanking.pug', { ranking })
+	}
+
 	@Router.Get('/rank/state')
 	static async states ({ query }, response)
 	{
