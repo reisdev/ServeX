@@ -1,9 +1,10 @@
 /* @Author: Raphael Nepomuceno <raphael.nepomuceno@ufv.br> */
 
-import * as Router from '../utils/router.js'
-import * as Middlewares from '../utils/middlewares.js'
-
+import _ from 'lodash'
 import moment from 'moment'
+
+import * as Middlewares from '../utils/middlewares.js'
+import * as Router from '../utils/router.js'
 
 import { $Service, $Contract, $ServiceCategory, sequelize } from '../sequelize.js'
 
@@ -51,7 +52,7 @@ export class ControlPanel
 		} catch (e) {
 			return response.status(400).render('error.pug', {
 				status: '0x05',
-				error: 'Erro ao computar relatório',
+				error: 'Erro ao gerar relatório.',
 				message: 'Erro desconhecido.',
 				stack: e.stack
 			})
@@ -84,7 +85,7 @@ export class ControlPanel
 		} catch (e) {
 			return response.status(400).render('error.pug', {
 				status: '0x05',
-				error: 'Erro ao computar relatório',
+				error: 'Erro ao gerar relatório.',
 				message: 'Erro desconhecido.',
 				stack: e.stack
 			})
@@ -118,7 +119,7 @@ export class ControlPanel
 		} catch (e) {
 			return response.status(400).render('error.pug', {
 				status: '0x05',
-				error: 'Erro ao computar relatório',
+				error: 'Erro ao gerar relatório.',
 				message: 'Erro desconhecido.',
 				stack: e.stack
 			})
@@ -140,21 +141,19 @@ export class ControlPanel
 				WHERE serviceCategories.id = :id
 				GROUP BY users.id`
 
-		try {
-			const rank = await sequelize.query(sql, {
-				type: sequelize.QueryTypes.SELECT,
-				replacements: { id: params.id }
-			})
+		const list = await sequelize.query(sql, {
+			type: sequelize.QueryTypes.SELECT,
+			replacements: { id: params.id }
+		})
 
-			return response.json(rank)
-		} catch (e) {
+		if(_.isEmpty(list))
 			return response.status(400).render('error.pug', {
 				status: '0x05',
-				error: 'Erro ao computar relatório',
-				message: 'Erro desconhecido.',
-				stack: e.stack
+				error: 'Erro ao gerar relatório.',
+				message: 'Categoria inexistente.'
 			})
-		}
+
+		return response.render('controlPanel/volume.pug', { list })
 	}
 
 	@Router.Get('/:id/report/services')
@@ -185,7 +184,7 @@ export class ControlPanel
 		} catch (e) {
 			return response.status(400).render('error.pug', {
 				status: '0x05',
-				error: 'Erro ao computar relatório',
+				error: 'Erro ao gerar relatório.',
 				message: 'Erro desconhecido.',
 				stack: e.stack
 			})
@@ -222,7 +221,7 @@ export class ControlPanel
 		} catch (e) {
 			return response.status(400).render('error.pug', {
 				status: '0x05',
-				error: 'Erro ao computar relatório',
+				error: 'Erro ao gerar relatório.',
 				message: 'Erro desconhecido.',
 				stack: e.stack
 			})

@@ -1,0 +1,22 @@
+extends ../index.pug
+
+block content
+	.card.w-100
+		.card-body
+			h4.card-title Usuários com mais contratações para a categoria #{list[0].categoryName}
+			table.table.table-hover
+				caption Relação de usuários com mais contratações para a categoria #{list[0].categoryName}
+				thead
+					tr
+						th(scope='col') #
+						th(scope='col') Usuário
+						th(scope='col') Contratações
+				tbody
+					each row, index in list
+						tr
+							th(scope='row')= index + 1
+							td= row.userName
+							td= row.count
+					else
+						tr
+							td(colspan=5).center-text Não há avaliações cadastradas
